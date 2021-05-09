@@ -1,0 +1,99 @@
+<div fxLayout.xs="column"  fxLayout.sm="column" fxLayout="row" fxLayoutWrap fxLayoutAlign="center">
+    <section fxFlex="35%" fxFlex.sm="60%">
+        <mat-progress-bar *ngIf='!activityLoaded' mode="indeterminate"></mat-progress-bar>
+        <mat-card  fxLayoutGap="5%" fxLayout="column" >
+            <p *ngIf="userPhoneNumber != '' && activityLoaded">Your Texting Phone Number: {{userPhoneNumber}}</p>
+            <mat-error *ngIf="numbersUnavailable">
+                There are no phone numbers available. Administrator should add more numbers.
+            </mat-error>
+            <mat-select *ngIf="userPhoneNumber === '' && !numbersUnavailable && activityLoaded" (selectionChange)="numberSelected($event)" placeholder="Select a Phone Number" >
+                <mat-option value="{{number}}" *ngFor="let number of phoneNumbers">{{number}}</mat-option>
+            </mat-select>
+            <mat-tab-group fxFlex="100%" *ngIf='houseHoldsLoaded'>
+                <mat-tab label="Loaded House Holds"> 
+                    <mat-accordion>
+                        <div *ngFor="let houseHoldRecord of houseHoldRecords;">
+                            <mat-expansion-panel *ngIf="houseHoldRecord.houseHold.residents.length > 1" style="box-shadow:none;">
+                                <mat-expansion-panel-header style="padding: 0 17px;">
+                                  <mat-panel-title>
+                                    <div *ngIf="!houseHoldRecord.houseHold.fullAddress1">No Address</div>
+                                      {{houseHoldRecord.houseHold.fullAddress1}}
+                                  </mat-panel-title>
+                                  <mat-panel-description>{{houseHoldRecord.houseHold.residents.length}} Residents</mat-panel-description>
+                                </mat-expansion-panel-header>
+                                <mat-list *ngFor='let resident of houseHoldRecord.houseHold.residents'>
+                                  <mat-list-item *ngIf='!textReceivedContactRecordsIDS.includes(resident.personID)'>
+                                      <mat-icon>perm_identity</mat-icon>
+                                      <div fxFlex="90%">{{resident.name.firstName}} {{resident.name.lastName}}</div>
+                                      <button mat-icon-button [disabled]="sendingText" (click)="sendInitText(resident, houseHoldRecord)" style="float: right;"><mat-icon>send</mat-icon></button>
+                                  </mat-list-item >
+                                </mat-list>
+                            </mat-expansion-panel>
+                            <div *ngIf="houseHoldRecord.houseHold.residents.length <= 1">
+                                <mat-list *ngFor='let resident of houseHoldRecord.houseHold.residents'>
+                                    <mat-list-item>
+                                        <div *ngIf="!houseHoldRecord.houseHold.fullAddress1">No Address</div>
+                                        <div fxFlex="40%" >{{houseHoldRecord.houseHold.fullAddress1}} </div>
+                                        <mat-icon>perm_identity</mat-icon>
+                                        <div fxFlex="100%">{{resident.name.firstName}} {{resident.name.lastName}}</div>
+                                        <button fxLayoutAlign="end start" mat-icon-button [disabled]="sendingText" (click)="sendInitText(resident, houseHoldRecord)" style="float: right;"><mat-icon>send</mat-icon></button>
+                                    </mat-list-item >
+                                </mat-list>
+                            </div>
+                        </div>
+                    </mat-accordion>
+                    <mat-error *ngIf='houseHoldsCompleted'>There are no Households currently loaded.</mat-error>
+                    <mat-error *ngIf='houseHoldsNewLockCompleted'>Activity Completed. No more members to contact.</mat-error>
+                    <div><button fxFlex="100%" mat-raised-button color="primary" [disabled]='loadingHouseHolds' (click)="lockNewHouseHolds()">Load More House Holds</button></div>
+                    <mat-progress-bar *ngIf="loadingHouseHolds && !houseHoldsNewLockCompleted" mode="indeterminate"></mat-progress-bar>
+                    <mat-progress-bar *ngIf="sendingText" mode="indeterminate"></mat-progress-bar>
+                </mat-tab>
+
+                <mat-tab label="Text Sent House Holds"> 
+                    <mat-accordion>
+                        <mat-expansion-panel *ngFor="let sentHouseHoldRecord of sentHouseHoldRecords;">
+                          <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                {{sentHouseHoldRecord.houseHold.fullAddress1}} 
+                            </mat-panel-title>
+                            <mat-panel-description>
+                                {{sentHouseHoldRecord.houseHold.residents.length}} Residents - Number of Texts Sent: {{sentHouseHoldRecord.numTextSent}}
+                            </mat-panel-description>
+                          </mat-expansion-panel-header>
+                          <mat-list *ngFor='let resident of sentHouseHoldRecord.houseHold.residents'>
+                            <mat-list-item *ngIf='!textReceivedContactRecordsIDS.includes(resident.personID)'>
+                                <mat-icon>perm_identity</mat-icon>
+                                <div fxFlex="90%">{{resident.name.firstName}} {{resident.name.lastName}}</div>
+                                <button *ngIf='!residentsSent.includes(resident.personID)' mat-icon-button [disabled]="sendingText" (click)="sendInitText(resident, sentHouseHoldRecord)" style="float: right;"><mat-icon>send</mat-icon></button>
+                                <mat-error *ngIf='residentsSent.includes(resident.personID)'>Sent</mat-error>
+                            </mat-list-item >
+                          </mat-list>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                </mat-tab>
+                <mat-tab>
+                    <ng-template matTabLabel>
+                        <span matBadge={{textReceivedContactRecords.length}} matBadgeOverlap="false">Responded People</span>
+                    </ng-template>
+                    <mat-list *ngIf="textReceivedContactRecords">
+                        <div *ngFor="let textReceivedContactRecord of textReceivedContactRecords;" >
+                            <mat-list-item>
+                                <mat-icon>perm_identity</mat-icon>
+                                
+                                <div fxFlex="90%">{{textReceivedContactRecord.person.resident.name.firstName}} {{textReceivedContactRecord.person.resident.name.lastName}}</div>
+                                <button mat-icon-button (click)="getConversation(textReceivedContactRecord)" style="float: right;"><mat-icon>chat</mat-icon></button>
+                                <mat-divider></mat-divider>
+                            </mat-list-item>
+                        </div>   
+                    </mat-list>
+                </mat-tab>
+            </mat-tab-group>
+        </mat-card>
+    </section>
+    <conversation fxFlex="70%" *ngIf="selectedTextContactRecord" [(selectedTextContactRecord)] = selectedTextContactRecord
+                                                      [(activity)] = activity
+                                                      [(textReceivedContactRecords)]=textReceivedContactRecords
+                                                      [userPhoneNumber] = userPhoneNumber
+                                                      ></conversation>
+</div>
+

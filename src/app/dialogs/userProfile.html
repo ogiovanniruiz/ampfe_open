@@ -1,0 +1,49 @@
+<div fxLayout="column" fxLayoutAlign="center">
+    <div fxLayout="column" fxLayout.xs="column" fxLayoutAlign="center" fxLayoutGap="2%">
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+          <mat-form-field fxFlex="50%" > 
+            <input matInput #firstName type="name" placeholder="First Name" name="name" id="name" required>
+          </mat-form-field>
+          <mat-form-field fxFlex="50%"> 
+            <input matInput #lastName type="name" placeholder="Last Name" required>
+          </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+          <mat-form-field fxFlex="50%"> 
+            <input matInput #phone type="tel" placeholder="Phone Number">
+          </mat-form-field>
+          <mat-form-field fxFlex="50%"> 
+            <input matInput #email type="email" placeholder="Email" required>
+          </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%" *ngIf="false">
+          <mat-form-field fxFlex="50%"> 
+            <input matInput #password type="password" placeholder="Password" required>
+          </mat-form-field>
+          <mat-form-field fxFlex="50%"> 
+            <input matInput #password_repeat type="password" placeholder="Repeat Password" required>
+          </mat-form-field>
+        </div>
+            <div fxLayout="row" fxLayoutGap="2%">
+              <mat-form-field fxFlex="45%"> 
+                <input matInput #city type="city" placeholder="City">
+              </mat-form-field>
+              <mat-form-field fxFlex="15%"> 
+                <mat-select #state placeholder="State">
+                  <mat-option>None</mat-option>
+                  
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field fxFlex="30%"> 
+                <input matInput #zip type="zip" placeholder="Zipcode">
+              </mat-form-field>
+            </div > 
+            <div fxLayoutAlign="center" fxLayout="row" fxLayoutGap="5%">
+              <button mat-raised-button color="accent" (click)="closeSettings()">CLOSE</button>
+              <button mat-raised-button  color="primary" (click)="saveEdits()">SAVE</button>
+            </div>
+          </div>
+          <br/>
+
+
+</div>

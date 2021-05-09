@@ -1,0 +1,64 @@
+
+<header fxLayoutAlign="center"  fxLayout="column" fxLayoutGap="5%">
+    <section fxLayoutAlign="center" > <b color="primary">{{status}}</b></section>
+    <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+</header>
+<mat-error fxLayoutAlign="center"><b>{{errorMessage}}</b></mat-error>
+<br>
+<body fxLayout="column" fxLayoutGap="5%" fxLayoutAlign="center center">
+    <button mat-raised-button fxLayoutAlign="center" *ngIf="incomingCall" color="primary" fxFlex="40%" fxFlex.sm="100%" fxFlex.xs="100%" (click)="acceptCall()"><mat-icon>call</mat-icon>Accept Call</button>
+    <button mat-raised-button fxLayoutAlign="center" *ngIf="inCall" color="warn" fxFlex="40%" fxFlex.sm="100%" fxFlex.xs="100%" (click)="hangupCall()"><mat-icon>call_end</mat-icon>HangUp Call</button>
+    <mat-form-field appearance="fill" *ngIf="inCall">
+        <mat-label>Redirect Call</mat-label>
+        <mat-select (selectionChange)="redirectCall($event)">
+          <mat-option *ngFor='let hotline of activities' value={{hotline.hotlineMetaData.mainPhoneNumber}}>{{hotline.name}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    
+    <mat-card fxFlex="100%" *ngIf='showForm' fxLayout="column" fxLayoutGap="5%">
+        <mat-card-header>
+            Form for Incoming Call from: {{incomingPhoneNum}}
+        </mat-card-header>
+        <section fxLayout="column" fxLayoutGap="5%" fxFlex="100%">
+            <section fxLayout="row" fxLayoutGap="5%">
+                <mat-form-field >
+                    <mat-label>First Name</mat-label>
+                    <input matInput #firstName>
+                </mat-form-field> 
+                <mat-form-field >
+                    <mat-label>Last Name</mat-label>
+                    <input matInput #lastName>
+                </mat-form-field> 
+            </section> 
+            <mat-form-field>
+                <mat-label>Email</mat-label>
+                <input matInput #email>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Address</mat-label>
+                <input matInput #address>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Notes</mat-label>
+                <textarea matInput #notes></textarea>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Urgency Level</mat-label>
+                <mat-select (selectionChange)="urgencySelected($event)">
+                  <mat-option value="Low">Low</mat-option>
+                  <mat-option value="Medium">Medium</mat-option>
+                  <mat-option value="URGENT">URGENT</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+            <section fxLayout="row" fxLayoutGap="5%" fxLayoutAlign="center">
+                <button mat-raised-button color='primary' (click)="submitData()">SUBMIT</button> 
+                <button mat-raised-button color='accent' (click)="lobby()">LOBBY</button> 
+                <button mat-raised-button color='warn' (click)="block()">BLOCK</button> 
+            </section>
+            <mat-error *ngIf='noNotes'>Notes and urgency level are required to submit.</mat-error>
+
+        </section>
+      </mat-card>
+      <button mat-raised-button color='warn' (click)='disconnectFromHotline()'>Leave Hotline</button> 
+</body>

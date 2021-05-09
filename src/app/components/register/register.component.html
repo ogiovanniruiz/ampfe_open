@@ -1,0 +1,51 @@
+<div style="margin-top: 5%"  fxLayoutAlign="center">
+  <mat-card fxLayout="column" fxLayoutAlign="center" fxFlex="50%" fxFlex.xs="90%" fxFlex.sm="80%">
+    <span fxLayoutAlign="center">
+      <img width="373" height="81" alt="Angular Logo" src="{{logo_dir}}">
+    </span>
+    <br/>
+    <div fxLayout="column" fxLayout.xs="column" fxLayoutAlign="center" fxLayoutGap="2%">
+      <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+        <mat-form-field fxFlex="50%" > 
+          <input matInput #firstName type="text" placeholder="First Name" required>
+        </mat-form-field>
+        <mat-form-field fxFlex="50%"> 
+          <input matInput #lastName type="text" placeholder="Last Name" required>
+        </mat-form-field>
+      </div>
+      <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+        <mat-form-field fxFlex="50%"> 
+          <input matInput #phone type="phone" placeholder="Phone Number" [formControl]="phoneFormControl">
+        </mat-form-field>
+        <mat-form-field fxFlex="50%"> 
+          <input matInput #email type="email" placeholder="Email" [formControl]="emailFormControl" required>
+        </mat-form-field>
+      </div>
+      <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+        <mat-form-field fxFlex="50%"> 
+          <input matInput #password type="password" placeholder="Password" required>
+        </mat-form-field>
+        <mat-form-field fxFlex="50%"> 
+          <input matInput #repeatPassword type="password" placeholder="Repeat Password" required>
+        </mat-form-field>
+      </div>
+      <div fxLayoutAlign="center" fxLayout="row" fxLayoutGap="5%">
+        <button mat-raised-button color="accent" (click)="cancel()">CANCEL</button>
+        <button mat-raised-button color="accent" (click)="firstName.value='';
+                                                          lastName.value='';
+                                                          email.value='';
+                                                          phone.value='';
+                                                          password.value='';
+                                                          repeatPassword.value='';">CLEAR</button>
+        <button mat-raised-button color="primary" (click)="submitRegistration()" [disabled]="loading">SUBMIT</button>
+      </div>
+      <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+    </div>
+    <br/>
+    <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
+    <mat-error *ngIf="displayErrorMsg">{{errorMessage}}</mat-error>
+    <div fxLayoutGap="4%" fxLayout="column" *ngIf="showOauthButton" style="margin-top: 20px;">
+      <button mat-raised-button color="accent" (click)="initOauthLogin()">GOOGLE LOGIN</button>
+    </div>
+  </mat-card>
+</div>

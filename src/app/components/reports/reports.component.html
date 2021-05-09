@@ -1,0 +1,158 @@
+<body fxLayout="column" fxLayoutGap="5%">
+  <mat-grid-list #grid rowHeight="2:1">
+    <!--
+    <mat-grid-tile>
+      <mat-card fxFlex=80%>
+        <mat-card-header>
+          <mat-card-title>COI Report</mat-card-title>
+          <mat-card-subtitle>Report by Org for number of  COI's created</mat-card-subtitle>
+        </mat-card-header>
+        <mat-error *ngIf="displayScriptsReportMessage">{{scriptsReportMessage}}</mat-error>
+        <mat-card-actions>
+          <button fxFlex color="primary" mat-button (click)='openCOIReportDialog()'>Open COI Report</button>
+        </mat-card-actions>
+      </mat-card>
+    </mat-grid-tile>-->
+    <mat-grid-tile>
+        <mat-card fxFlex=90% fxLayout="column">
+          <mat-card-header>
+            <mat-card-title>User Report</mat-card-title>
+            <mat-card-subtitle>Report by user for a script and activity type.</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content fxLayout="row" fxLayoutAlign="center"fxLayoutGap="5%">
+            <mat-form-field appearance="fill">
+              <mat-label>Select Script</mat-label>
+              <mat-select #selectedUserReportScript>
+                <mat-option *ngFor="let script of scripts" [value]="script">
+                  {{script.title}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Activity Type</mat-label>
+              <mat-select #selectedUserReportActivityType>
+                <mat-option [value]="'Texting'">Texting</mat-option>
+                <mat-option [value]="'Phonebank'">Phonebank</mat-option>
+                <mat-option [value]="'Petition'">Petition</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </mat-card-content>
+          <mat-error *ngIf="displayUserReportMessage">{{userReportMessage}}</mat-error>
+          <mat-card-actions>
+            <button fxFlex color="primary"mat-button (click)="openUserReportDialog()">Enter User Report</button>
+          </mat-card-actions>
+        </mat-card>
+      </mat-grid-tile>
+
+      <mat-grid-tile>
+        <mat-card fxFlex=80%>
+          <mat-card-header>
+            <mat-card-title>Organizations Report</mat-card-title>
+            <mat-card-subtitle>Report by Organization for a script and activity type.</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content fxLayout="row" fxLayoutAlign="center"fxLayoutGap="5%">
+            <mat-form-field appearance="fill">
+              <mat-label>Select Script</mat-label>
+              <mat-select #selectedOrgReportScript>
+                <mat-option *ngFor="let script of scripts" [value]="script">
+                  {{script.title}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Activity Type</mat-label>
+              <mat-select #selectedOrgReportActivityType>
+                <mat-option [value]="'Texting'">Texting</mat-option>
+                <mat-option [value]="'Phonebank'">Phonebank</mat-option>
+                <mat-option [value]="'Petition'">Petition</mat-option>
+                <mat-option [value]="'All'">All</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </mat-card-content>
+          <mat-error *ngIf="displayOrgReportMessage">{{orgReportMessage}}</mat-error>
+          <mat-card-actions>
+            <button fxFlex color="primary" mat-button (click)='openOrgReportDialog()'>Enter Organization Report</button>
+          </mat-card-actions>
+        </mat-card>
+      </mat-grid-tile>
+
+      <mat-grid-tile>
+        <mat-card fxFlex=80%>
+          <mat-card-header>
+            <mat-card-title>Precincts/Blockgroups Report</mat-card-title>
+            <mat-card-subtitle>Report by Precinct/Blockgroup for a script and activity type.</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content fxLayout="row" fxLayoutAlign="center"fxLayoutGap="5%">
+            <mat-form-field appearance="fill">
+              <mat-label>Select Report Type</mat-label>
+              <mat-select #selectedPrecBlockReportReportType>
+                <mat-option [value]="'Precinct'">Precinct</mat-option>
+                <mat-option [value]="'Blockgroup'">Blockgroup</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Select Script</mat-label>
+              <mat-select #selectedPrecBlockReportScript>
+                <mat-option *ngFor="let script of scripts" [value]="script">
+                  {{script.title}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </mat-card-content>
+          <mat-card-content fxLayout="row" fxLayoutAlign="center"fxLayoutGap="5%">
+            <mat-form-field appearance="fill">
+              <mat-label>Activity Type</mat-label>
+              <mat-select #selectedPrecBlockReportActivityType>
+                <mat-option [value]="'Texting'">Texting</mat-option>
+                <mat-option [value]="'Phonebank'">Phonebank</mat-option>
+                <mat-option [value]="'Petition'">Petition</mat-option>
+                <mat-option [value]="'All'">All</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <div style="width: 199px;padding-top:10px;"><span>Campaign</span><mat-slide-toggle #selectedPrecBlockReportOrg style="padding: 0px 10px;"></mat-slide-toggle><span>Org</span></div>
+          </mat-card-content>
+          <mat-error *ngIf="displayPrecBlockReportMessage">{{precblockReportMessage}}</mat-error>
+          <mat-card-actions>
+            <button fxFlex color="primary" mat-button (click)='openPrecBlockReportDialog()'>Enter Precinct/Blockgroup Report</button>
+          </mat-card-actions>
+        </mat-card>
+      </mat-grid-tile>
+      
+      <mat-grid-tile>
+        <mat-card fxFlex=80%>
+          <mat-card-header>
+            <mat-card-title>Scripts Report</mat-card-title>
+            <mat-card-subtitle>Report by Script for a activity type.</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content fxLayout="row" fxLayoutAlign="center"fxLayoutGap="5%">
+            <mat-form-field appearance="fill">
+              <mat-label>Activity Type</mat-label>
+              <mat-select #selectedScriptsReportActivityType>
+                <mat-option [value]="'Texting'">Texting</mat-option>
+                <mat-option [value]="'Phonebank'">Phonebank</mat-option>
+                <mat-option [value]="'Petition'">Petition</mat-option>
+                <mat-option [value]="'All'">All</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <div style="width: 100%;padding-top:10px;"><span>Campaign</span><mat-slide-toggle #selectedScriptsReportOrg style="padding: 0px 10px;"></mat-slide-toggle><span>Org</span></div>
+          </mat-card-content>
+          <mat-error *ngIf="displayScriptsReportMessage">{{scriptsReportMessage}}</mat-error>
+          <mat-card-actions>
+            <button fxFlex color="primary" mat-button (click)='openScriptsReportDialog()'>Enter Scripts Report</button>
+          </mat-card-actions>
+        </mat-card>
+      </mat-grid-tile>
+
+
+
+
+  </mat-grid-list>
+  
+  <section fxLayoutAlign="center">
+    <button mat-raised-button color='primary' fxLayoutAlign="center" (click)='downloadCampaignContactHistory()'>Download Campaign Contact History</button>
+    <!--<button mat-button color='warn' *ngIf='dev' (click)='wipeCampaignReport()'>Wipe Campaign Report (For Dev Only)</button>-->
+  </section>
+</body>
+
+
+

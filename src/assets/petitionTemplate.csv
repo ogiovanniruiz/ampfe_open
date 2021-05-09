@@ -1,0 +1,4 @@
+firstName,lastName,emails,phones,middleName,address,unit,city,zip,county,pmc_phone,pmc_text,pmc_email,date
+Joe,Rodriguez,joe@email.or,9519876543,,1234 Blue Cardinal St,,Corona,92880,Riverside,Y,N,Y,2020-01-12
+Miguel,Diaz,miguel@emal.org,951222222,Joe,4555 Pine St,4I,Riverside,92501,Riverside,N,N,Y,2019-12-25
+Sandy,Squirel,sandy@emel.org,9091234567,,3630 University Ave,,Riverside,92501,Riverside,N,N,Y,2018-12-24

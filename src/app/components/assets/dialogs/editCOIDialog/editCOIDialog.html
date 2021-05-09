@@ -1,0 +1,45 @@
+<h2 mat-dialog-title fxLayoutAlign="center" *ngIf="languageMode === 'ENGLISH'">Edit Community of Interest</h2>
+<h2 mat-dialog-title fxLayoutAlign="center" *ngIf="languageMode === 'SPANISH'">Editar comunidad de interés</h2>
+
+<mat-dialog-content fxLayout="column" fxLayoutGap="1%">
+  <p *ngIf="languageMode === 'ENGLISH'">1. {{questions[0].english}}</p>
+  <p *ngIf="languageMode === 'SPANISH'">1. {{questions[0].spanish}}</p>
+  <mat-form-field>
+    <mat-label *ngIf="languageMode === 'ENGLISH'">COI Name</mat-label>
+    <mat-label *ngIf="languageMode === 'SPANISH'">Nombre</mat-label>
+    <input required matInput #polygonName>
+  </mat-form-field> 
+  <p *ngIf="languageMode === 'ENGLISH'">2. {{questions[1].english}}</p>
+  <p *ngIf="languageMode === 'SPANISH'">2. {{questions[1].spanish}}</p>
+  <mat-form-field>
+    <mat-label *ngIf="languageMode === 'ENGLISH'"> What unites your community? What are your shared interests? What is important to your community?</mat-label>
+    <mat-label *ngIf="languageMode === 'SPANISH'"> ¿Qué une a tu comunidad? ¿Que es importante para tu comunidad? </mat-label>
+    <textarea required matInput #q1 ></textarea>
+  </mat-form-field> 
+  <p *ngIf="languageMode === 'ENGLISH'">3. {{questions[2].english}}</p>
+  <p *ngIf="languageMode === 'SPANISH'">3. {{questions[2].spanish}} </p>
+  <mat-form-field>
+    <mat-label *ngIf="languageMode === 'ENGLISH'"> Or nearby areas you don't want to be in a district with? Why or why not?</mat-label>
+    <mat-label *ngIf="languageMode === 'SPANISH'"> ¿O áreas cercanas en las que no desea estar en un distrito? ¿Por qué o por qué no?</mat-label>
+    <textarea matInput #q2 ></textarea>  
+  </mat-form-field> 
+  <p *ngIf="languageMode === 'ENGLISH'">4. {{questions[3].english}}</p>
+  <p *ngIf="languageMode === 'SPANISH'">4. {{questions[3].spanish}}</p>
+  <mat-form-field>
+    <mat-label *ngIf="languageMode === 'ENGLISH'">What else do we need to know about your community?</mat-label>
+    <mat-label *ngIf="languageMode === 'SPANISH'">¿Qué más necesitamos saber sobre su comunidad?</mat-label>
+
+    <textarea matInput #q3></textarea>    
+  </mat-form-field> 
+
+
+
+  <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
+<mat-dialog-actions>
+
+  <button mat-raised-button color="primary" (click)="saveChanges();" *ngIf="languageMode === 'ENGLISH'">Save Changes</button>
+  <button mat-raised-button color="warn" (click)="deleteCOI();" *ngIf="languageMode === 'ENGLISH'" class="edit-delete-button">DELETE</button>
+
+  <button mat-raised-button color="primary" (click)="saveChanges();" *ngIf="languageMode === 'SPANISH'">Guardar cambios</button>
+  <button mat-raised-button color="warn" (click)="deleteCOI();" *ngIf="languageMode === 'SPANISH'" class="edit-delete-button">ELIMINAR</button>
+</mat-dialog-actions>

@@ -1,0 +1,18 @@
+<h2 mat-dialog-title fxLayoutAlign="center">Contact Form</h2>
+<mat-dialog-content fxLayout="column">
+  <mat-form-field>
+    <input matInput placeholder="Subject" #subject>
+  </mat-form-field>
+  
+  <mat-form-field>
+    <textarea matInput placeholder="Message..." #message></textarea>
+  </mat-form-field>
+  <mat-checkbox [(ngModel)]="isBug">Is this a bug/glitch?</mat-checkbox>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-raised-button color="primary" [disabled]="sending" (click)="sendEmail();">SEND</button>
+  <button mat-raised-button color="accent" (click)="closeSettings();">CLOSE</button>
+</mat-dialog-actions>
+<mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
+<mat-error *ngIf="displayErrorMsg">{{errorMessage}}</mat-error>

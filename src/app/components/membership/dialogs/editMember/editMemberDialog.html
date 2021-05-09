@@ -1,0 +1,95 @@
+<h2 mat-dialog-title fxLayoutAlign="center">Edit a Member</h2>
+
+<mat-dialog-content fxLayout="column">
+  <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+    <mat-form-field fxFlex="33%" > 
+      <input matInput #firstName type="name" placeholder="First Name" required>
+    </mat-form-field>
+    <mat-form-field fxFlex="33%"> 
+        <input matInput #middleName type="name" placeholder="Middle Name">
+    </mat-form-field>
+    <mat-form-field fxFlex="33%"> 
+      <input matInput #lastName type="name" placeholder="Last Name">
+    </mat-form-field>
+  </section>
+
+  <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+    <mat-form-field fxFlex="50%"> 
+      <input matInput #phone type="tel" placeholder="Phone Number" maxlength="10" (input)="numericOnly($event)">
+    </mat-form-field>
+    <mat-form-field fxFlex="50%"> 
+      <input matInput #email type="email" placeholder="Email">
+    </mat-form-field>
+  </section>
+
+  <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+    <mat-form-field fxFlex="100%"> 
+      <input matInput #address type="text" placeholder="Address">
+    </mat-form-field>
+  </section>
+
+  <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+    <mat-form-field fxFlex="50%"> 
+      <input matInput #city type="text" placeholder="City">
+    </mat-form-field>
+    <mat-form-field fxFlex="20%">
+      <mat-select #state placeholder="State">
+        <mat-option *ngFor="let state of states | keyvalue" [value]="state.key">{{state.key}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field fxFlex="30%"> 
+      <input matInput #zip type="text" placeholder="Zip" maxlength="5" (input)="numericOnly($event)">
+    </mat-form-field>
+  </section>
+
+  <section fxLayout="row" fxLayoutGap="2%">
+    <mat-form-field fxFlex="50%" appearance="fill">
+      <mat-label>Choose a date of birth</mat-label>
+      <input matInput [matDatepicker]="dob" [(ngModel)]="dobSelected">
+      <mat-datepicker-toggle matSuffix [for]="dob"></mat-datepicker-toggle>
+      <mat-datepicker #dob></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field fxFlex="30%">
+      <mat-label>Tags</mat-label>
+      <mat-select #selectedTags multiple>
+        <mat-option [value]="tag" *ngFor="let tag of tags">{{tag}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field fxFlex="20%">
+      <mat-select #ethnicity placeholder="Ethnicity">
+        <mat-option *ngFor="let ethnicity of ethnicities" [value]="ethnicity">{{ethnicity}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </section>
+
+  <mat-progress-bar *ngIf="showProgressbar" mode='indeterminate'></mat-progress-bar>
+  <mat-error *ngIf="displayMessage" style="margin-top:15px">{{message}}</mat-error>
+  <mat-expansion-panel style="margin-top:15px">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Geography</mat-panel-title>
+    </mat-expansion-panel-header>
+    <section>
+      <p>Lat: {{lat}}</p>
+      <p>Lng: {{lng}}</p>
+      <p *ngIf='blockgroupID'> Blockgroup Geoid: {{blockgroupID}}</p>
+      <p *ngIf='precinctID'> Precinct ID: {{precinctID}}</p>
+      <p *ngIf='countyID'> County: {{countyID}}</p>
+      <p *ngIf='citywideID'> City: {{citywideID}}</p>
+      <p *ngIf='citywardID'> City Ward: {{citywardID}}</p>
+      <p *ngIf='assemblyID'> Assembly: {{assemblyID}}</p>
+      <p *ngIf='senateID'> Senate: {{senateID}}</p>
+      <p *ngIf='congressionalID'> Congressional: {{congressionalID}}</p>
+      <p *ngIf='recreationalID'> Recreational: {{recreationalID}}</p>
+      <p *ngIf='schoolID'> School: {{schoolID}}</p>
+      <p *ngIf='waterID'> Water: {{waterID}}</p>
+    </section> 
+  </mat-expansion-panel>
+  <br>
+</mat-dialog-content>
+<mat-card-actions align="end">
+  <button mat-raised-button color="accent" [disabled]='showProgressbar' (click)="cancel()">CANCEL</button>
+  <button mat-raised-button color="warn" [disabled]='showProgressbar' (click)="deleteMember()">DELETE</button>
+  <button mat-raised-button  color="primary" [disabled]='showProgressbar' (click)="editMember()">SAVE</button>
+
+</mat-card-actions>
+

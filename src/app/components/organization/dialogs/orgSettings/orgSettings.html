@@ -1,0 +1,42 @@
+<h2 mat-dialog-title fxLayoutAlign="center">Organization Specific Settings and Details v0.9.6.4</h2>
+<mat-dialog-content fxLayoutAlign="center" fxLayout="column" fxLayoutGap="5%">
+  <mat-tab-group>
+    <mat-tab label="Organization Logos">
+      <mat-card >
+        <mat-card-content>
+          <img class="noStretch" fxLayoutAlign="center" [src]="image || '/assets/noImage.png'">
+
+        </mat-card-content>
+
+        <mat-card-actions>
+          <input type="file" #file mat-raised-button (change)="fileChanged($event)"> 
+          <button mat-raised-button  color="primary" (click)="upload()">UPLOAD LOGO</button> 
+        </mat-card-actions>
+      </mat-card>
+      <mat-error fxLayoutAlign="center" *ngIf="displayMessage">{{userMessage}}</mat-error>
+      <mat-error fxLayoutAlign="center" *ngIf="displayErrorMsg">{{errorMessage}}</mat-error>
+      <br>
+    </mat-tab>
+    <mat-tab label="Lead Contact Information">
+      <mat-list fxLayoutAlign="center" fxLayout="column">
+        <mat-list-item *ngFor="let lead of leads">
+          <mat-icon matListIcon>group</mat-icon>
+          <h3 matLine> {{lead.name.fullName}}</h3>
+          <p matLine><span>{{lead.loginEmail}}</span></p>
+        </mat-list-item>
+      </mat-list>
+    </mat-tab>
+    <mat-tab label="Download Contact History">
+      <section>
+        <button fxLayoutAlign="center" mat-raised-button color="accent" (click)="downloadOrgContactHistory()">DOWNLOAD</button> 
+      </section>
+      
+      <mat-progress-bar *ngIf='downloading' mode='indeterminate'></mat-progress-bar>
+    </mat-tab>
+  </mat-tab-group>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-raised-button  color="accent" (click)="closeDialog()">CLOSE</button> 
+</mat-dialog-actions>
+
+ 

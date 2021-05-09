@@ -1,0 +1,86 @@
+<h2 mat-dialog-title fxLayoutAlign="center">Edit Campaign</h2>
+<mat-spinner *ngIf="loader" style="margin: 0px auto"></mat-spinner>
+<mat-dialog-content fxLayout="column" [style.visibility]="!loader ? 'visible' : 'hidden'" [style.height]="!loader ? 'auto' : '0px'">
+    <mat-form-field>
+        <input matInput #editCampaignName placeholder="Campaign Name:">
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput #editCampaignDescription placeholder="Description:">
+    </mat-form-field>
+
+    <mat-form-field *ngIf="!targetsNum">
+        <mat-label>District Type:</mat-label>
+        <mat-select #editDistrictBoundaryType (selectionChange)="getDistricts()">
+            <mat-option *ngFor="let districtType of districtBoundariesType" [value]="districtType" (click)="getDistricts()">{{districtType}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <div *ngIf="targetsNum">
+        <mat-label>District Type:</mat-label>
+        <div>{{data.boundary[0].properties.districtType | titlecase}}</div>
+    </div>
+
+    <mat-progress-bar mode="indeterminate" *ngIf="loadingIDS && !districtBoundariesResults?.length"></mat-progress-bar>
+
+    <mat-form-field *ngIf="!targetsNum" [style.display]="districtBoundariesResults?.length > 0 ? 'inline-block' : 'none'">
+        <mat-label>District:</mat-label>
+        <mat-select #editDistrictBoundary multiple>
+            <input (keyup)="applyFilter($event.target.value)" placeholder="Search for district" style="width:calc(100% - 38px);height:3em;margin:5px 0px 5px 5px;padding:0px 12px;font-size:14px;">
+            <mat-option *ngFor="let district of districtBoundaries" [value]="district._id">{{district?.properties.districtType}} {{district.properties.name | uppercase}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <div *ngIf="targetsNum" style="margin-top:20px">
+        <mat-label>District:</mat-label>
+        <div *ngFor="let bound of data.boundary">{{bound.properties.name | uppercase}}</div>
+    </div>
+
+    <mat-form-field *ngIf="!targetsNum">
+        <mat-label>Election Type:</mat-label>
+        <mat-select #editElectionType>
+            <mat-option *ngFor="let election of electionTypes" [value]="election">{{election}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <div *ngIf="targetsNum" style="margin-top:20px">
+        <mat-label>Election Type:</mat-label>
+        <div>{{data.electionType}}</div>
+    </div>
+
+    <div *ngIf="!targetsNum" fxLayout="row" style="margin-bottom: 14px">
+        <span style="margin-right: 20px;">Target-Restrictions:</span>
+        <mat-radio-group fxLayout="row" fxLayoutGap="5%" [(ngModel)]="geographical">
+            <mat-radio-button value="true">Geographical</mat-radio-button>
+            <mat-radio-button value="false">Non-geographical</mat-radio-button>
+        </mat-radio-group>
+    </div>
+    <div *ngIf="targetsNum" style="margin-top:20px">
+        <mat-label>Target-Restrictions:</mat-label>
+        <div>{{data.geographical == true ? 'Geographical' : 'Non-geographical'}}</div>
+    </div>
+
+    <div *ngIf="!targetsNum" fxLayout="row" style="margin-bottom: 14px">
+        <span style="margin-right: 20px;">Fund by:</span>
+        <mat-radio-group fxLayout="row" fxLayoutGap="5%" [(ngModel)]="fundedByCreatorOrg">
+            <mat-radio-button value="true">Creator Org</mat-radio-button>
+            <mat-radio-button value="false">Orgs Fund Themselves</mat-radio-button>
+        </mat-radio-group>
+    </div>
+    <div *ngIf="targetsNum" style="margin-top:20px; margin-bottom:20px">
+        <mat-label>Fund by:</mat-label>
+        <div>{{data.fundedByCreatorOrg == true ? 'Creator Org' : 'Orgs Fund Themselves'}}</div>
+    </div>
+
+    <div>
+        <mat-label>Creator Organization:</mat-label>
+        <div>{{creatorOrgName}}</div>
+    </div>
+
+    <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
+</mat-dialog-content>
+<mat-dialog-actions align="end" [style.visibility]="!loader ? 'visible' : 'hidden'">
+    <button mat-raised-button color="primary" *ngIf="!loadingIDS" (click)="editCampaign('edit')">SUBMIT</button>
+    <button mat-raised-button color="accent" (click)="return();">CANCEL</button>
+  
+    <button mat-raised-button color="primary" (click)="editCampaign('activate')" *ngIf="!data.active">ACTIVATE</button>
+    <button mat-raised-button color="warn" (click)="editCampaign('deactivate')" *ngIf="data.active">DEACTIVATE</button>
+    <button mat-raised-button color="warn" (click)="deleteCampaign()" *ngIf="!targetsNum">DELETE</button>
+</mat-dialog-actions>
+<mat-error *ngIf="displayErrorMsg" [style.visibility]="!loader ? 'visible' : 'hidden'">{{errorMessage}}</mat-error>

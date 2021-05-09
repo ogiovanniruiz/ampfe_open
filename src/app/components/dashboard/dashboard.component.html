@@ -1,0 +1,96 @@
+<div style="margin-top: 10%" fxLayout.xs="column" fxLayout="row" fxLayoutWrap fxLayoutAlign="center" fxLayoutGap="5%" *ngIf="!dataLoaded">
+  <mat-card fxLayoutGap="10%" fxLayout="column" fxFlex="40" fxFlex.sm="60">
+    <span fxLayoutAlign="center">
+      <img width="373" height="81" alt="censusIE Logo" src="{{logo_dir}}">
+    </span>
+        
+    <section fxLayout="column" fxLayoutGap="10%">
+        <p fxLayoutAlign="center">Loading Campaign Dashboard...</p>
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <br>
+    </section>
+  </mat-card>
+</div>
+<h1 fxLayoutAlign="center" *ngIf="dataLoaded">{{campaignName}} Dashboard</h1>
+<br>
+<mat-grid-list #grid rowHeight="3:1">
+  <mat-grid-tile *ngIf="dataLoaded && campaignActive" >
+    <mat-card fxFlex=80%>
+      <button fxFlex color="primary" mat-button [disabled]='!funded' (click)="enterActivityDashboard('Phonebank')">PHONEBANK</button>
+    </mat-card>
+  </mat-grid-tile>
+  <!--
+  <mat-grid-tile *ngIf="dataLoaded" >
+    <mat-card fxFlex=80%>
+      <button fxFlex color="primary" mat-button (click)="enterActivityDashboard('Canvass')">CANVASS</button>
+    </mat-card>
+  </mat-grid-tile>-->
+  <mat-grid-tile *ngIf="dataLoaded && campaignActive" >
+    <mat-card fxFlex=80%>
+      <button fxFlex color="primary" mat-button  [disabled]='!funded' (click)="enterActivityDashboard('Texting')">TEXTING</button>
+    </mat-card>
+  </mat-grid-tile>
+  <!--
+  <mat-grid-tile *ngIf="dataLoaded" >
+    <mat-card fxFlex=80%>
+      <button fxFlex color="primary" mat-button  (click)="enterActivityDashboard('Hotline')">HOTLINE</button>
+    </mat-card>
+  </mat-grid-tile>
+  
+  <mat-grid-tile *ngIf="(orgLevel === 'ADMINISTRATOR' || dev) && dataLoaded">
+    <mat-card fxFlex=80%>
+      <button fxFlex color="primary" mat-button (click)="enterEventsModule()">EVENTS</button>
+    </mat-card>
+  </mat-grid-tile>-->
+  <mat-grid-tile *ngIf="(orgLevel === 'ADMINISTRATOR' || dev) && dataLoaded && campaignActive">
+    <mat-card fxFlex=80%>
+      <button fxFlex color="primary" mat-button (click)="enterTargetingModule()">TARGETING</button>
+    </mat-card>
+  </mat-grid-tile>
+
+  <!--
+  <mat-grid-tile *ngIf="(dataManager || dev) && dataLoaded">
+    <mat-card fxFlex=80%>
+      <button fxFlex color="primary" mat-button (click)="openSettingsDialog()">CAMPAIGN SETTINGS</button>
+    </mat-card>
+  </mat-grid-tile>
+  -->
+  <mat-grid-tile *ngIf="(orgLevel === 'ADMINISTRATOR' || dev || dataManager) && dataLoaded">
+    <mat-card fxFlex=80%>
+      <button fxFlex color="primary" mat-button (click)="enterReportsModule()">REPORTS</button>
+    </mat-card>
+  </mat-grid-tile>
+  
+  <mat-grid-tile *ngIf="dataLoaded && dev">
+    <mat-card fxFlex=80%>
+      <button fxFlex color="primary" mat-button (click)="enterActivityDashboard('Petition')">PETITIONS</button>
+    </mat-card>
+  </mat-grid-tile>
+  <mat-grid-tile *ngIf="(dataManager || dev) && dataLoaded && campaignActive">
+    <mat-card fxFlex=80%>
+      <button fxFlex color="primary" mat-button (click)="enterScriptsModule()">SCRIPTS</button>
+    </mat-card>
+  </mat-grid-tile>
+  <!--
+  <mat-grid-tile *ngIf="(dev) && dataLoaded">
+    <mat-card fxFlex=80%>
+      <button fxFlex color="primary" mat-button (click)="enterPeopleModule()">PEOPLE</button>
+    </mat-card>
+  </mat-grid-tile>
+  -->
+  <mat-grid-tile *ngIf="dataLoaded && campaignActive">
+    <mat-card fxFlex=80%>
+      <button fxFlex color="primary" mat-button (click)="enterAssetsModule()">ASSETS/COI's</button>
+    </mat-card>
+  </mat-grid-tile>
+
+
+  
+
+</mat-grid-list>
+
+<section fxLayoutAlign="end" *ngIf="(dataManager || dev) && dataLoaded && campaignActive">
+  <section fxLayout="column" fxLayoutGap="10%">
+      <button  mat-fab  matTooltip="Campaign Settings" (click)="openSettingsDialog()"><mat-icon>settings</mat-icon></button> 
+  </section>
+</section>

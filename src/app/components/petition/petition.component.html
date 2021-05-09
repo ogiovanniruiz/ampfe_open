@@ -1,0 +1,81 @@
+<div fxLayout="column" fxLayoutGap="2%" fxLayoutAlign="center center" fxLayoutAlign.xs="center">
+  <mat-card fxLayout="column" fxLayoutGap="5%" fxLayoutAlign="center">
+    <mat-progress-bar mode="indeterminate" *ngIf="!dataLoaded"></mat-progress-bar>
+    <p fxLayoutAlign="center"  *ngIf="!dataLoaded">Loading Pledge Card...</p>
+    <section fxLayout="column" fxLayoutAlign="center center">
+        <img width="373" height="81" [src]="image || '/assets/amplify.png'">
+        <p>{{petitionName}}</p>
+    </section>
+
+
+    <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="1%" *ngIf="dataLoaded">
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+          <mat-form-field fxFlex="40%" > 
+            <input matInput #firstName type="name" placeholder="First Name" required>
+          </mat-form-field>
+          <mat-form-field fxFlex="30%"> 
+            <input matInput #middleName type="name" placeholder="Middle Name">
+          </mat-form-field>
+          <mat-form-field fxFlex="40%"> 
+            <input matInput #lastName type="name" placeholder="Last Name" required>
+          </mat-form-field>
+        </div>
+        <mat-error *ngIf="showNameError">Needs a first and last name.</mat-error>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+            <mat-form-field fxFlex="50%"> 
+                <input matInput #phone type="tel" placeholder="Phone Number" maxlength="10">
+            </mat-form-field>
+            <mat-form-field fxFlex="50%"> 
+              <input matInput #email type="email" placeholder="Email">
+            </mat-form-field>
+        </div>
+
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+          <mat-form-field fxFlex="90%"> 
+            <input matInput #address type="text" placeholder="Address">
+          </mat-form-field>
+          <mat-form-field fxFlex="10%"> 
+            <input matInput #unit type="text" placeholder="Unit #">
+          </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+          <mat-form-field fxFlex="33%"> 
+            <input matInput #city type="text" placeholder="City">
+          </mat-form-field>
+          <mat-form-field fxFlex="30%">
+            <mat-select #county [(ngModel)]="countySelected" placeholder="County">
+              <mat-option>None</mat-option>
+              <mat-option *ngFor="let county of counties" [value]="county" (click)="storeCounty(county)">{{county}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field fxFlex="33%"> 
+            <input matInput #zip type="text" placeholder="Zip Code">
+          </mat-form-field>
+        </div>
+     
+        <mat-accordion>
+          <mat-expansion-panel *ngFor="let question of script.questions; let k = index" [ngSwitch]="question.questionType" >
+            <mat-expansion-panel-header  class="right-aligned-header">
+              <mat-panel-title>{{k + 1}}</mat-panel-title>
+              <mat-panel-description>{{question.question}}</mat-panel-description>
+            </mat-expansion-panel-header>
+            <section *ngSwitchCase="'SINGLESELECT'" >
+              <mat-radio-group fxLayout="column" fxLayoutGap="5%" [ngModel] #radioAnswers="ngModel" name="{{question.question}}">
+                <mat-radio-button *ngFor="let responses of question.responses" value="{{responses.response}},{{responses.idType}}">{{responses.response}} </mat-radio-button>
+              </mat-radio-group>
+            </section>
+            <section *ngSwitchCase="'TEXT'" >
+              <mat-form-field fxFlex="100%"> 
+                <input matInput #textAnswers placeholder="Type your answer here" name="{{question.question}}">
+              </mat-form-field>
+            </section>
+                  </mat-expansion-panel>
+        </mat-accordion>
+    </div>
+
+    <mat-card-actions>
+      <button mat-button color="accent" (click)="clear()">CLEAR</button>
+      <button mat-button  color="primary" (click)="submitPetition()">SUBMIT</button>
+    </mat-card-actions>
+  </mat-card>
+</div>

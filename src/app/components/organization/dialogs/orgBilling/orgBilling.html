@@ -1,0 +1,13 @@
+<h2 mat-dialog-title fxLayoutAlign="center">Organization Billing</h2>
+<mat-dialog-content fxLayout="column" style="padding-top:10px;padding-bottom:10px">
+    <h2>Currently Funded: {{funded}}</h2>
+    <mat-slide-toggle checked="{{funded}}" *ngIf='dev' (click)="toggleFundedStatus(!fundedToggle.checked);" #fundedToggle> Change Funded Status</mat-slide-toggle>
+    
+    <h2>Currently Subscribed: {{subscribed}}</h2>
+    <mat-slide-toggle checked="{{subscribed}}" *ngIf='dev' (click)="toggleSubscribedStatus(!subscribedToggle.checked);" #subscribedToggle> Change Subscribed Status</mat-slide-toggle>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="accent" (click)="closeDialog();">CLOSE</button>
+</mat-dialog-actions>
+<mat-error fxLayoutAlign="center" *ngIf="displayErrorMsg">{{errorMessage}}</mat-error> 

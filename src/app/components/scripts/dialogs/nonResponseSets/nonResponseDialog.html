@@ -1,0 +1,46 @@
+<h2 mat-dialog-title fxLayoutAlign="center">Edit Script</h2>
+<mat-dialog-content fxLayoutAlign="center" fxLayout="column" fxLayoutGap="2%" style="padding-top:10px;padding-bottom:10px">
+    <section fxLayoutAlign="center" fxLayout="column" fxLayoutGap="2%">
+        <section>
+            <mat-form-field fxFlex="100%">
+                <input matInput placeholder="Non-Response Set Title" #nonResponseSetTitle>
+            </mat-form-field>
+        </section>
+        <section fxLayoutGap="5%">
+            <mat-form-field fxFlex="30%">
+                <mat-label>Non-Response Type</mat-label>
+                <mat-select [(value)]="nonResponseType">
+                    <mat-option [value]="'DNC'">Do Not Contact</mat-option>
+                    <mat-option [value]="'IMP'">Impression</mat-option>
+                    <mat-option [value]="'NONRESPONSE'">Non-Response</mat-option>
+                    <mat-option [value]="'INVALIDPHONE'">Invalid Phone</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field fxFlex="60%">
+                <input (keyup.enter)="addNonResponse()" matInput #newNonResponse placeholder="Add a Non-Response">
+            </mat-form-field>
+            <button mat-mini-fab color='primary' (click)="addNonResponse()"><mat-icon>add</mat-icon></button> 
+        </section>
+    </section>
+    <mat-list>
+        <mat-list-item *ngFor="let nonResponse of nonResponses">
+            <h2 matLine> {{nonResponse.nonResponse}}</h2>
+            <h2 matLine> {{nonResponse.nonResponseType}}</h2>
+            <button mat-button color="warn" (click)="removeNonResponse(nonResponse.nonResponse)">Remove</button>
+        </mat-list-item>
+    </mat-list>
+    <mat-error fxLayoutAlign="center" *ngIf="displayNonResponseMessage">{{userNonResponseMessage}}</mat-error> 
+    <mat-checkbox [(ngModel)]="campaignLoaded" (click)="updateLoadedStatus(!loaded.checked);" #loaded>Load to Campaign</mat-checkbox>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button color='primary' (click)="saveNonResponseSetChanges()">Save Changes</button>
+    <button mat-button color='accent' (click)="closeDialog()">Cancel</button>
+</mat-dialog-actions>
+<mat-error fxLayoutAlign="center" *ngIf="displayErrorMsg">{{errorMessage}}</mat-error>
+
+
+
+
+
+    
+

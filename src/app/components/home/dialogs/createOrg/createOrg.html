@@ -1,0 +1,16 @@
+
+<h2 mat-dialog-title fxLayoutAlign="center">Create an Organization</h2>
+<mat-dialog-content fxLayout="column">
+    <mat-form-field>
+        <input matInput #orgName placeholder="Organization Name">
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput #orgDescription placeholder="Description">
+    </mat-form-field>
+    <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
+</mat-dialog-content>
+<mat-dialog-actions align="end" >
+    <button mat-raised-button color="primary" (click)="createOrganization()">SUBMIT</button>
+    <button mat-raised-button color="accent" (click)="closeDialog();">CANCEL</button>
+</mat-dialog-actions>
+<mat-error *ngIf="displayErrorMsg">{{errorMessage}}</mat-error>

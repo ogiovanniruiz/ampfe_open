@@ -1,0 +1,233 @@
+<mat-tab-group>
+    <mat-tab label="Scripts" fxLayout="column" fxLayoutGap="2%">
+        <section style="margin-top: 2%; margin-bottom: 2%" fxLayout="row" fxLayoutAlign="center"fxLayoutGap="5%">
+            <mat-card fxFlex="60">
+                <mat-card-header>
+                    <mat-card-title>Create a Script</mat-card-title>
+                  </mat-card-header>
+                <mat-card-content fxLayout="column">
+                    <section fxLayoutAlign="center" fxLayout="column" fxLayoutGap="2%">
+                        <section>
+                            <mat-form-field fxFlex="100%">
+                                <input matInput placeholder="Script Title" #scriptTitle>
+                            </mat-form-field>
+                        </section>
+                        <section fxLayoutGap="5%"> 
+                            <mat-form-field fxFlex="30%">
+                                <mat-label>Question Type</mat-label>
+                                <mat-select [(value)]="questionType">
+                                    <mat-option [value]="'SINGLESELECT'">Single-Select</mat-option>
+                                    <mat-option [value]="'TEXT'">Text</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field fxFlex=60%>
+                                <input matInput #newQuestion (keyup.enter)="addQuestion()" placeholder="Add a question to Script">
+                            </mat-form-field>
+                            <button mat-mini-fab color='primary' (click)="addQuestion()"><mat-icon>add</mat-icon></button> 
+                        </section>
+                    </section>
+                    <mat-accordion>
+                        <mat-expansion-panel *ngFor="let question of questions">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>{{question.question}}</mat-panel-title>
+                                <mat-panel-description> 
+                                    <div *ngIf="question.responses.length > 0 || question.questionType === 'TEXT'">{{question.questionType}}</div> 
+                                    <mat-error *ngIf="question.responses.length === 0 && question.questionType != 'TEXT'">Question of type {{question.questionType}} requires at least one response.</mat-error></mat-panel-description>
+                            </mat-expansion-panel-header>
+
+                            <section fxLayout="column">
+                                <mat-list>
+                                    <mat-list-item *ngFor="let response of question.responses">
+                                        <h2 matLine> {{response.response}}</h2>
+                                        <h2 matLine> {{response.idType}}</h2>
+                                        <button mat-button color="warn" (click)="removeResponse(response.response, question)">Remove</button>
+                                    </mat-list-item>
+                                </mat-list>
+                                <section fxLayout="row" *ngIf="question.questionType != 'TEXT'" fxLayoutGap="2%" fxLayoutAlign="center">
+                                    <mat-form-field fxFlex="30%">
+                                        <mat-label>ID Type</mat-label>
+                                        <mat-select [(value)]="idType">
+                                            <mat-option [disabled]="getIdTypeStatus(question.responses, 'VERYPOSITIVE')" [value]="'VERYPOSITIVE'">Very Positive</mat-option>
+                                            <mat-option [disabled]="getIdTypeStatus(question.responses, 'POSITIVE')"  [value]="'POSITIVE'">Positive</mat-option>
+                                            <mat-option [disabled]="getIdTypeStatus(question.responses, 'NEUTRAL')"  [value]="'NEUTRAL'">Neutral</mat-option>
+                                            <mat-option [disabled]="getIdTypeStatus(question.responses, 'NEGATIVE')"  [value]="'NEGATIVE'">Negative</mat-option>
+                                            <mat-option [disabled]="getIdTypeStatus(question.responses, 'VERYNEGATIVE')"  [value]="'VERYNEGATIVE'">Very Negative</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-form-field fxFlex="30%" ><input matInput placeholder="Response" (keyup.enter)="addResponse(newResponse.value, idType, question)"#newResponse> </mat-form-field>
+                                    <button mat-button color="primary" (click)="addResponse(newResponse.value, idType, question)">Add Response</button>
+                                </section>
+                                <button mat-button color="warn" fxLayoutAlign="center" (click)="removeQuestion(question)">Remove Question</button>
+                            </section>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                    <mat-error fxLayoutAlign="center" *ngIf="displayScriptMessage">{{userScriptMessage}}</mat-error> 
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-button color='primary' (click)="createScript()">CREATE SCRIPT</button>
+                    <button mat-button color='accent' (click)="clearScript()">CLEAR</button>
+                  </mat-card-actions>
+            </mat-card>
+            
+        </section>
+        <section style="margin-top: 2%; margin-bottom: 2%" fxLayout="row" fxLayoutAlign="center" fxLayoutGap="5%">
+            <mat-tab-group>
+                <mat-tab label="Campaign Scripts"> 
+                    <mat-card fxFlex="100%">
+                        <mat-list fxFlex="100%">
+                            <mat-list-item *ngFor="let script of campaignScripts" >
+                                <h2 matLine> {{script.title}}</h2>
+                                <mat-divider></mat-divider>
+                            </mat-list-item>
+                            <mat-list-item *ngIf="campaignScripts.length === 0">
+                                <mat-error  fxLayoutAlign="center" >No Campaign Scripts</mat-error>
+                            </mat-list-item>
+                        </mat-list>
+                    </mat-card>
+                </mat-tab>
+                <mat-tab label="My Org Scripts">
+                    <mat-card fxFlex="100%">
+                        <mat-list fxFlex="100%">
+                            <mat-list-item *ngFor="let script of orgScripts" >
+                                <h2 matLine> {{script.title}}</h2>
+                                <button mat-button color="primary" (click)="editScript(script)">Edit</button>
+                                <button mat-button color="accent" (click)="archiveScript(script)">Archive</button>
+                                <button mat-button color="warn" (click)="removeScript(script)">Delete</button>
+                                <mat-divider></mat-divider>
+                            </mat-list-item>
+                            <mat-list-item *ngIf="orgScripts.length === 0">
+                                <mat-error  fxLayoutAlign="center" >No Org Scripts Created</mat-error>
+                            </mat-list-item>
+                        </mat-list>
+                    </mat-card>
+                </mat-tab>
+                <mat-tab label="Participating Org Scripts">
+                    <mat-card fxFlex="100%">
+                        <mat-list fxFlex="100%">
+                            <mat-list-item *ngFor="let script of participatingOrgScripts" >
+                                <h2 matLine> {{script.title}}</h2>
+                                <button mat-button color="accent" (click)="archiveScript(script)">Archive</button>
+                                <mat-divider></mat-divider>
+                            </mat-list-item>
+                            <mat-list-item *ngIf="scripts.length === 0">
+                                <mat-error  fxLayoutAlign="center" >No Scripts Created</mat-error>
+                            </mat-list-item>
+                        </mat-list>
+                    </mat-card>
+                </mat-tab>
+                <mat-tab label="Archived">
+                    <mat-card fxFlex="100%">
+                        <mat-list fxFlex="100%">
+                            <mat-list-item *ngFor="let script of archivedScripts" >
+                                <h2 matLine> {{script.title}}</h2>
+                                <button mat-button color="accent" (click)="archiveScript(script)">Restore</button>
+                                <mat-divider></mat-divider>
+                            </mat-list-item>
+                            <mat-list-item *ngIf="archivedScripts.length === 0">
+                                <mat-error  fxLayoutAlign="center" >No Archived Scripts</mat-error>
+                            </mat-list-item>
+                        </mat-list>
+                    </mat-card>
+                </mat-tab>
+              </mat-tab-group>
+        </section>
+    </mat-tab>
+    <mat-tab label="Non-Response Sets">
+        <section style="margin-top: 2%; margin-bottom: 2%" fxLayout="row" fxLayoutAlign="center"fxLayoutGap="5%">
+            <mat-card fxFlex="60">
+                <mat-card-header>
+                    <mat-card-title>Create a Non-Response Set</mat-card-title>
+                </mat-card-header>
+                <mat-card-content fxLayout="column">
+                    <section fxLayoutAlign="center" fxLayout="column" fxLayoutGap="2%">
+                        <section>
+                            <mat-form-field fxFlex="100%">
+                                <input matInput placeholder="Non-Response Set Title" #nonResponseSetTitle>
+                            </mat-form-field>
+                        </section>
+                        <section fxLayoutGap="5%">
+                            <mat-form-field fxFlex="30%">
+                                <mat-label>Non-Response Type</mat-label>
+                                <mat-select [(value)]="nonResponseType">
+                                    <mat-option [value]="'DNC'">Do Not Contact</mat-option>
+                                    <mat-option [value]="'IMP'">Impression</mat-option>
+                                    <mat-option [value]="'NONRESPONSE'">Non-Response</mat-option>
+                                    <mat-option [value]="'INVALIDPHONE'">Invalid Phone</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field fxFlex="60%">
+                                <input (keyup.enter)="addNonResponse()" matInput #newNonResponse placeholder="Add a Non-Response">
+                            </mat-form-field>
+                            <button mat-mini-fab color='primary' (click)="addNonResponse()"><mat-icon>add</mat-icon></button> 
+                        </section>
+                    </section>
+                    <mat-list fxLayoutAlign="center" fxLayout="column" fxLayoutGap="2%">
+                            <mat-list-item *ngFor="let nonResponse of nonResponses">
+                                <h2 matLine> {{nonResponse.nonResponse}}</h2>
+                                <h2 matLine> {{nonResponse.nonResponseType}}</h2>
+                                <button mat-button color="warn" (click)="removeNonResponse(nonResponse.nonResponse)">Remove</button>
+                            </mat-list-item>
+                    </mat-list>
+                    <mat-error fxLayoutAlign="center" *ngIf="displayNonResponseMessage">{{userNonResponseMessage}}</mat-error> 
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-button color='primary' (click)="createNonResponseSet()">CREATE NONRESPONSE SET</button>
+                    <button mat-button color='accent' (click)="clearNonResponseSet()">CLEAR</button>
+                  </mat-card-actions>
+            </mat-card>
+        </section>
+        <section style="margin-top: 2%; margin-bottom: 2%" fxLayout="row" fxLayoutAlign="center" fxLayoutGap="5%">
+            <mat-tab-group>
+            <mat-tab label="Campaign Non-Response Sets">
+                <mat-card fxFlex="100%">
+                    <mat-list fxFlex="100%">
+                        <mat-list-item *ngFor="let nonResponseSet of campaignNonResponseSets" >
+                            <h2 matLine> {{nonResponseSet.title}}</h2>
+                            <mat-divider></mat-divider>
+                        </mat-list-item>
+                        <mat-list-item *ngIf="campaignNonResponseSets.length === 0">
+                            <mat-error  fxLayoutAlign="center" >No Campaign Non-Response Sets Created</mat-error>
+                        </mat-list-item>
+                    </mat-list>
+                </mat-card>
+            </mat-tab>
+            <mat-tab label="My Org Non-Response Sets">
+                <mat-card fxFlex="100%">
+                    <mat-list fxFlex="100%">
+                        <mat-list-item *ngFor="let nonResponseSet of orgNonResponseSets" >
+                            <h2 matLine> {{nonResponseSet.title}}</h2>
+                            <button mat-button color="primary" (click)="editNonResponseSet(nonResponseSet )">Edit</button>
+                            <button mat-button color="accent" (click)="archiveNonResponseSet(nonResponseSet)">Archive</button>
+                            <button mat-button color="warn" (click)="removeNonResponseSet(nonResponseSet )">Delete</button>
+                            <mat-divider></mat-divider>
+                        </mat-list-item>
+                        <mat-list-item *ngIf="orgNonResponseSets.length === 0">
+                            <mat-error  fxLayoutAlign="center" >No Org Non-Response Sets Created</mat-error>
+                        </mat-list-item>
+                    </mat-list>
+                </mat-card>
+
+            </mat-tab>
+            <mat-tab label="Archived Non-Response Sets">
+                <mat-card fxFlex="100%">
+                    <mat-list fxFlex="100%">
+                        <mat-list-item *ngFor="let nonResponseSet of archivedNonResponseSets" >
+                            <h2 matLine> {{nonResponseSet.title}}</h2>
+                            <button mat-button color="accent" (click)="archiveNonResponseSet(nonResponseSet)">Restore</button>
+                            <mat-divider></mat-divider>
+                        </mat-list-item>
+                        <mat-list-item *ngIf="archivedNonResponseSets.length === 0">
+                            <mat-error  fxLayoutAlign="center" >No Archived Non-Response Sets </mat-error>
+                        </mat-list-item>
+                    </mat-list>
+                </mat-card>
+
+
+            </mat-tab>
+          </mat-tab-group>
+
+
+        </section>
+    </mat-tab>
+  </mat-tab-group>
+  <mat-error fxLayoutAlign="center" *ngIf="displayErrorMsg">{{errorMessage}}</mat-error>

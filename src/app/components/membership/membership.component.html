@@ -1,0 +1,61 @@
+<section style="margin-top: 2%" fxLayout="row" fxLayoutAlign="center"fxLayoutGap="5%">
+  <mat-card fxFlex="90">
+    <mat-card-header>
+      <mat-card-title>Organization's Membership List</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-paginator #paginator [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 15]" [length]="totalSize" [pageIndex]="currentPage" (page)="pageEvent = handlePage($event)" ></mat-paginator>
+      <table matSort (matSortChange)="sortData($event)">
+        <tr>
+          <th mat-sort-header="firstName">First Name</th>
+          <th mat-sort-header="middleName">Middle Name</th>
+          <th mat-sort-header="lastName">Last Name</th>
+          <th mat-sort-header="phone">Phone Number</th>
+          <th mat-sort-header="email">Email</th>
+          <th mat-sort-header="voter">Voter</th>
+          <th mat-sort-header="city">City</th>
+          <th mat-sort-header="zip">Zip</th>
+          <th mat-sort-header="lat">Lat</th>
+          <th mat-sort-header="lng">Lng</th>
+          <th mat-sort-header="fileName">File Name</th>
+          <th mat-sort-header="date">Date</th>
+        </tr>
+        <tr *ngFor="let person of sortedMembers">
+            <td>{{person.resident.name.firstName}}</td>
+            <td>{{person.resident.name.middleName}}</td>
+            <td>{{person.resident.name.lastName}}</td>
+            <td>{{person.resident.phones[0] ? person.resident.phones[0].number : ''}}</td>
+            <td>{{person.resident.email}}</td>
+            <td>{{person.resident.voter}}</td>
+
+            <td>{{person.address.city}}</td>
+            <td>{{person.address.zip}}</td>
+            <td>{{person.location.coordinates[1]}}</td>
+            <td>{{person.location.coordinates[0]}}</td>
+            <td>{{person.resident.fileName}}</td>
+            <td>{{person.date | dateFormat}}</td>
+            <td><button mat-button color="accent" (click)="openEditMemberDialog(person)">EDIT</button></td>
+            <mat-divider></mat-divider>
+        </tr>
+      </table>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button mat-raised-button color="primary" (click)="openUploadManagerDialog()">MANAGE UPLOADS</button>
+      <button mat-raised-button color="primary" (click)="openCreateMemberDialog()">CREATE</button>
+      <button mat-raised-button color="accent" (click)="openUploadMembershipDialog()">UPLOAD LIST</button>
+      <button mat-raised-button color="primary" (click)="openTagManagementDialog()">TAGS</button>
+      <button mat-raised-button color="primary" (click)="openMemberGraphDialog()">GRAPH</button>
+    </mat-card-actions>
+
+    <section *ngIf="uploadDuplicates[0]">
+      <mat-error>List of Duplicates: <button mat-raised-button color="warn" (click)="downloadDuplicateList()">DOWNLOAD LIST</button></mat-error>
+      <div *ngFor="let duplicate of uploadDuplicates">
+        <mat-error>{{duplicate.firstName}} {{duplicate.lastName}}</mat-error>
+      </div>
+    </section>
+
+  </mat-card>
+
+</section>
+
+<mat-error *ngIf="displayErrorMsg" style="margin-top: 14px">{{errorMessage}}</mat-error>

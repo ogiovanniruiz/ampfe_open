@@ -1,0 +1,29 @@
+<h2 mat-dialog-title fxLayoutAlign="center">Developer Permissions</h2>
+<mat-dialog-content style="padding-top:7px;padding-bottom:7px">
+    <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+    <div fxLayout="row" fxLayoutAlign="space-around center">
+        <mat-form-field>
+            <input matInput type="text" (keyup)="applyFilter($event.target.value)" (focus)="setFilter($event.target.value)" placeholder="Search">
+        </mat-form-field>
+        <mat-paginator #paginator [pageSize]="pageSize"  [length]="totalSize" [pageIndex]="currentPage" (page)="pageEvent = handlePage($event)"></mat-paginator>
+    </div>
+    <table matSort (matSortChange)="sortData($event)">
+        <tr>
+          <th mat-sort-header="firstName">First Name</th>
+          <th mat-sort-header="lastName">Last Name</th>
+          <th mat-sort-header="email">Email </th>
+          <th mat-sort-header="permission">Developer </th>
+        </tr>
+        <tr *ngFor="let user of sortedUsers">
+            <td>{{user.name.firstName}}</td>
+            <td>{{user.name.lastName}}</td>
+            <td>{{user.loginEmail}}</td>
+            <td><mat-slide-toggle checked="{{user.dev}}" (click)="updateDevStatus(user, !developer.checked);" #developer></mat-slide-toggle></td>
+            <mat-divider></mat-divider>
+        </tr>
+    </table>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="accent" (click)="closeSettings();">CLOSE</button>
+</mat-dialog-actions>
+<mat-error *ngIf="displayErrorMsg">{{errorMessage}}</mat-error>

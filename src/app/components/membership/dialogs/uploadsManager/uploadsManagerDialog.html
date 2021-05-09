@@ -1,0 +1,28 @@
+<h2 mat-dialog-title fxLayoutAlign="center">Upload a Membership List</h2>
+<mat-dialog-content fxLayout="column" style="padding-top:7px;padding-bottom:7px">
+  <mat-paginator #paginator [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 15]" [length]="totalSize" [pageIndex]="currentPage" (page)="pageEvent = handlePage($event)" ></mat-paginator>
+  <table matSort (matSortChange)="sortData($event)">
+    <tr>
+      <th mat-sort-header="fileName">File Name</th>
+      <th mat-sort-header="geocoded">Geocoded</th>
+      <th mat-sort-header="geographyFound">Geolocated</th>
+      <th mat-sort-header="date">Date</th>
+
+    </tr>
+    <tr *ngFor="let upload of sortedUploads">
+        <td>{{upload.fileName}}</td>
+        <td>{{upload.geocoded}}</td>
+        <td>{{upload.geographyFound}}</td>
+        <td>{{upload.date}}</td>
+        <td><button mat-button color="accent" (click)="deleteUpload(upload)">Delete</button></td>
+        <mat-divider></mat-divider>
+    </tr>
+  </table>
+
+  
+
+</mat-dialog-content>
+<mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
+<mat-card-actions align="end">
+  <button mat-raised-button color="accent" (click)="cancel()">CANCEL</button>
+</mat-card-actions>

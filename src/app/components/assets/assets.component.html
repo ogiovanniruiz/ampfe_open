@@ -1,0 +1,64 @@
+<div fxFlex="100%" >
+    <div fxLayoutAlign="center center" style="background:#f2efe9;padding:2px 0px;" *ngIf=" langMode === 'ENGLISH'">Activate Layer and Zoom in to level {{loadingZoomLevel}} to show blockgroups or cities. Current Zoom: <mat-error>{{zoom}}</mat-error></div>
+    <div fxLayoutAlign="center center" style="background:#f2efe9;padding:2px 0px;" *ngIf=" langMode === 'SPANISH'">Acerca la imagen a nivel {{loadingZoomLevel}} para mostrar los grupos de bloques o ciudades. Nivel Actual: <mat-error>{{zoom}}</mat-error></div>
+    <mat-error *ngIf='showLassoDisclaimer' fxLayoutAlign="center center">Warning: COI's created with the lasso tool are difficult to edit shape once they are created.</mat-error>
+    <div #container style="height:calc(100vh - 87px)" leaflet
+                              [leafletOptions]="options" 
+                              (leafletMapReady)="onMapReady($event)"
+                              [leafletLayersControl]="layersControl"
+                              (leafletMapMoveEnd)="mapMoved($event)"
+                              [leafletCenter]="center"
+                              (leafletMapMoveStart)="mapStart($event)"
+                              >
+
+      <div [leafletLayer]="cois"></div>
+
+      <div fxFlex="20%" fxLayoutAlign="center center" fxLayout="column" fxLayoutGap="2%" style="z-index: 1000" *ngIf="!downloading">
+        
+        <mat-card fxLayoutAlign="center center" fxLayout="column"  fxLayoutGap="10%" >
+          <button mat-fab color='warn' *ngIf="editDetailsMode && langMode === 'ENGLISH'" (click)='toggleDetailsEditing()' matTooltip='Disable Edit COI Details Mode'><mat-icon>edit_note</mat-icon></button>
+          <button mat-fab color='accent' *ngIf="!editDetailsMode && langMode === 'ENGLISH'" (click)='toggleDetailsEditing()' matTooltip='Enable Edit COI Details Mode' class="edit-coi-enable"><mat-icon>edit_note</mat-icon></button>
+
+          <button mat-fab color='warn' *ngIf="editDetailsMode && (langMode === 'SPANISH')" (click)='toggleDetailsEditing()' matTooltip='Desactivar el modo de edición'><mat-icon>edit_note</mat-icon></button>
+          <button mat-fab color='accent' *ngIf="!editDetailsMode && (langMode === 'SPANISH')" (click)='toggleDetailsEditing()' matTooltip='Activar el modo de edición' class="edit-coi-enable"><mat-icon>edit_note</mat-icon></button>
+
+          <button mat-fab color='warn' *ngIf="editMode && langMode === 'ENGLISH'" (click)='toggleEditing()' matTooltip='Disable Edit Geometry Mode'><mat-icon>format_shapes</mat-icon></button>
+          <button mat-fab color='accent' *ngIf="!editMode && langMode === 'ENGLISH'" (click)='toggleEditing()' matTooltip='Enable Edit Geometry Mode' class="edit-geometry-enable"><mat-icon>format_shapes</mat-icon></button>
+
+          <button mat-fab color='warn' *ngIf="editMode && (langMode === 'SPANISH')" (click)='toggleEditing()' matTooltip='Desactivar el modo de edición'><mat-icon>format_shapes</mat-icon></button>
+          <button mat-fab color='accent' *ngIf="!editMode && (langMode === 'SPANISH')" (click)='toggleEditing()' matTooltip='Activar el modo de edición' class="edit-geometry-enable"><mat-icon>format_shapes</mat-icon></button>
+
+         
+
+          <button mat-fab color='primary' (click)="openSearchDialog()" *ngIf="langMode === 'ENGLISH'" matTooltip='Search'><mat-icon>search</mat-icon></button>
+          <button mat-fab color='primary' (click)="openSearchDialog()" *ngIf="langMode === 'SPANISH'" matTooltip='Buscar'><mat-icon>search</mat-icon></button>
+
+          <button mat-fab color='primary' (click)="startTutorial()" matTooltip='Tutorial'><mat-icon>help_outline</mat-icon></button>
+          <!--<mat-error>Tutorial Under Maintenance</mat-error>-->
+
+          <button mat-fab color='primary' (click)='download()' *ngIf="langMode === 'ENGLISH'" matTooltip='Download Map'><mat-icon>cloud_download</mat-icon></button>
+          <button mat-fab color='primary' (click)='download()' *ngIf="langMode === 'SPANISH'" matTooltip='Descargar Mapa'><mat-icon>cloud_download</mat-icon></button>
+          <mat-slide-toggle (click)='toggleLangMode()'>Español</mat-slide-toggle>
+          <mat-spinner *ngIf='loadingBlockgroups'></mat-spinner>
+          <p *ngIf='loadingBlockgroups'>Loading Blockgroups....</p>
+          <mat-spinner *ngIf='loadingCities' ></mat-spinner>
+          <p *ngIf='loadingCities'>Loading Cities....</p>
+        </mat-card>
+        <mat-card *ngIf="editMode || shapeCreated" fxLayout="column">
+          <p>Selected COI: {{selectedCOIName}}</p>
+          <br *ngIf='totalPop != 0'>
+          <p *ngIf='totalPop != 0'>Total Population: {{totalPop}}</p>
+          <p *ngIf='percentAsianEthnicity != 0'>% Asian Pop: {{percentAsianEthnicity}}</p>
+          <p *ngIf='percentWhiteEthnicity != 0'>% White Pop: {{percentWhiteEthnicity}}</p>
+          <p *ngIf='percentBlackEthnicity != 0'>% Black Pop: {{percentBlackEthnicity}}</p>
+          <p *ngIf='percentPIEthnicity != 0'>% Pacific Islander Pop: {{percentPIEthnicity}}</p>
+          <p *ngIf='percentHispanicEthnicity != 0'>% Hispanic Pop: {{percentHispanicEthnicity}}</p>
+          <p *ngIf='percentMale != 0'>% Male Pop: {{percentMale}}</p>
+          <p *ngIf='percentFemale != 0'>% Female Pop: {{percentFemale}}</p>
+          <br *ngIf='totalPop != 0'>
+          <p *ngIf='totalPop != 0'>*ACS Estimates</p>
+
+        </mat-card>
+      </div>
+    </div>
+  </div>

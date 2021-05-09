@@ -1,0 +1,16 @@
+<header fxLayoutAlign="center"  fxLayout="column" fxLayoutGap="5%">
+    <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+</header>
+<mat-error fxLayoutAlign="center"><b>{{errorMessage}}</b></mat-error>
+<body style="margin-top: 2%" fxLayout="row" fxLayoutAlign="center"fxLayoutGap="5%">
+
+    <mat-card fxFlex="40" fxLayoutGap="10%" fxLayout="column">
+        <p>This is where the search will go.</p>
+
+        <button mat-raised-button color='primary' (click)='openUploadDialog()'>Upload Contacts</button>
+    </mat-card>
+    
+</body>
+
+
+

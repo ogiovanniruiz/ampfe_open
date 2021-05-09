@@ -1,0 +1,51 @@
+<h2 mat-dialog-title fxLayoutAlign="center">Create a {{activityType}} Activity</h2>
+<section fxLayout="column" fxLayoutGap="1%" *ngIf="loading">
+    <mat-progress-bar mode="indeterminate" fxFlex="2px" *ngIf="!errors"></mat-progress-bar>
+    <p fxLayoutAlign="center center" style="padding-top:7px;" *ngIf="!errors"s>Please wait while completing...</p>
+    <p fxLayoutAlign="center center" style="padding-top:7px;" *ngIf="errors">There was an error. Please try again or contact support.</p>
+</section>
+<mat-dialog-content fxLayout="row" fxLayout.xs="column"  fxLayout.sm="column" fxLayoutGap="5%" [style.display]="!loading ? 'flex' : 'none'">
+    <!--Left Hand Section-->
+    <section fxLayout="column" fxLayoutGap="1%" fxFlex="50%">
+        <mat-form-field> 
+            <input matInput #activityName type="name" placeholder="Activity Name">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput #description type="text" placeholder="Description">
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Add Orgs</mat-label>
+            <mat-select [formControl]="campaignOrgsSelected" multiple>
+                <mat-option *ngFor="let Org of campaignOrgs" [value]="Org._id">{{Org.name}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Add Users</mat-label>
+            <mat-select [formControl]="usersSelected" multiple>
+                <mat-option #ev (click)="selectAllUsers(ev)" value="1">Select All</mat-option>
+                <mat-option *ngFor="let user of users" [value]="user._id">{{user.name.fullName}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
+        <br>
+    </section>
+
+    <!--Right Hand Section-->
+    <section fxLayout="column" fxLayoutGap="2%" fxFlex="50%">
+        <mat-card fxLayout="column" fxLayoutGap="2%">
+            <h2 fxFlexAlign="center">Script</h2>
+            <mat-select #selectedScript placeholder="Select a Script">
+                <mat-option *ngFor="let script of scripts" value="{{script._id}}" selected="true">{{script.title}}</mat-option>
+            </mat-select>
+        </mat-card>
+        <br> 
+    </section>
+</mat-dialog-content>
+<mat-progress-bar mode="indeterminate" *ngIf="creatingActivity"></mat-progress-bar>
+<mat-dialog-actions align="end" *ngIf="!creatingActivity">
+    <button mat-raised-button color="accent" (click)="close()" fxFlexAlign="center">CLOSE</button>
+    <button mat-raised-button color="primary"  (click)="createActivity()" fxFlexAlign="center">SAVE</button>
+</mat-dialog-actions>

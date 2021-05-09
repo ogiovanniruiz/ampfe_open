@@ -1,0 +1,70 @@
+<h2 mat-dialog-title fxLayoutAlign="center" *ngIf="langMode === 'ENGLISH'">Search Map</h2>
+<h2 mat-dialog-title fxLayoutAlign="center"  *ngIf="langMode === 'SPANISH'">Buscar En Mapa</h2>
+<mat-dialog-content fxLayout="column">
+   <mat-tab-group>
+    <mat-tab [label]='byCoiLabel.tabLabel'>
+      <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+        <mat-form-field>
+          <mat-select #coi [placeholder]="byCoiLabel.placeHolder">
+            <mat-option *ngFor="let coi of cois | keyvalue" [value]="coi.key">{{coi.value}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </section>
+
+      <section *ngIf="cois">
+        <button mat-button  color="primary" (click)="searchCOI()" *ngIf="langMode === 'ENGLISH'">SEARCH</button>
+        <button mat-button color="accent" (click)="cancel()" *ngIf="langMode === 'ENGLISH'">CANCEL</button>
+
+        <button mat-button  color="primary" (click)="searchCOI()" *ngIf="langMode === 'SPANISH'">BUSCAR</button>
+        <button mat-button color="accent" (click)="cancel()" *ngIf="langMode === 'SPANISH'">CANCELAR</button>
+      </section>
+    </mat-tab>
+
+    <mat-tab [label]='byBGLabel.tabLabel'>
+      <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+        <mat-form-field>
+          <mat-select #blockgroup [placeholder]="byBGLabel.placeHolder">
+            <mat-option *ngFor="let blockgroup of blockgroups" [value]="blockgroup">{{blockgroup}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </section>
+
+      <section *ngIf="blockgroups.length">
+        <button mat-button  color="primary" (click)="searchBlockgroup()" *ngIf="langMode === 'ENGLISH'">SEARCH</button>
+        <button mat-button color="accent" (click)="cancel()" *ngIf="langMode === 'ENGLISH'">CANCEL</button>
+
+        <button mat-button  color="primary" (click)="searchBlockgroup()" *ngIf="langMode === 'SPANISH'">BUSCAR</button>
+        <button mat-button color="accent" (click)="cancel()" *ngIf="langMode === 'SPANISH'">CANCELAR</button>
+      </section>
+    </mat-tab>
+    <mat-tab [label]='byAddressLabel.tabLabel'>
+      <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+        <mat-form-field fxFlex="100%"> 
+          <input matInput #address type="text" placeholder="Street #">
+        </mat-form-field>
+      </section>
+      <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+        <mat-form-field fxFlex="50%"> 
+          <mat-select #city placeholder="City">
+            <mat-option *ngFor="let city of cities" [value]="city">{{city}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      <mat-form-field fxFlex="50%"> 
+        <mat-select #zip placeholder="Zip">
+          <mat-option *ngFor="let zip of zips" [value]="zip">{{zip}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      </section>
+      <section *ngIf="cities">
+        <button mat-button  color="primary" (click)="searchAddress()" *ngIf="langMode === 'ENGLISH'">SEARCH</button>
+        <button mat-button color="accent" (click)="cancel()" *ngIf="langMode === 'ENGLISH'">CANCEL</button>
+
+        <button mat-button  color="primary" (click)="searchAddress()" *ngIf="langMode === 'SPANISH'">BUSCAR</button>
+        <button mat-button color="accent" (click)="cancel()" *ngIf="langMode === 'SPANISH'">CANCELAR</button>
+      </section>
+      <mat-error *ngIf='showMessage'>{{message}}</mat-error>
+    </mat-tab>
+
+
+  </mat-tab-group>
+</mat-dialog-content>

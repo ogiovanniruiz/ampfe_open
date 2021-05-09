@@ -1,0 +1,40 @@
+.full-height{
+    height: calc(100vh - 64px);
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    height: 75px;
+    width:100%
+}
+
+.volunteer{
+    background-color: #2196F3;
+    float: right;
+    border-radius: 10px;
+    color: white;
+    margin-left:10px;
+    margin-top:10px;
+}
+
+.voter_name{
+    background-color:  white;
+    border-radius: 10px;
+}
+
+.text{
+    margin:5px;
+}
+
+.selected{
+    color: #2196F3;
+}
+
+.voter {
+    margin:5px;
+}
+
+.mat-expansion-panel-header-description {
+    color: red
+}

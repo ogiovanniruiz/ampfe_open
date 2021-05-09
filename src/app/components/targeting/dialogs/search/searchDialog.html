@@ -1,0 +1,83 @@
+<h2 mat-dialog-title fxLayoutAlign="center">Search Map</h2>
+<mat-dialog-content fxLayout="column">
+  <mat-progress-bar mode="indeterminate" *ngIf="loadingAddressData"></mat-progress-bar>
+  <mat-tab-group>
+    <mat-tab label="By Address">
+      <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+        <mat-form-field fxFlex="25%"> 
+          <input matInput #streetNum type="text" placeholder="Street #">
+        </mat-form-field>
+        <mat-form-field fxFlex="15%"> 
+          <mat-select #prefix placeholder="Prefix">
+            <mat-option *ngFor="let prefix of preficies" [value]="prefix">{{prefix}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field fxFlex="45%"> 
+          <input matInput #street type="text" placeholder="Street Name">
+        </mat-form-field>
+        <mat-form-field fxFlex="15%"> 
+          <mat-select #suffix placeholder="Suffix">
+            <mat-option *ngFor="let suffix of sufficies" [value]="suffix">{{suffix}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </section>
+      <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+        <mat-form-field fxFlex="30%"> 
+          <mat-select #city placeholder="City">
+            <mat-option *ngFor="let city of cities" [value]="city">{{city}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <!--
+        <mat-form-field fxFlex="30%"> 
+          <mat-select #county placeholder="County">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let county of counties" [value]="county">{{county}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      -->
+      <mat-form-field fxFlex="30%"> 
+        <mat-select #zip placeholder="Zip">
+          <mat-option *ngFor="let zip of zips" [value]="zip">{{zip}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      </section>
+      <mat-error *ngIf="displayAddressMessage" fxLayoutAlign="center">{{userAddressMessage}}</mat-error>
+
+      <section *ngIf="!loadingAddressData">
+        <button mat-button  color="primary" (click)="searchAddress()">SEARCH</button>
+        <button mat-button color="accent" (click)="cancel()">CANCEL</button>
+      </section>
+    </mat-tab>
+
+    <mat-tab label="By Precinct">
+      <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+        <mat-form-field>
+          <mat-select #precinct placeholder="Precinct">
+            <mat-option *ngFor="let precinct of precincts" [value]="precinct">{{precinct}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </section>
+
+      <section *ngIf="precincts.length">
+        <button mat-button  color="primary" (click)="searchPrecinct()">SEARCH</button>
+        <button mat-button color="accent" (click)="cancel()">CANCEL</button>
+      </section>
+    </mat-tab>
+
+    <mat-tab label="By Census Blockgroup">
+      <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+        <mat-form-field>
+          <mat-select #blockgroup placeholder="Blockgroup">
+            <mat-option *ngFor="let blockgroup of blockgroups" [value]="blockgroup">{{blockgroup}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </section>
+
+      <section *ngIf="blockgroups.length">
+        <button mat-button  color="primary" (click)="searchBlockgroup()">SEARCH</button>
+        <button mat-button color="accent" (click)="cancel()">CANCEL</button>
+      </section>
+    </mat-tab>
+
+  </mat-tab-group>
+</mat-dialog-content>

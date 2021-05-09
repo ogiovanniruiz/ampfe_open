@@ -1,0 +1,26 @@
+<h2 mat-dialog-title fxLayoutAlign="center">Upload Contact List</h2>
+<mat-dialog-content fxLayout="column" fxLayoutGap="2%" style="padding-top:7px;padding-bottom:7px">
+  <a color='primary' fxLayoutAlign="center" href="../../../assets/contactTemplate.csv" download>Download Template</a> 
+  <mat-form-field appearance="fill">
+    <mat-label>Activity Type</mat-label>
+    <mat-select>
+      <mat-option [value]="'Texting'">Texting</mat-option>
+      <mat-option [value]="'Phonebank'">Phonebank</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Script</mat-label>
+    <mat-select>
+      <mat-option *ngFor='let script of scripts'[value]="script._id">{{script.title}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>NonResponse Set</mat-label>
+    <mat-select>
+      <mat-option *ngFor='let nonResponseSet of nonResponseSets'[value]="nonResponseSet._id">{{nonResponseSet.title}}</mat-option>
+    </mat-select>
+  </mat-form-field>  
+  <input type="file" #file mat-raised-button (change)="fileChanged($event)" >  
+  
+  <button mat-raised-button color='primary'>UPLOAD</button>
+</mat-dialog-content>

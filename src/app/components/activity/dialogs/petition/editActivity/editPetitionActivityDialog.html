@@ -1,0 +1,45 @@
+<h2 mat-dialog-title fxLayoutAlign="center">Edit {{activityType}} Activity</h2>
+<mat-dialog-content fxLayout="row" fxLayout.xs="column"  fxLayout.sm="column" fxLayoutGap="5%" [style.display]="!loading ? 'flex' : 'none'">
+    <!--Left Hand Section-->
+    <section fxLayout="column" fxLayoutGap="1%" fxFlex="50%">
+        <mat-form-field>
+            <input matInput #activityName type="name" placeholder="Activity Name">
+        </mat-form-field>
+
+        <mat-form-field>
+            <input matInput #description type="text" placeholder="Description">
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Add Orgs</mat-label>
+            <mat-select #activityAllOrgs [formControl]="campaignOrgsSelected" multiple>
+                <mat-option *ngFor="let Org of campaignOrgs" [value]="Org._id">{{Org.name}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Add Users</mat-label>
+            <mat-select #activityAllUsers [formControl]="usersSelected" multiple>
+                <mat-option #ev (click)="selectAllUsers(ev)" value="1">Select All</mat-option>
+                <mat-option *ngFor="let user of users" [value]="user._id">{{user.name.fullName}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
+        <br>
+    </section>
+
+    <!--Right Hand Section-->
+    <section fxLayout="column" fxLayoutGap="2%" fxFlex="50%">
+        <mat-card fxLayout="column" fxLayoutGap="2%">
+            <h2 fxFlexAlign="center">Script Name: {{scriptName}}</h2>
+        </mat-card>
+        <br>
+    </section>
+</mat-dialog-content>
+<mat-dialog-actions align="end" [style.display]="!loading ? 'flex' : 'none'">
+    <button mat-raised-button color="accent" (click)="close()" fxFlexAlign="center">CLOSE</button>
+    <button mat-raised-button color="primary" (click)="saveActivityEdits()" fxFlexAlign="center">SAVE</button>
+    <button mat-raised-button color="warn" *ngIf="dev" (click)="deleteActivity()" fxFlexAlign="center">DELETE</button>
+    <button mat-raised-button color="primary" *ngIf="dev" (click)="deactivate()" fxFlexAlign="center">COMPLETE</button>
+</mat-dialog-actions>

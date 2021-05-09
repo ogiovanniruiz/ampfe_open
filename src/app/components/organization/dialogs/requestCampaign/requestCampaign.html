@@ -1,0 +1,25 @@
+<section *ngIf="mode === 'REQUEST'" >
+    <h2 mat-dialog-title fxLayoutAlign="center">Request to join a Campaign</h2>
+    <mat-dialog-content fxLayout="column">
+        <mat-form-field>
+            <input matInput #requestID placeholder="Campaign ID">
+        </mat-form-field>
+        <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end" >
+        <button mat-raised-button color="primary" (click)="requestCampaign(requestID.value)">REQUEST CAMPAIGN</button>
+        <button mat-raised-button color="accent" (click)="closeDialog();">CANCEL</button>
+    </mat-dialog-actions>
+</section>
+
+
+<section *ngIf="mode === 'SUCCESS'">
+    <mat-card fxLayout="column" fxLayoutGap="5%">
+        <span fxLayoutAlign="center">
+            <img width="200" height="200" alt="success" src="../assets/success.png">
+        </span>
+        <button mat-raised-button color="primary" (click)="closeDialog();">CLOSE</button>
+    </mat-card>
+</section>
+
+<mat-error *ngIf="displayErrorMsg" style="margin-top: 14px">{{errorMessage}}</mat-error>

@@ -1,0 +1,59 @@
+<h2 mat-dialog-title fxLayoutAlign="center">Campaign Settings</h2>
+<mat-dialog-content fxLayout="column" fxLayoutGap="2%">
+<mat-tab-group>
+  <mat-tab label="Approved Organizations">
+    <input (keyup)="applyFilter($event.target.value)" placeholder="Search" style="width: calc(100% - 38px);height: 2.5em;margin: 5px 0px 0px;padding: 0px 12px;font-size: 14px;">
+    <mat-list>
+      <mat-list-item *ngFor="let org of campaignOrgs">
+        <mat-icon matListIcon>group</mat-icon>
+        <h3 matLine> {{org.name}}</h3>
+        <p matLine><span>{{org.description}}</span></p>
+        <button *ngIf="dev" (click)="removeOrg(org._id)" mat-button color="warn">REMOVE</button>
+      </mat-list-item>
+    </mat-list>
+  </mat-tab>
+  <mat-tab label="Organization Requests">
+    <mat-action-list *ngIf="requests.length > 0; else noRequests">
+      <mat-list-item *ngFor="let org of requests" [matMenuTriggerFor]="menu">
+        <mat-icon matListIcon>group</mat-icon>
+        <h3 matLine> {{org.name}} </h3>
+        <p matLine><span> {{org.description}} </span></p>
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="manageRequest(org._id, 'APPROVE')">
+              <mat-icon>done</mat-icon>
+              <span>Approve</span></button>
+            <button mat-menu-item (click)="manageRequest(org._id, 'DENY')">          
+              <mat-icon>block</mat-icon>
+              <span>Deny</span>
+            </button>
+        </mat-menu>
+      </mat-list-item>
+    </mat-action-list>
+    <ng-template #noRequests><mat-error fxLayoutAlign="center">There are no requests.</mat-error></ng-template>
+  </mat-tab>
+  <mat-tab label="Data Managers">
+    <mat-progress-bar mode="indeterminate" *ngIf="loadingMembers"></mat-progress-bar>
+    <mat-action-list>
+      <mat-list-item *ngFor="let user of allOrgUsers" [matMenuTriggerFor]="menu">
+        <mat-icon matListIcon>group</mat-icon>
+        <h3 matLine> {{user.name.firstName}} {{user.name.lastName}}</h3>
+        <p matLine><span *ngIf="user.dataManager.includes(campaignID)"> Data Manager </span></p>
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="updateDataManager(user)">
+              <mat-icon>done</mat-icon>
+              <span>Data Manager Toggle</span>
+            </button>
+        </mat-menu>
+      </mat-list-item>
+    </mat-action-list>
+  </mat-tab>
+  <mat-tab label="New User Link">
+    <section fxLayout="column" fxLayoutGap="2%">
+      <button mat-raised-button color="primary" (click)="generateNewUserLink();" >Generate User Link to COI Tool</button>
+      <input type="text" value='{{userURL}}' #userinput >
+      <button (click)="copyInputMessage(userinput)" value="click to copy">Copy Link</button>
+    </section>
+  </mat-tab>
+</mat-tab-group>
+</mat-dialog-content>
+<mat-error fxLayoutAlign="center" *ngIf="displayErrorMsg">{{errorMessage}}</mat-error>

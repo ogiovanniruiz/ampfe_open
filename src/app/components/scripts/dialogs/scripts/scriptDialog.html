@@ -1,0 +1,72 @@
+<h2 mat-dialog-title fxLayoutAlign="center">Edit Script</h2>
+<mat-dialog-content fxLayoutAlign="center" fxLayout="column" style="padding-top:10px;padding-bottom:10px">
+    <section fxLayoutAlign="center" fxLayout="column" fxLayoutGap="2%">
+        <section>
+            <mat-form-field fxFlex="100%">
+                <input matInput placeholder="Script Title" #scriptTitle>
+            </mat-form-field>
+        </section>
+        <section fxLayoutGap="5%"> 
+            <mat-form-field fxFlex="30%">
+                <mat-label>Question Type</mat-label>
+                <mat-select [(value)]="questionType">
+                    <mat-option [value]="'SINGLESELECT'">Single-Select</mat-option>
+                    <mat-option [value]="'TEXT'">Text</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field fxFlex=60%>
+                <input matInput #newQuestion (keyup.enter)="addQuestion()" placeholder="Add a question to Script">
+            </mat-form-field>
+            <button mat-mini-fab color='primary' (click)="addQuestion()"><mat-icon>add</mat-icon></button> 
+        </section>
+    </section>
+    <mat-error fxLayoutAlign="center" *ngIf="displayScriptMessage">{{userScriptMessage}}</mat-error> 
+    <mat-accordion style="margin-top: 2%; margin-bottom: 2%">
+        <mat-expansion-panel *ngFor="let question of questions">
+            <mat-expansion-panel-header>
+                <mat-panel-title>{{question.question}}</mat-panel-title>
+                <mat-panel-description> 
+                    <div *ngIf="question.responses.length > 0 || question.questionType === 'TEXT'">{{question.questionType}}</div> 
+                    <mat-error *ngIf="question.responses.length === 0 && question.questionType != 'TEXT'">Question of type {{question.questionType}} requires at least one response.</mat-error></mat-panel-description>
+            </mat-expansion-panel-header>
+            <section fxLayout="column">
+                <mat-list>
+                    <mat-list-item *ngFor="let response of question.responses">
+                        <h2 matLine> {{response.response}}</h2>
+                        <h2 matLine> {{response.idType}}</h2>
+                        <button mat-button color="warn" (click)="removeResponse(response.response, question)">Remove</button>
+                    </mat-list-item>
+                </mat-list>
+                <section fxLayout="row" *ngIf="question.questionType != 'TEXT'" fxLayoutGap="2%" fxLayoutAlign="center">
+                    <mat-form-field fxFlex="30%">
+                        <mat-label>ID Type</mat-label>
+                        <mat-select [(value)]="idType">
+                            <mat-option [disabled]="getIdTypeStatus(question.responses, 'VERYPOSITIVE')" [value]="'VERYPOSITIVE'">Very Positive</mat-option>
+                            <mat-option [disabled]="getIdTypeStatus(question.responses, 'POSITIVE')" [value]="'POSITIVE'">Positive</mat-option>
+                            <mat-option [disabled]="getIdTypeStatus(question.responses, 'NEUTRAL')" [value]="'NEUTRAL'">Neutral</mat-option>
+                            <mat-option [disabled]="getIdTypeStatus(question.responses, 'NEGATIVE')" [value]="'NEGATIVE'">Negative</mat-option>
+                            <mat-option [disabled]="getIdTypeStatus(question.responses, 'VERYNEGATIVE')"  [value]="'VERYNEGATIVE'">Very Negative</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field fxFlex="30%" ><input matInput placeholder="Response" (keyup.enter)="addResponse(newResponse.value, idType, question)" #newResponse> </mat-form-field>
+                    <button mat-button color="primary" (click)="addResponse(newResponse.value, idType, question)">Add Response</button>
+                </section>
+                <button mat-button fxLayoutAlign="center" color="warn" (click)="removeQuestion(question)">Remove Question</button>
+            </section>
+        </mat-expansion-panel>
+    </mat-accordion>
+    <br>
+    <mat-checkbox [(ngModel)]="campaignLoaded" (click)="updateLoadedStatus(!loaded.checked);" #loaded>Load to Campaign</mat-checkbox>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button color='primary' (click)="saveScriptChanges()">Save Changes</button>
+    <button mat-button color='accent' (click)="closeDialog()">Cancel</button>
+</mat-dialog-actions>
+<mat-error fxLayoutAlign="center" *ngIf="displayErrorMsg">{{errorMessage}}</mat-error>
+
+
+
+
+
+    
+

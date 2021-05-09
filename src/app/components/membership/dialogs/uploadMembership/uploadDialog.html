@@ -1,0 +1,26 @@
+<h2 mat-dialog-title fxLayoutAlign="center">Upload a Membership List</h2>
+<mat-dialog-content fxLayout="column" style="padding-top:7px;padding-bottom:7px">
+  <mat-form-field *ngFor='let theirHeader of theirHeaders'>
+    <mat-label>Your Header: {{theirHeader}}</mat-label>
+    <mat-select [(formControl)]="selectedHeader1" (selectionChange)="dropdownChanged($event)">
+      <mat-option *ngFor="let ourHeader of ourHeaders" [value]="ourHeader" (click)='allocateHeader(ourHeader, theirHeader)'>{{ourHeader}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Tag this Upload</mat-label>
+    <mat-select [(formControl)]="selectedTags" multiple>
+      <mat-option *ngFor="let tag of tags" [value]="tag">{{tag}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+    
+  <input type="file" #file mat-raised-button (change)="fileChanged($event)" >  
+  
+
+</mat-dialog-content>
+<mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
+<mat-progress-bar *ngIf='uploading' mode='indeterminate'></mat-progress-bar>
+<mat-card-actions align="end">
+  <button mat-raised-button color="accent" (click)="cancel()">CANCEL</button>
+  <button mat-raised-button color='primary' (click)='checkUpload()'>UPLOAD</button>
+</mat-card-actions>

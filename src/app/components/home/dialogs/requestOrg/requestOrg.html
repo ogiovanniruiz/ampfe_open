@@ -1,0 +1,36 @@
+<section fxLayout="column" *ngIf="mode === 'REQUEST'">
+    <h2 mat-dialog-title fxLayoutAlign="center">Request to Join an Organization</h2>
+    <mat-form-field>
+        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter Organization by Name">
+    </mat-form-field>
+</section>
+<mat-dialog-content *ngIf="dataSource && mode === 'REQUEST'" fxLayoutAlign="center">
+    <table mat-table [dataSource]="dataSource">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef >Name</th>
+          <td mat-cell *matCellDef="let element">{{element.name}}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Action</th >
+                <td mat-cell *matCellDef="let element">
+                    <button (click)="sendOrgRequest(element)" mat-button color="primary">SEND REQUEST</button>
+                </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+</mat-dialog-content>
+<mat-dialog-actions align="end" *ngIf="mode === 'REQUEST'">
+    <button mat-raised-button color="accent" (click)="closeDialog();">CLOSE</button>
+</mat-dialog-actions>
+<mat-error fxLayoutAlign="center" *ngIf="displayMessage && mode === 'REQUEST'">{{userMessage}}</mat-error>
+<mat-error fxLayoutAlign="center" *ngIf="displayErrorMsg">{{errorMessage}}</mat-error>
+<section *ngIf="mode === 'SUCCESS'">
+    <mat-card fxLayout="column" fxLayoutGap="5%">
+        <span fxLayoutAlign="center">
+            <img width="200" height="200" alt="success" src="../assets/success.png">
+        </span>
+        <button mat-raised-button color="primary" (click)="closeDialog();">CLOSE</button>
+    </mat-card>
+</section>
+

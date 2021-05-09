@@ -1,0 +1,20 @@
+<h2 mat-dialog-title fxLayoutAlign="center">Org Tag Management</h2>
+<mat-dialog-content fxLayout="column" fxLayoutGap="2%" style="padding-top:10px;padding-bottom:10px">
+  <mat-list fxLayoutAlign="center" fxLayout="column">
+    <mat-list-item>
+      <mat-form-field fxFlex=100%> 
+        <input matInput #newTag placeholder="Create a Tag">
+      </mat-form-field>
+      <button mat-mini-fab color="primary" (click)="createNewTag()"><mat-icon>add</mat-icon></button>
+    </mat-list-item>
+    <mat-error fxLayoutAlign="center" *ngIf="displayMessage">{{userMessage}}</mat-error> 
+
+    <mat-list-item *ngFor="let tag of tags">
+      <mat-icon matListIcon>group</mat-icon>
+      <h3 matLine> {{tag}}</h3>
+      <p matLine><span>{{tag}}</span></p>
+      <button mat-icon-button (click)="deleteTag(tag)" style="float: right;"><mat-icon>cancel</mat-icon></button>
+    </mat-list-item>
+  </mat-list>
+</mat-dialog-content>
+<mat-error fxLayoutAlign="center" *ngIf="displayErrorMsg">{{errorMessage}}</mat-error> 

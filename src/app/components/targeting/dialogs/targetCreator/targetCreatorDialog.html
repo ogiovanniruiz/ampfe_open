@@ -1,0 +1,51 @@
+<h2 mat-dialog-title fxLayoutAlign="center">Create a Target  v0.961</h2>
+<mat-dialog-content fxLayout="column" fxLayoutGap="2%" style="padding-top:7px;padding-bottom:7px">
+  <mat-form-field><input matInput #targetName placeholder="Target Name"></mat-form-field>
+
+  <div fxLayout="row" style="margin-bottom:14px;margin-top: 10px">
+    <span style="margin-right: 20px;">Target by:</span>
+    <mat-radio-group fxLayout="row" fxLayoutGap="5%" [(ngModel)]="idByHousehold" (change)="targetBy($event);">
+      <mat-radio-button value="HOUSEHOLD">Household</mat-radio-button>
+      <mat-radio-button value="INDIVIDUAL">Individual</mat-radio-button>
+      <mat-radio-button value="MEMBERSHIP">Membership</mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <query-builder *ngIf="idByHousehold === 'HOUSEHOLD'" [(ngModel)]='queries' [config]='hhConfig'>
+    <ng-container *queryInput="let rule; type: 'boolean'">
+      <mat-checkbox [(ngModel)]="rule.value"></mat-checkbox>
+    </ng-container>
+
+  </query-builder>
+
+  <query-builder *ngIf="idByHousehold === 'INDIVIDUAL'" [(ngModel)]='queries' [config]='indivConfig'>
+    <ng-container *queryInput="let rule; type: 'boolean'">
+      <mat-checkbox [(ngModel)]="rule.value"></mat-checkbox>
+    </ng-container>
+
+  </query-builder>
+
+  <query-builder *ngIf="idByHousehold === 'MEMBERSHIP'" [(ngModel)]='queries' [config]='memberConfig'>
+    <ng-container *queryInput="let rule; type: 'boolean'">
+      <mat-checkbox [(ngModel)]="rule.value"></mat-checkbox>
+    </ng-container>
+  </query-builder>
+  <mat-form-field appearance="fill">
+    <mat-label>Load a campaign wide target to use as a template.</mat-label>
+    <mat-select>
+      <mat-option *ngFor="let target of campaignTargets" (click)='selectTarget(target)' [value]='target.properties.name'>{{target.properties.name}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
+  <mat-progress-bar mode="indeterminate" *ngIf="gettingEstimate"></mat-progress-bar>
+
+  <button fxLayout="row" fxLayoutGap="2%" (click)="getEstimate()">
+    <section fxLayout="row"># HouseHolds: <p *ngIf="estimate.totalHouseHolds> 499999"> > </p> {{estimate.totalHouseHolds}}</section>
+    <section fxLayout="row"># Residents: <p *ngIf="estimate.totalResidents> 499999"> > </p> {{estimate.totalResidents}}</section>
+  </button>
+</mat-dialog-content>
+<mat-dialog-actions align='end' fxLayoutGap="2%">
+  <mat-checkbox class="example-margin" #campaignWide *ngIf='dev || dataManager'>Campaign Wide</mat-checkbox>
+  <button mat-raised-button color="primary" (click)="createTarget();">CREATE TARGET</button>
+  <button mat-raised-button color="accent" (click)="downloadList();">Download</button>
+</mat-dialog-actions>

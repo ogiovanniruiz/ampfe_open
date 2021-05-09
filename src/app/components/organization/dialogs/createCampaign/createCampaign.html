@@ -1,0 +1,62 @@
+<h2 mat-dialog-title fxLayoutAlign="center">Create a Campaign</h2>
+<mat-spinner *ngIf="loader" style="margin: 0px auto"></mat-spinner>
+<mat-dialog-content fxLayout="column" [style.visibility]="!loader ? 'visible' : 'hidden'" [style.height]="!loader ? 'auto' : '0px'">
+    <mat-form-field>
+        <input matInput #campaignName placeholder="Campaign Name">
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput #description placeholder="Description">
+    </mat-form-field>
+
+    <!--<mat-form-field>
+        <mat-label>State</mat-label>
+        <mat-select #state>
+            <mat-option *ngFor="let states of stateList" [value]="states" (click)="getDistricts()">{{states}}</mat-option>
+        </mat-select>
+    </mat-form-field>-->
+
+    <mat-form-field>
+        <mat-label>District Type</mat-label>
+        <mat-select #districtBoundaryType (selectionChange)="getDistricts()">
+            <mat-option *ngFor="let districtType of districtBoundariesType" [value]="districtType" (click)="getDistricts()">{{districtType}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-progress-bar mode="indeterminate" *ngIf="loadingIDS && !districtBoundariesResults?.length"></mat-progress-bar>
+
+    <mat-form-field [style.display]="districtBoundariesResults?.length > 0 ? 'inline-block' : 'none'">
+        <mat-label>District</mat-label>
+        <mat-select #districtBoundary multiple>
+            <input (keyup)="applyFilter($event.target.value)" placeholder="Search for district" style="width:calc(100% - 38px);height:3em;margin:5px 0px 5px 5px;padding:0px 12px;font-size:14px;">
+            <mat-option *ngFor="let district of districtBoundaries" [value]="district._id">{{district?.properties.districtType}} {{district.properties.name | uppercase}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Election Type</mat-label>
+        <mat-select #electionType>
+            <mat-option *ngFor="let election of electionTypes" [value]="election">{{election}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <div fxLayout="row" style="margin-bottom: 14px">
+        <span style="margin-right: 20px;">Target-Restrictions:</span>
+        <mat-radio-group fxLayout="row" fxLayoutGap="5%" [(ngModel)]="geographical">
+            <mat-radio-button value="true">Geographical</mat-radio-button>
+            <mat-radio-button value="false">Non-geographical</mat-radio-button>
+        </mat-radio-group>
+    </div>
+    <div fxLayout="row" style="margin-bottom: 14px">
+        <span style="margin-right: 20px;">Fund by:</span>
+        <mat-radio-group fxLayout="row" fxLayoutGap="5%" [(ngModel)]="fundedByCreatorOrg">
+            <mat-radio-button value="true">Creator Org</mat-radio-button>
+            <mat-radio-button value="false">Orgs Fund Themselves</mat-radio-button>
+        </mat-radio-group>
+    </div>
+    <mat-error *ngIf="displayMessage" style="margin-top: 14px">{{userMessage}}</mat-error>
+</mat-dialog-content>
+<mat-dialog-actions align="end" [style.visibility]="!loader ? 'visible' : 'hidden'">
+    <button mat-raised-button color="primary" (click)="createCampaign()">SUBMIT</button>
+    <button mat-raised-button color="accent" (click)="closeDialog();">CANCEL</button>
+</mat-dialog-actions>
+<mat-error *ngIf="displayErrorMsg" [style.visibility]="!loader ? 'visible' : 'hidden'">{{errorMessage}}</mat-error>

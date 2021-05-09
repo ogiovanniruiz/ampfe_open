@@ -1,0 +1,29 @@
+<h1 mat-dialog-title fxLayoutAlign="center">Organization Twilio Account</h1>
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+<mat-error fxLayoutAlign="center" *ngIf="!accountExists && !loading">No Account Exists</mat-error> 
+<mat-dialog-content *ngIf="accountExists" style="padding-top:10px;padding-bottom:10px">
+  <mat-error fxLayoutAlign="center" >Account Active</mat-error> 
+  <mat-list fxLayoutAlign="center" fxLayout="column">
+    <mat-list-item>
+      <mat-form-field fxFlex=100%>
+        <input matInput #areaCode placeholder="Buy a Phone Number with an Area Code." maxlength="3">
+      </mat-form-field>
+      <button mat-mini-fab color='primary' (click)="buyPhoneNumber()"><mat-icon>add</mat-icon></button> 
+    </mat-list-item>
+    <mat-error fxLayoutAlign="center" *ngIf="displayMessage">{{userMessage}}</mat-error> 
+    <mat-list-item *ngFor="let number of phoneNumbers">
+      <mat-icon matListIcon>group</mat-icon>
+      <h3 matLine> {{number.phoneNumber}}</h3>
+      <p matLine><span>{{number.smsUrl}}</span></p>
+      <button mat-icon-button (click)="releasePhoneNumber(number)" style="float: right;"><mat-icon>cancel</mat-icon></button>
+    </mat-list-item>
+  </mat-list>
+</mat-dialog-content>
+
+<mat-dialog-actions  *ngIf="!loading && !accountExists" align="end">
+  <button mat-raised-button color='primary' (click)="createTwilioAccount()">CREATE ACCOUNT</button>
+</mat-dialog-actions>
+<mat-dialog-actions *ngIf="!loading && accountExists" align="end">
+  <button mat-raised-button color='warn' (click)="updateTwilioAccount()">Update Twilio URL's</button>
+</mat-dialog-actions>
+<mat-error fxLayoutAlign="center" *ngIf="displayErrorMsg">{{errorMessage}}</mat-error> 
