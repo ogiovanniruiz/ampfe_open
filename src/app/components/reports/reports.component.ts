@@ -207,10 +207,9 @@ export class ReportsComponent implements OnInit {
     }
   }
 
-  openCOIReportDialog(){
+  openCOIReportDialog(mode: string){
 
-    const dialogRef = this.dialog.open(COIReportDialog, {data: {selectedScript: this.selectedOrgReportScript.value,
-                                                                selectedActivityType: this.selectedOrgReportActivityType.value}});
+    const dialogRef = this.dialog.open(COIReportDialog, {data: {mode: mode}});
     dialogRef.afterClosed().subscribe(result => {
       if(result){
         console.log('CLOSED...');

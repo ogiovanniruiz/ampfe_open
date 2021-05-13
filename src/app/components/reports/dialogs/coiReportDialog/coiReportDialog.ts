@@ -35,30 +35,37 @@ export class COIReportDialog implements OnInit {
                 public dialog: MatDialog,
                 public reportService: ReportService,
                 public orgService: OrganizationService
-              ) {
-                  console.log(data)
-
-              }
-    onNoClick(): void {this.dialogRef.close(); }
+              ) {}
 
     getCOIReport(){
         var campaignID: number = parseInt(sessionStorage.getItem('campaignID'));
+        var orgID: string = sessionStorage.getItem('orgID');
 
         var reportPickerStart = '';
         if (this.reportPickerStart){var reportPickerStart = this.reportPickerStart['startAt'] ? new Date(this.reportPickerStart['startAt']).toISOString().slice(0, 10) : ''}
         var reportPickerEnd = '';
         if (this.reportPickerEnd){var reportPickerEnd = this.reportPickerEnd['startAt'] ? new Date(this.reportPickerEnd['startAt']).toISOString().slice(0, 10) : ''}
 
-        var data = {selectedScript: this.data.selectedScript, selectedActivityType: this.data.selectedActivityType, reportPickerStart, reportPickerEnd};
+        var mode = this.data.mode
         this.completed = true;
 
-        this.reportService.getCOIReport(campaignID, data).subscribe(
+        this.reportService.getCOIReport(campaignID, mode, orgID, reportPickerStart, reportPickerEnd).subscribe(
             async (report: unknown[]) =>{
+
+                this.members = [];
+                this.sortedMembers = [];
+
+                this.members = report
+
+                this.sortedMembers = this.members.slice();
+                this.totalSize = this.members.length;
+                this.iterator();
+
+                /*
                 this.orgService.getCampaignOrgs(campaignID).subscribe(
                     async (orgs: Organization[]) => {
 
-                        this.members = [];
-                        this.sortedMembers = [];
+
                         for(var i = 0; i < report.length; i++){
                             // Create arrays
                             report[i]['scripts'] = {};
@@ -102,6 +109,8 @@ export class COIReportDialog implements OnInit {
                         }
                     }
                 );
+
+                */
             }
         );
 
@@ -145,7 +154,7 @@ export class COIReportDialog implements OnInit {
     }
 
     async ngOnInit() {
-        await this.getCOIReport()
+        this.getCOIReport()
     }
 }
 
