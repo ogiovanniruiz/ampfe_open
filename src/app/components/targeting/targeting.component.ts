@@ -104,11 +104,15 @@ export class TargetingComponent implements OnInit {
     this.leafletMap.createPane('preclock').style.zIndex = '603';
     this.leafletMap.createPane('prec').style.zIndex = '601';
 
+    this.leafletMap.createPane('precProp').style.zIndex = '600';
+
     map.on('overlayadd', this.overlayadd);
     map.on('overlayremove', this.onOverlayRemove);
 
     this.layersControl.overlays['Blockgroups'] = L.featureGroup();
     this.layersControl.overlays['Precincts'] = L.featureGroup();
+
+    this.layersControl.overlays['Precinct Propensity'] = L.featureGroup();
   }
 
   overlayadd = (e) =>{
@@ -122,6 +126,14 @@ export class TargetingComponent implements OnInit {
     }
     if(e.name === 'Precincts'){
       this.loadPrecincts = true;
+      if(this.zoom >= this.loadingZoomLevel) {
+        this.bounds = this.leafletMap.getBounds();
+        this.getPrecincts(this.bounds);
+      }
+    }
+
+    if(e.name === 'Precinct Propensity'){
+      this.loadPrecincts= true;
       if(this.zoom >= this.loadingZoomLevel) {
         this.bounds = this.leafletMap.getBounds();
         this.getPrecincts(this.bounds);
@@ -374,6 +386,35 @@ export class TargetingComponent implements OnInit {
 
         this.layersControl.overlays['Precincts'].removeLayer(this.layersControl.overlays['Precincts'].getLayers()[1]);
         layerPrecinct.addTo(this.layersControl.overlays['Precincts']);
+
+
+
+
+        //////////////////////////////////////////
+
+        let layerPrecinctProp = await L.geoJSON(targets, {pane: 'prec', onEachFeature: onEachPropFeature.bind(this)});
+
+        function onEachPropFeature(feature, layerPrec) {
+          var tractData = 'Precinct Number: ' + feature.properties.precinctID + '<br>' +
+                          'General Propenisty: ' + feature.properties.generalPropensity + '%<br>' +
+                          'Primary Propensity: ' + feature.properties.primaryPropensity + "%"
+          layerPrec.bindTooltip(tractData).bringToBack();
+
+          if(feature.properties.generalPropensity >= 75){
+            layerPrec.bindTooltip(tractData).setStyle({fillColor: 'green', color: 'green'}).bringToBack();
+          }else if(feature.properties.generalPropensity < 75 && feature.properties.generalPropensity >= 50){
+            layerPrec.bindTooltip(tractData).setStyle({fillColor: 'yellow', color: 'yellow'}).bringToBack();
+
+          }else if(feature.properties.generalPropensity < 50){
+            layerPrec.bindTooltip(tractData).setStyle({fillColor: 'red', color: 'red'}).bringToBack();
+
+          }
+        }
+
+        
+
+        this.layersControl.overlays['Precinct Propensity'].removeLayer(this.layersControl.overlays['Precinct Propensity'].getLayers()[0]);
+        layerPrecinctProp.addTo(this.layersControl.overlays['Precinct Propensity'])
 
         this.loadingPrecincts = false;
       });

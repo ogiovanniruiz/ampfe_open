@@ -19,12 +19,12 @@
       <button fxFlex color="primary" mat-button [disabled]='!funded' (click)="enterActivityDashboard('Phonebank')">PHONEBANK</button>
     </mat-card>
   </mat-grid-tile>
-  <!--
+  
   <mat-grid-tile *ngIf="dataLoaded" >
     <mat-card fxFlex=80%>
       <button fxFlex color="primary" mat-button (click)="enterActivityDashboard('Canvass')">CANVASS</button>
     </mat-card>
-  </mat-grid-tile>-->
+  </mat-grid-tile>
   <mat-grid-tile *ngIf="dataLoaded && campaignActive" >
     <mat-card fxFlex=80%>
       <button fxFlex color="primary" mat-button  [disabled]='!funded' (click)="enterActivityDashboard('Texting')">TEXTING</button>

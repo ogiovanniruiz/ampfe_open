@@ -12,8 +12,8 @@ import { EditPetitionActivityDialog } from './dialogs/petition/editActivity/edit
 import {TextReportsDialog} from './dialogs/activityReports/textReport/textReportDialog'
 import { PhonebankReportsDialog } from './dialogs/activityReports/phonebankReport/phonebankReportDialog';
 import { PetitionReportsDialog } from './dialogs/activityReports/petitionReport/petitionReportDialog';
-import { CreateHotlineActivityDialog} from './dialogs/hotline/createHotLine/createHotlineActivityDialog'
-import {EditHotlineActivityDialog} from './dialogs/hotline/editHotLine/editHotlineActivityDialog'
+import { CreateCanvassActivityDialog} from './dialogs/canvass/createCanvass/createCanvassActivityDialog'
+import {EditHotlineActivityDialog} from './dialogs/canvass/editHotLine/editHotlineActivityDialog'
 import {HotlineReportsDialog} from './dialogs/activityReports/hotlineReport/hotlineReportDialog'
 
 
@@ -23,8 +23,8 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [HotlineReportsDialog, CreateHotlineActivityDialog, EditHotlineActivityDialog,PetitionReportsDialog, PhonebankReportsDialog, TextReportsDialog, ActivityComponent, CreateTextActivityDialog, EditTextActivityDialog, CreatePhoneActivityDialog, EditPhoneActivityDialog, CreatePetitionActivityDialog, EditPetitionActivityDialog],
-  entryComponents: [HotlineReportsDialog,CreateHotlineActivityDialog, EditHotlineActivityDialog, PetitionReportsDialog, PhonebankReportsDialog, TextReportsDialog, CreateTextActivityDialog, EditTextActivityDialog, CreatePhoneActivityDialog, EditPhoneActivityDialog, CreatePetitionActivityDialog, EditPetitionActivityDialog],
+  declarations: [HotlineReportsDialog, CreateCanvassActivityDialog, EditHotlineActivityDialog,PetitionReportsDialog, PhonebankReportsDialog, TextReportsDialog, ActivityComponent, CreateTextActivityDialog, EditTextActivityDialog, CreatePhoneActivityDialog, EditPhoneActivityDialog, CreatePetitionActivityDialog, EditPetitionActivityDialog],
+  entryComponents: [HotlineReportsDialog,CreateCanvassActivityDialog, EditHotlineActivityDialog, PetitionReportsDialog, PhonebankReportsDialog, TextReportsDialog, CreateTextActivityDialog, EditTextActivityDialog, CreatePhoneActivityDialog, EditPhoneActivityDialog, CreatePetitionActivityDialog, EditPetitionActivityDialog],
   imports: [
     CommonModule,
     MaterialModule,

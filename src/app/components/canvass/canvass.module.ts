@@ -2,14 +2,14 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../material.module';
 import { Routes, RouterModule } from '@angular/router';
-import {HotlineComponent} from './hotline.component';
+import {CanvassComponent} from './canvass.component';
 
 const routes: Routes = [
-  { path: '', component: HotlineComponent}
+  { path: '', component: CanvassComponent}
 ];
 
 @NgModule({
-  declarations: [HotlineComponent],
+  declarations: [CanvassComponent],
   entryComponents: [],
   imports: [
     CommonModule,
@@ -17,4 +17,4 @@ const routes: Routes = [
     RouterModule.forChild(routes)
   ]
 })
-export class HotlineModule { }
+export class CanvassModule { }

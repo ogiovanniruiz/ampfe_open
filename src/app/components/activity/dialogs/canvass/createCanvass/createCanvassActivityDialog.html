@@ -35,16 +35,22 @@
 
     <!--Right Hand Section-->
     <section fxLayout="column" fxLayoutGap="2%" fxFlex="50%">
+        <mat-card fxLayout="column" fxLayoutGap="2%">
+            <h2 fxFlexAlign="center">Targets</h2>
+            <mat-select placeholder="Select targets" #selectedTarget>
+                <mat-option *ngFor="let target of targets" value="{{target._id}}" selected="true">{{target.properties.name}}</mat-option>
+            </mat-select>
+        </mat-card>
 
-        <!--
+        
         <mat-card fxLayout="column" fxLayoutGap="2%">
             <h2 fxFlexAlign="center">Script</h2>
             <mat-select #selectedScript placeholder="Select a Script">
                 <mat-option *ngFor="let script of scripts" value="{{script._id}}" selected="true">{{script.title}}</mat-option>
             </mat-select>
         </mat-card>
-        <br> -->
-
+        <br>
+        <!--
         <mat-card fxLayout="column" fxLayoutGap="2%">
             <mat-select (selectionChange)="numberSelected($event)" placeholder="Select a Phone Number" >
                 <mat-option value="{{number}}" *ngFor="let number of phoneNumbers">{{number}}</mat-option>
@@ -56,6 +62,7 @@
                 <input matInput #voiceMailNumber placeholder="Voice Mail Number">
             </mat-form-field>
         </mat-card>
+    -->
         
 
     </section>

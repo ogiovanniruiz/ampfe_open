@@ -1,6 +1,6 @@
 {
   "name": "amplify",
-  "version": "0.9.8.7",
+  "version": "0.9.8.8",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

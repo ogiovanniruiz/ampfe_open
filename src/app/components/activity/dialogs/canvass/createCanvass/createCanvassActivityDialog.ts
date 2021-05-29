@@ -8,13 +8,14 @@ import {Organization} from '../../../../../models/organizations/organization.mod
 import {User} from '../../../../../models/users/user.model';
 import {FormControl} from '@angular/forms';
 import {HotlineService} from '../../../../../services/hotline/hotline.service'
+import {TargetService} from '../../../../../services/target/target.service';
 
 @Component({
-  templateUrl: './createHotlineActivityDialog.html',
+  templateUrl: './createCanvassActivityDialog.html',
   providers: [DatePipe]
 })
   
-export class CreateHotlineActivityDialog implements OnInit{
+export class CreateCanvassActivityDialog implements OnInit{
   campaignOrgs: Organization[] = [];
   campaignOrgsSelected = new FormControl();
   campaignOrgsUpdate = [];
@@ -43,19 +44,27 @@ export class CreateHotlineActivityDialog implements OnInit{
   loading = false;
   errors = false;
 
+  geographical: boolean;
+
+  targetsAvailable: boolean = false;
+  targets: unknown[] = [];
+
   @ViewChild('activityName', {static: true}) activityName: ElementRef;
   @ViewChild('description' , {static: true}) description: ElementRef;
   @ViewChild('activityEmail', {static: true}) activityEmail: ElementRef;
   @ViewChild('voiceMailNumber', {static: true}) voiceMailNumber: ElementRef;
 
   @ViewChild('selectedScript', {static: false}) selectedScript: ElementRef;
+  @ViewChild('selectedTarget', {static: false}) selectedTarget: ElementRef;
+  @ViewChild('selectedNonResponseSet', {static: false}) selectedNonResponseSet: ElementRef;
   
   constructor(
-      public dialogRef: MatDialogRef<CreateHotlineActivityDialog>,
+      public dialogRef: MatDialogRef<CreateCanvassActivityDialog>,
       public activityService: ActivityService,
       public orgService: OrganizationService,
       public scriptService: ScriptService,
       public hotlineService: HotlineService,
+      public targetService: TargetService,
       ) {
   }
 
@@ -73,19 +82,11 @@ export class CreateHotlineActivityDialog implements OnInit{
       return;
     }
 
-    if(!this.selectedNumber){
-      this.displayMessage = true;
-      this.userMessage = 'The Hotline needs a phone number.';
-      return;
-    }
-
-    /*
-
     if(!this.selectedScript['value']){
       this.displayMessage = true;
       this.userMessage = 'The activity needs a Script.';
       return;
-    }*/
+    }
 
     this.creatingActivity = true;
 
@@ -107,13 +108,8 @@ export class CreateHotlineActivityDialog implements OnInit{
       campaignID: campaignID,
       orgIDs: this.campaignOrgsUpdate,
       userIDs: this.usersUpdate,
-      hotlineMetaData: {
-                        mainPhoneNumber: this.selectedNumber['value'],
-                        email: this.activityEmail.nativeElement.value,
-                        voiceMailNumber: this.voiceMailNumber.nativeElement.value                
-                        }
-
-      //scriptID: this.selectedScript['value']
+      scriptID: this.selectedScript['value'],
+      targetID: this.selectedTarget['value'],
     }
 
     this.activityService.createActivity(newActivity).subscribe(
@@ -187,6 +183,46 @@ export class CreateHotlineActivityDialog implements OnInit{
     }
   }
 
+  getOrgTargets(){
+    var campaignID: number = parseInt(sessionStorage.getItem('campaignID'))
+    var orgID: string = sessionStorage.getItem('orgID')
+    this.geographical = (sessionStorage.getItem('geographical') === 'true')
+
+    this.targetService.getOrgTargets(campaignID, orgID).subscribe(
+      (targets: unknown[])=>{
+        if(this.geographical){
+          for(var i = 0; i < targets.length; i++){
+            if(targets[i]['properties'].geometric || targets[i]['properties'].idByHousehold === 'MEMBERSHIP'){
+              this.targets.push(targets[i])
+            }
+          }
+        }else{
+          this.targets = targets
+        }
+
+        if(this.geographical){
+            for(var i = 0; i < this.targets.length; i++){
+                if(this.targets[i]['properties'].geometric || this.targets[i]['properties'].idByHousehold === 'MEMBERSHIP'){
+                    this.targetsAvailable = true;
+                }
+            }
+        } else {
+            if(this.targets.length > 0){
+                this.targetsAvailable = true;
+            }
+        }
+        
+      },
+      error =>{
+        console.log(error)
+        this.displayErrorMsg = true;
+        this.errorMessage = 'There was a problem with the server.';
+      }
+    ) 
+  }
+
+
+  /*
   getUsedHotlineNumbers(){
     this.hotlineService.getUsedHotlineNumbers().subscribe(result =>{
       this.getOrgPhoneNumbers(result)
@@ -216,7 +252,7 @@ export class CreateHotlineActivityDialog implements OnInit{
 
   public numberSelected(selectedNumber){
     this.selectedNumber = selectedNumber
-  }
+  }*/
 
   ngOnInit(){
     this.getCampaignOrgs();
@@ -224,6 +260,7 @@ export class CreateHotlineActivityDialog implements OnInit{
     this.activityType = sessionStorage.getItem('activityType')
     this.dev = JSON.parse(sessionStorage.getItem('user')).dev
     this.getAllScripts();
-    this.getUsedHotlineNumbers()
+    this.getOrgTargets();
+    //this.getUsedHotlineNumbers()
   }
 }
