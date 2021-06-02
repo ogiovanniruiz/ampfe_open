@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { Ng5SliderModule } from 'ng5-slider';
+
 import 'hammerjs';
 import { MatDialogModule,} from '@angular/material/dialog';
 import {MatTabsModule} from '@angular/material/tabs';
@@ -62,7 +62,6 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'
     MatProgressBarModule,
     MatPaginatorModule,
     MatSortModule,
-    Ng5SliderModule,
     MatTableModule,
     MatDatepickerModule,
     MatNativeDateModule,
@@ -98,7 +97,6 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'
     MatSlideToggleModule,
     MatPaginatorModule,
     MatSortModule,
-    Ng5SliderModule,
     MatTableModule,
     MatDatepickerModule,
     MatNativeDateModule,

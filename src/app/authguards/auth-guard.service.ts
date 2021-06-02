@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, Route } from '@angular/router';
 import { Observable } from 'rxjs';
-import 'rxjs/add/operator/map';
 import decode from 'jwt-decode';
-import { version } from '../../../package.json';
+import { map } from 'rxjs/operators';
 import { UserService } from '../services/user/user.service';
+
+import { version } from '../../environments/version';
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +20,7 @@ export class AuthGuard implements CanActivate {
   canActivate(activatedRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise <boolean> | boolean {
     
     if (activatedRoute.queryParams.dir) {
-      return this.userService.processLink(activatedRoute.queryParams.dir).map(
+      return this.userService.processLink(activatedRoute.queryParams.dir).pipe(map(
         activityDetails => {
 
           if (activityDetails['exp'] < Math.floor(Date.now() / 1000)) {
@@ -28,7 +31,7 @@ export class AuthGuard implements CanActivate {
           if (!activityDetails['orgID']) { return false; }
 
           return true;
-      });
+      }));
     }
 
     const stringProfile = sessionStorage.getItem('user');
@@ -41,7 +44,7 @@ export class AuthGuard implements CanActivate {
         return false;
       }
 
-      if (tokenPayload.version !== version) {
+      if (tokenPayload.version !== version.version) {
         return false;
       }
 

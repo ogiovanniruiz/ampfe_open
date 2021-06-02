@@ -13,9 +13,11 @@ import {UserService} from './services/user/user.service'
 
 import { environment } from '../environments/environment';
 
-import { version } from '../../package.json';
 import { UpdatedUser } from './models/users/user.model';
 import {ContactFormDialog} from './dialogs/contactForm';
+
+import { version } from '../environments/version';
+
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -44,7 +46,7 @@ export class AppComponent implements OnInit{
     this.differ = differs.find([]).create();
   }
 
-  public version: string = version;
+  public version: string = version.version;
 
   public synced: boolean = true;
   public serverVersion: string;
