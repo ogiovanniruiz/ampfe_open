@@ -1,8 +1,16 @@
-<h2 mat-dialog-title fxLayoutAlign="center">Tutorials</h2>
+<h2 mat-dialog-title fxLayoutAlign="center">Tutorial</h2>
 <mat-dialog-content fxLayoutAlign="center center" fxLayout="column">
-  <button mat-button (click)="createCOI()">Create a Community of interest</button>
-  <button mat-button (click)="cloneCOI()">Clone Community of interest</button>
-  <button mat-button (click)="editCOI()">Edit Community of interest</button>
-  <button mat-button (click)="deleteCOI()">Delete Community of interest</button>
+
+  <button mat-button *ngIf="langMode === 'ENGLISH'"(click)="createCOI()">Create a Community of interest</button>
+  <button mat-button *ngIf="langMode === 'SPANISH'"(click)="createCOI()">Crear un Communidad de Interes</button>
+
+  <button mat-button *ngIf="langMode === 'ENGLISH'" (click)="cloneCOI()">Clone Community of interest</button>
+  <button mat-button *ngIf="langMode === 'SPANISH'" (click)="cloneCOI()">Clonar un Communidad de Interes</button>
+
+  <button mat-button *ngIf="langMode === 'ENGLISH'" (click)="editCOI()">Edit Community of interest</button>
+  <button mat-button *ngIf="langMode === 'SPANISH'" (click)="editCOI()">Editar un Communidad de Interes</button>
+
+  <button mat-button *ngIf="langMode === 'ENGLISH'" (click)="deleteCOI()">Delete Community of interest</button>
+  <button mat-button *ngIf="langMode === 'SPANISH'" (click)="deleteCOI()">Borar un Communidad de Interes</button>
 
 </mat-dialog-content>

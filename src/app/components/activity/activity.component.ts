@@ -20,7 +20,7 @@ import { environment } from '../../../environments/environment';
 import { CompileShallowModuleMetadata } from '@angular/compiler';
 
 import {CreateCanvassActivityDialog} from './dialogs/canvass/createCanvass/createCanvassActivityDialog'
-import {EditHotlineActivityDialog} from './dialogs/canvass/editHotLine/editHotlineActivityDialog'
+import {EditCanvassActivityDialog} from './dialogs/canvass/editCanvass/editCanvassActivityDialog'
 @Component({
   selector: 'app-activity',
   templateUrl: './activity.component.html',
@@ -120,8 +120,8 @@ export class ActivityComponent implements OnInit {
       const dialogRef = this.dialog.open(EditPetitionActivityDialog,  {width: '95%', data: {activity}, disableClose: true });
       dialogRef.afterClosed().subscribe(result => {this.getActivities()});
     }
-    if(this.activityType === 'Hotline'){
-      const dialogRef = this.dialog.open(EditHotlineActivityDialog,  {width: '95%', data: {activity}});
+    if(this.activityType === 'Canvass'){
+      const dialogRef = this.dialog.open(EditCanvassActivityDialog,  {width: '95%', data: {activity}});
       dialogRef.afterClosed().subscribe(result => {this.getActivities()});
     }
   }
@@ -140,7 +140,7 @@ export class ActivityComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {this.getActivities()});
     }
 
-    if(this.activityType === 'Hotline'){
+    if(this.activityType === 'Canvass'){
       const dialogRef = this.dialog.open(HotlineReportsDialog,  { data: {activity}});
       dialogRef.afterClosed().subscribe(result => {this.getActivities()});
     }

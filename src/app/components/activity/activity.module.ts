@@ -13,7 +13,7 @@ import {TextReportsDialog} from './dialogs/activityReports/textReport/textReport
 import { PhonebankReportsDialog } from './dialogs/activityReports/phonebankReport/phonebankReportDialog';
 import { PetitionReportsDialog } from './dialogs/activityReports/petitionReport/petitionReportDialog';
 import { CreateCanvassActivityDialog} from './dialogs/canvass/createCanvass/createCanvassActivityDialog'
-import {EditHotlineActivityDialog} from './dialogs/canvass/editHotLine/editHotlineActivityDialog'
+import {EditCanvassActivityDialog} from './dialogs/canvass/editCanvass/editCanvassActivityDialog'
 import {HotlineReportsDialog} from './dialogs/activityReports/hotlineReport/hotlineReportDialog'
 
 
@@ -23,8 +23,8 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [HotlineReportsDialog, CreateCanvassActivityDialog, EditHotlineActivityDialog,PetitionReportsDialog, PhonebankReportsDialog, TextReportsDialog, ActivityComponent, CreateTextActivityDialog, EditTextActivityDialog, CreatePhoneActivityDialog, EditPhoneActivityDialog, CreatePetitionActivityDialog, EditPetitionActivityDialog],
-  entryComponents: [HotlineReportsDialog,CreateCanvassActivityDialog, EditHotlineActivityDialog, PetitionReportsDialog, PhonebankReportsDialog, TextReportsDialog, CreateTextActivityDialog, EditTextActivityDialog, CreatePhoneActivityDialog, EditPhoneActivityDialog, CreatePetitionActivityDialog, EditPetitionActivityDialog],
+  declarations: [HotlineReportsDialog, CreateCanvassActivityDialog, EditCanvassActivityDialog,PetitionReportsDialog, PhonebankReportsDialog, TextReportsDialog, ActivityComponent, CreateTextActivityDialog, EditTextActivityDialog, CreatePhoneActivityDialog, EditPhoneActivityDialog, CreatePetitionActivityDialog, EditPetitionActivityDialog],
+  entryComponents: [HotlineReportsDialog,CreateCanvassActivityDialog, EditCanvassActivityDialog, PetitionReportsDialog, PhonebankReportsDialog, TextReportsDialog, CreateTextActivityDialog, EditTextActivityDialog, CreatePhoneActivityDialog, EditPhoneActivityDialog, CreatePetitionActivityDialog, EditPetitionActivityDialog],
   imports: [
     CommonModule,
     MaterialModule,

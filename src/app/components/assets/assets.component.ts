@@ -23,6 +23,7 @@ import domtoimage from 'dom-to-image';
 declare var shpwrite: any;
 
 import { createCOI, cloneCOI, editCOI, deleteCOI, defaultStepOptions} from './tutorial-data';
+import { createCOI_spanish, cloneCOI_spanish, editCOI_spanish, deleteCOI_spanish} from './tutorial-data_spanish';
 import * as blockgroupIDSJSON from '../../../assets/blockgroupIDS.json';
 import * as turf from '@turf/turf';
 
@@ -1001,11 +1002,27 @@ export class AssetsComponent implements OnInit {
     this.map.fitBounds(rectangle.getBounds(), {padding: [80, 80]});
 
     if(tutorial === 'cloneCOI') {
-      this.shepherdService.addSteps(cloneCOI);
+
+      if(this.langMode === 'ENGLISH'){
+        this.shepherdService.addSteps(cloneCOI);
+      }else if(this.langMode === 'SPANISH'){
+        this.shepherdService.addSteps(cloneCOI_spanish);
+      }
+
     } else if(tutorial === 'editCOI') {
-      this.shepherdService.addSteps(editCOI);
+
+      if(this.langMode === 'ENGLISH'){
+        this.shepherdService.addSteps(editCOI);
+      }else if(this.langMode === 'SPANISH'){
+        this.shepherdService.addSteps(editCOI_spanish);
+      }
+
     } else if(tutorial === 'deleteCOI'){
-      this.shepherdService.addSteps(deleteCOI);
+      if(this.langMode === 'ENGLISH'){
+        this.shepherdService.addSteps(deleteCOI);
+      }else if(this.langMode === 'SPANISH'){
+        this.shepherdService.addSteps(deleteCOI_spanish);
+      }
     }
 
     ['close', 'cancel'].forEach(event => this.shepherdService.tourObject.on(event, () => {
@@ -1023,7 +1040,7 @@ export class AssetsComponent implements OnInit {
 
   startTutorial() {
     this.zone.run(() => {
-      const dialogRef = this.dialog.open(TutorialDialog);
+      const dialogRef = this.dialog.open(TutorialDialog, {data: {langMode: this.langMode}});
       dialogRef.afterClosed().subscribe(
           async (tutorial: string) => {
             if(tutorial) {
@@ -1032,7 +1049,12 @@ export class AssetsComponent implements OnInit {
               }
 
               if (tutorial === 'createCOI') {
-                this.shepherdService.addSteps(createCOI);
+                if(this.langMode === 'ENGLISH'){
+                  this.shepherdService.addSteps(createCOI);
+                }else if(this.langMode === 'SPANISH'){
+                  this.shepherdService.addSteps(createCOI_spanish);
+                }
+                
                 if(document.getElementsByClassName('regTutorial').length){
                   document.getElementsByClassName('regTutorial')[0].classList.remove('regTutorial');
                 }

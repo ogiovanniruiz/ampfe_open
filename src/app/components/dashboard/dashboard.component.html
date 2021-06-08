@@ -22,7 +22,7 @@
   
   <mat-grid-tile *ngIf="dataLoaded" >
     <mat-card fxFlex=80%>
-      <button fxFlex color="primary" mat-button (click)="enterActivityDashboard('Canvass')">CANVASS</button>
+      <button fxFlex color="primary" mat-button [disabled]='!dev' (click)="enterActivityDashboard('Canvass')">CANVASS</button>
     </mat-card>
   </mat-grid-tile>
   <mat-grid-tile *ngIf="dataLoaded && campaignActive" >

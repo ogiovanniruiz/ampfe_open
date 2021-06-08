@@ -10,7 +10,11 @@ import { MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
   constructor(
         public dialogRef: MatDialogRef<TutorialDialog>,
         @Inject(MAT_DIALOG_DATA) public data: any,
-        ){}
+        ){
+            this.langMode = data.langMode
+        }
+
+    langMode: string;
 
     createCOI(): void {
         this.dialogRef.close('createCOI');

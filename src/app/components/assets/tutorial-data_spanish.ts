@@ -6,7 +6,7 @@ export const defaultStepOptions = {
     }
 };
 
-export const createCOI_spansh = [
+export const createCOI_spanish = [
     {
         title: 'Crear Comunidad De Interes!',
         text: ['Comience con haciendo clic el botón para Crear Comunidad De Interes'],
@@ -124,7 +124,7 @@ export const cloneCOI_spanish = [
 export const editCOI_spanish = [
     {
         title: 'Editar el COI!',
-        text: ['Start by first clicking the "Enable Edit Mode" button.'],
+        text: ['Aga clic al Boton para Editar el COI.'],
         attachTo: {
             element: '.edit-geometry-enable',
             on: 'right'
@@ -137,8 +137,8 @@ export const editCOI_spanish = [
         advanceOn: {selector: '.edit-geometry-enable', event: 'click'},
     },
     {
-        title: 'Edit COI!',
-        text: ['Drag the pointer on the corners of the COI rectangle to reshape it.'],
+        title: 'Editar el COI!',
+        text: ['Arrastre el puntero en las esquinas del rectángulo COI para remodelarlo.'],
         classes: 'modalOverlayOpeningPadding100',
         modalOverlayOpeningPadding: 100,
         attachTo: {
@@ -147,16 +147,16 @@ export const editCOI_spanish = [
         },
     },
     {
-        title: 'Edit COI!',
-        text: ['The COI has now been reshaped. Press the "Next" button if you want to edit the COI information'],
+        title: 'Editar el COI!',
+        text: ['El COI ahora ha sido remodelado. Presione el botón "Next" si desea editar la información de COI'],
         buttons: [{
             text: 'Next',
             type: 'next'
         }]
     },
     {
-        title: 'Edit COI!',
-        text: ['Start by first clicking the "Enable Edit Mode" button.'],
+        title: 'Editar el COI!',
+        text: ['Aga clic al Boton para Editar el COI.'],
         attachTo: {
             element: '.edit-coi-enable',
             on: 'right'
@@ -169,8 +169,8 @@ export const editCOI_spanish = [
         advanceOn: {selector: '.edit-coi-enable', event: 'click'},
     },
     {
-        title: 'Edit COI!',
-        text: ['Click the COI to edit the COI information.'],
+        title: 'Editar el COI!',
+        text: ['Haga clic en el COI para editar la información del COI.'],
         attachTo: {
             element: '.tutorialPoly',
             on: 'auto'
@@ -193,7 +193,7 @@ export const editCOI_spanish = [
     },
     {
         title: 'Felizidades!',
-        text: ['Your COI has now been edited!'],
+        text: ['¡Tu COI ahora ha sido editado!'],
         buttons: [{
             classes: 'shepherd-button-primary',
             text: 'Done',
@@ -209,8 +209,8 @@ export const editCOI_spanish = [
 
 export const deleteCOI_spanish = [
     {
-        title: 'Delete COI!',
-        text: ['Start by first clicking the "Enable Edit Mode" button.'],
+        title: 'Borar COI!',
+        text: ['Comience haciendo clic primero en el botón "Habilitar modo de edición".'],
         attachTo: {
             element: '.edit-coi-enable',
             on: 'right'
@@ -223,8 +223,8 @@ export const deleteCOI_spanish = [
         advanceOn: {selector: '.edit-coi-enable', event: 'click'},
     },
     {
-        title: 'Delete COI!',
-        text: ['Click on the COI you want to delete.'],
+        title: 'Borar COI!',
+        text: ['Haga clic en el COI que desea eliminar.'],
         attachTo: {
             element: '.tutorialPoly',
             on: 'auto'
@@ -232,8 +232,8 @@ export const deleteCOI_spanish = [
         modalOverlayOpeningPadding: 50,
     },
     {
-        title: 'Delete COI!',
-        text: ['Click the "Delete" button and confirm your deletion.'],
+        title: 'Borar COI!',
+        text: ['Haga clic en el botón "Eliminar" y confirme su eliminación.'],
         cancelIcon: {
             enabled: false
         },
@@ -248,8 +248,8 @@ export const deleteCOI_spanish = [
         }
     },
     {
-        title: 'Congratulations!',
-        text: ['Your COI has now been deleted!'],
+        title: 'Feicidades!',
+        text: ['¡Tu COI ahora ha sido eliminado!'],
         buttons: [{
             classes: 'shepherd-button-primary',
             text: 'Done',

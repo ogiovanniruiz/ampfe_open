@@ -42,6 +42,14 @@
             </mat-select>
         </mat-card>
 
+        <mat-card fxLayout="column" fxLayoutGap="2%">
+            <h2 fxFlexAlign="center">NonResponse Set</h2>
+            <mat-select #selectedNonResponseSet placeholder="Select a NonResponse Set" >
+                <mat-option *ngFor="let nonResponseSet of nonResponseSets" value="{{nonResponseSet._id}}" selected="true">{{nonResponseSet.title}}</mat-option>
+            </mat-select>
+        </mat-card>
+
+
         
         <mat-card fxLayout="column" fxLayoutGap="2%">
             <h2 fxFlexAlign="center">Script</h2>
@@ -50,21 +58,8 @@
             </mat-select>
         </mat-card>
         <br>
-        <!--
-        <mat-card fxLayout="column" fxLayoutGap="2%">
-            <mat-select (selectionChange)="numberSelected($event)" placeholder="Select a Phone Number" >
-                <mat-option value="{{number}}" *ngFor="let number of phoneNumbers">{{number}}</mat-option>
-            </mat-select>
-            <mat-form-field> 
-                <input matInput #activityEmail placeholder="Activity Email">
-            </mat-form-field>
-            <mat-form-field> 
-                <input matInput #voiceMailNumber placeholder="Voice Mail Number">
-            </mat-form-field>
-        </mat-card>
-    -->
-        
 
+    
     </section>
 </mat-dialog-content>
 <mat-progress-bar mode="indeterminate" *ngIf="creatingActivity"></mat-progress-bar>

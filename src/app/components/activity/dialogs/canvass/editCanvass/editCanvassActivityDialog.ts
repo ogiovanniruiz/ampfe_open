@@ -9,11 +9,11 @@ import {Organization} from '../../../../../models/organizations/organization.mod
 import {User} from '../../../../../models/users/user.model';
 
 @Component({
-  templateUrl: './editHotlineActivityDialog.html',
+  templateUrl: './editCanvassActivityDialog.html',
   providers: [DatePipe]
 })
   
-export class EditHotlineActivityDialog implements OnInit{
+export class EditCanvassActivityDialog implements OnInit{
     campaignOrgs: Organization[] = [];
     campaignOrgsSelected = new FormControl();
     campaignOrgsUpdate: Organization[] = [];
@@ -37,9 +37,9 @@ export class EditHotlineActivityDialog implements OnInit{
 
     loading = false;
 
-    mainPhonenum: string = ''
-    email: string = ''
-    voiceMailNumber: string = ''
+    //mainPhonenum: string = ''
+    //email: string = ''
+    //voiceMailNumber: string = ''
 
     @ViewChild('activityName', {static: true}) activityName: ElementRef;
     @ViewChild('description' , {static: true}) description: ElementRef;
@@ -47,7 +47,7 @@ export class EditHotlineActivityDialog implements OnInit{
     @ViewChild('activityAllOrgs', {static: true}) activityAllOrgs: ElementRef;
     @ViewChild('activityAllUsers', {static: true}) activityAllUsers: ElementRef;
   
-  constructor(public dialogRef: MatDialogRef<EditHotlineActivityDialog>,
+  constructor(public dialogRef: MatDialogRef<EditCanvassActivityDialog>,
               @Inject(MAT_DIALOG_DATA) public data: any,
               public activityService: ActivityService,
               public orgService: OrganizationService,
@@ -87,7 +87,7 @@ export class EditHotlineActivityDialog implements OnInit{
       )
   }
 
-  /*
+  
   getScript(){
       var scriptID: string = this.activity['scriptID']
       this.scriptService.getScript(scriptID).subscribe(
@@ -101,7 +101,7 @@ export class EditHotlineActivityDialog implements OnInit{
               //this.errorMessage = 'There was a problem with the server.';
           }
       )
-  }*/
+  }
 
   close(){this.dialogRef.close()}
 
@@ -109,9 +109,9 @@ export class EditHotlineActivityDialog implements OnInit{
       this.activityName.nativeElement.value = this.activity['name'];
       
       if (this.activity['description']) this.description.nativeElement.value = this.activity['description'];
-      this.mainPhonenum = this.activity['hotlineMetaData']['mainPhoneNumber']
-      this.email = this.activity['hotlineMetaData']['email']
-      this.voiceMailNumber = this.activity['hotlineMetaData']['voiceMailNumber']
+      //this.mainPhonenum = this.activity['hotlineMetaData']['mainPhoneNumber']
+      //this.email = this.activity['hotlineMetaData']['email']
+      //this.voiceMailNumber = this.activity['hotlineMetaData']['voiceMailNumber']
 
   }
 

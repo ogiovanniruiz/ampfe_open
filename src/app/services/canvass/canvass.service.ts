@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { StorageMap } from '@ngx-pwa/local-storage';
-import 'rxjs/add/operator/catch';
+
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +12,16 @@ export class CanvassService {
 
   private API_URL = environment.API_URL;
   constructor(private http: HttpClient, private storage: StorageMap) {}
+
+  getCanvassHouseholds(activityID: string){
+    return this.http.post(this.API_URL + '/api/getCanvassHouseholds', {activityID})
+  }
+
+  submitScriptResponse(activity, idResponses, personID, user, orgID, houseHoldID, hhSize){
+    return this.http.post(this.API_URL + '/api/submitCanvassScriptResponse', {activity, idResponses, personID, user, orgID, houseHoldID, hhSize})
+  }
+
+  /////////////////////////////////////////
 
   updateMarkerLocation(location, person){
     return this.http.post(this.API_URL + '/canvass/updateMarkerLocation', {location, person})

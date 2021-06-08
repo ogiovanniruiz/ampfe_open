@@ -17,6 +17,11 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "jwt-decode",
+              "leaflet-lasso"
+
+           ],
             "outputPath": "dist/amplify",
             "index": "src/index.html",
             "main": "src/main.ts",

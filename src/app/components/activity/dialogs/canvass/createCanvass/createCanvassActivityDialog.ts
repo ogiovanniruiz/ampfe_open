@@ -34,6 +34,7 @@ export class CreateCanvassActivityDialog implements OnInit{
   userMessage: string = '';
 
   scripts: unknown[] = [];
+  nonResponseSets: unknown[] = [];
 
   creatingActivity: boolean = false;
 
@@ -45,9 +46,11 @@ export class CreateCanvassActivityDialog implements OnInit{
   errors = false;
 
   geographical: boolean;
+  nonResponseSetsAvailable: boolean = false;
 
   targetsAvailable: boolean = false;
   targets: unknown[] = [];
+
 
   @ViewChild('activityName', {static: true}) activityName: ElementRef;
   @ViewChild('description' , {static: true}) description: ElementRef;
@@ -109,6 +112,7 @@ export class CreateCanvassActivityDialog implements OnInit{
       orgIDs: this.campaignOrgsUpdate,
       userIDs: this.usersUpdate,
       scriptID: this.selectedScript['value'],
+      nonResponseSetID: this.selectedNonResponseSet['value'],
       targetID: this.selectedTarget['value'],
     }
 
@@ -221,38 +225,27 @@ export class CreateCanvassActivityDialog implements OnInit{
     ) 
   }
 
-
-  /*
-  getUsedHotlineNumbers(){
-    this.hotlineService.getUsedHotlineNumbers().subscribe(result =>{
-      this.getOrgPhoneNumbers(result)
-    })
-
-  }
-
-  public getOrgPhoneNumbers(usedPhoneNumbers){
-    var campaignID: number = parseInt(sessionStorage.getItem('campaignID'));
+  getAllNonResponseSets(){
     var orgID: string = sessionStorage.getItem('orgID')
-
-    this.orgService.getOrgPhoneNumbers(orgID, campaignID).subscribe(
-      (phoneNumbers: unknown[])  =>{
-        for(var i = 0; i < phoneNumbers.length; i++){
-          if(!usedPhoneNumbers.includes(phoneNumbers[i]['phoneNumber'])){
-            this.phoneNumbers.push(phoneNumbers[i]['phoneNumber']);
+    var campaignID: number = parseInt(sessionStorage.getItem('campaignID'))
+    this.scriptService.getAllNonResponseSets(orgID, campaignID).subscribe(
+        (nonResponseSets: unknown[]) =>{
+          this.nonResponseSets = nonResponseSets.filter(nonResponseSet => {
+            return nonResponseSet['campaignIDs'].includes(campaignID) && nonResponseSet['orgStatus'].active;
+          });
+          if(this.nonResponseSets.length){
+            this.nonResponseSetsAvailable = true;
           }
+        },
+        error=>{
+          console.log(error)
+          this.displayErrorMsg = true;
+          this.errorMessage = 'There was a problem with the server.';
         }
-      },
-      error =>{
-        console.log(error)
-        this.errorMessage = "There was an unknown error with the server.";
-        this.displayErrorMsg = true;
-      }
-    )
+    );
   }
 
-  public numberSelected(selectedNumber){
-    this.selectedNumber = selectedNumber
-  }*/
+
 
   ngOnInit(){
     this.getCampaignOrgs();
@@ -261,6 +254,6 @@ export class CreateCanvassActivityDialog implements OnInit{
     this.dev = JSON.parse(sessionStorage.getItem('user')).dev
     this.getAllScripts();
     this.getOrgTargets();
-    //this.getUsedHotlineNumbers()
+    this.getAllNonResponseSets()
   }
 }
