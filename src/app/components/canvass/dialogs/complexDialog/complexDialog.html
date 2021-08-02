@@ -1,0 +1,22 @@
+
+<h4 mat-dialog-title fxLayoutAlign="center">{{fullAddress1}}</h4>
+<h3 mat-dialog-title fxLayoutAlign="center">{{fullAddress2}}</h3>
+<mat-dialog-content fxLayout="column" [@.disabled]="disableAnimation">
+
+  <mat-accordion #accordion1="matAccordion">
+
+    <mat-expansion-panel *ngFor="let record of records; let i = index" [disabled]='record.complete'>
+      <mat-expansion-panel-header>
+        <mat-panel-title>{{record.houseHold.fullAddress1}}</mat-panel-title>
+        
+        <mat-panel-description> <p *ngIf='!record.complete'> #Residents: {{record.houseHold.residents.length}}</p>  <p *ngIf='record.complete'> Complete</p></mat-panel-description>
+      </mat-expansion-panel-header>
+      
+      <button mat-stroked-button (click)='openHouseHold(record.houseHold)'>Open Household</button>
+    </mat-expansion-panel>
+    
+  </mat-accordion>
+</mat-dialog-content>
+<mat-dialog-actions align="end" >
+
+</mat-dialog-actions>

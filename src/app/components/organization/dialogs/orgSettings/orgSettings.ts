@@ -152,8 +152,11 @@ export class OrgSettingsDialog implements OnInit{
           if(result[i]['scriptResponse']){
             binaryData.push('scriptResponse' + ',')
             for(var j = 0; j < result[i]['scriptResponse']['questionResponses'].length; j++){
-              binaryData.push(result[i]['scriptResponse']['questionResponses'][j]['question']+ ":" +result[i]['scriptResponse']['questionResponses'][j]['responses'] + ',')
-
+              if(result[i]['scriptResponse']['questionResponses'][j]['response']){
+                binaryData.push(result[i]['scriptResponse']['questionResponses'][j]['question']+ ":" +result[i]['scriptResponse']['questionResponses'][j]['response'] + ',')
+              }else{
+                binaryData.push(result[i]['scriptResponse']['questionResponses'][j]['question']+ ":" +result[i]['scriptResponse']['questionResponses'][j]['idType'] + ',')
+              }
             }
             binaryData.push('\n')
           }

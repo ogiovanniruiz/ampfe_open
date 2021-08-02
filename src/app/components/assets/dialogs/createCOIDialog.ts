@@ -74,14 +74,15 @@ import {Questions} from '../../../models/questions'
       };
 
 
-      if (this.shepherdService.isActive) {
-        this.dialogRef.close(coiDetail);
-        this.creating = false;
-        return true;
-      }
+      //if (this.shepherdService.isActive) {
+      //  this.dialogRef.close(coiDetail);
+      //  this.creating = false;
+      //  return true;
+      //}
 
       this.assetService.createCOI(coiDetail).subscribe(
         result =>{
+          console.log(result)
           this.dialogRef.close(result);
           this.creating = false;
         },

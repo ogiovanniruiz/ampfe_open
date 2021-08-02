@@ -50,7 +50,6 @@ export class PhonebankComponent implements OnInit {
 
   submittingResponse: boolean = false;
 
-
   demoVersion: boolean = environment.demoVersion;
   testCallingNumber:  string = environment.testCallingNumber;
 

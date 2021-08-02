@@ -4,16 +4,17 @@ import { MaterialModule } from '../../material.module';
 import { Routes, RouterModule } from '@angular/router';
 import {CanvassComponent} from './canvass.component';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
-import { HouseholdDialog } from './dialogs/householdDilaog';
+import { HouseHoldDialog } from './dialogs/houseHoldDialog';
 import {GetBirthdatePipe} from '../../pipes/getbirthdate.pipe';
+import { ComplexDialog } from './dialogs/complexDialog/complexDilaog';
 
 const routes: Routes = [
   { path: '', component: CanvassComponent}
 ];
 
 @NgModule({
-  declarations: [CanvassComponent, HouseholdDialog],
-  entryComponents: [HouseholdDialog],
+  declarations: [CanvassComponent, HouseHoldDialog, ComplexDialog],
+  entryComponents: [HouseHoldDialog, ComplexDialog],
   imports: [
     CommonModule,
     MaterialModule,

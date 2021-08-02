@@ -44,5 +44,11 @@ export class AssetService {
   cloneCOI(geometry: unknown, properties: unknown){
     return this.http.post(this.API_URL + '/api/cloneCOI', {geometry, properties});
   }
+
+  getClinics(){
+
+    return this.http.post(this.API_URL + '/api/getClinics', {});
+
+  }
   
 }

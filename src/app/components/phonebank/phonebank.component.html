@@ -57,7 +57,7 @@
           </mat-accordion>
 
           <mat-error *ngIf="needsResponses">This persons needs some responses to submit.</mat-error> 
-          <mat-grid-list [cols]="gridColumns || 1" rowHeight="4:1" gutterSize="5" *ngIf='nonResponseSet '>
+          <mat-grid-list [cols]="gridColumns || 1" rowHeight="4:1" gutterSize="5" *ngIf='nonResponseSet'>
             <mat-grid-tile>
               <button mat-raised-button color="primary" [disabled]="!residentsCalled.includes(resident.personID) || submittingResponse" fxFlex="100%" (click)="submitScriptResponse(resident, radioAnswers, textAnswers, houseHold._id, houseHold.residents.length);">Submit</button>
             </mat-grid-tile>

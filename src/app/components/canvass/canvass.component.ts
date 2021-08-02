@@ -4,7 +4,8 @@ import { Router } from '@angular/router';
 import { CanvassService } from 'src/app/services/canvass/canvass.service';
 import * as L from 'leaflet';
 import {MatDialog} from '@angular/material/dialog';
-import {HouseholdDialog} from './dialogs/householdDilaog'
+import {HouseHoldDialog} from './dialogs/houseHoldDialog'
+import {ComplexDialog} from './dialogs/complexDialog/complexDilaog'
 import {Activity} from '../../models/activities/activity.model'
 
 declare global {
@@ -17,6 +18,8 @@ declare global {
   styleUrls: ['./canvass.component.scss']
 })
 export class CanvassComponent implements OnInit {
+
+  layersControl = {overlays: {}};
 
   @ViewChild('firstName', {static: false}) firstName: ElementRef
   @ViewChild('lastName', {static: false}) lastName: ElementRef
@@ -35,6 +38,8 @@ export class CanvassComponent implements OnInit {
 
   map: any
 
+  houseHolds: L.FeatureGroup = L.featureGroup()
+
   constructor(
               private activityService: ActivityService,
               private router: Router,
@@ -51,24 +56,49 @@ export class CanvassComponent implements OnInit {
 
   onMapReady(map: L.Map){
     this.map = map
+    this.layersControl.overlays['HouseHolds'] = L.featureGroup();
   }
 
-  getCanvassHouseholds(){
+  getCanvassHouseHolds(){
 
     var activityID = sessionStorage.getItem('activityID')
 
-    this.canvassService.getCanvassHouseholds(activityID).subscribe((hhRecords: any[])=> {
-      for (var i = 0; i < hhRecords.length; i++) {
+    this.canvassService.getCanvassHouseHolds(activityID).subscribe((hhRecords: any[])=> {
 
+      for (var i = 0; i < hhRecords.length; i++) {
         var toolTip = hhRecords[i].houseHold.fullAddress1 + '<br>' +
                       hhRecords[i].houseHold.fullAddress2
 
-        L.marker([hhRecords[i].houseHold.location.coordinates[1], hhRecords[i].houseHold.location.coordinates[0]])
+        var color = 'blue'
+        var clickable = true;
+        if(hhRecords[i].records.length > 1){
+          color = 'purple'
+          
+          if(hhRecords[i].complete.length >= hhRecords[i].records.length){
+            color = 'green'
+            clickable = false
+          }
+        }else{
+
+          if(hhRecords[i].complete[0] === true){
+            color = 'green'
+            clickable = false
+          }
+        }
+
+        var marker = L.circle([hhRecords[i].houseHold.location.coordinates[1], hhRecords[i].houseHold.location.coordinates[0]], {color: color})
         .bindTooltip(toolTip)
-        .on('mouseup',this.openHouseholdDialog, this)
-        .on('mousedown', this.getSelected, hhRecords[i])
-        .addTo(this.map);
+        .addTo(this.map)
+
+        if(clickable){
+          marker.on('mouseup',this.openHouseHoldDialog, this).on('mousedown', this.getSelected, hhRecords[i])
+        }
+
+        this.houseHolds.addLayer(marker)
+        
       }
+
+      this.layersControl.overlays['HouseHolds'] = this.houseHolds  
     })
   }
 
@@ -80,10 +110,48 @@ export class CanvassComponent implements OnInit {
     window.GlobalSelected = this;
   }
 
-  openHouseholdDialog(){
+  openHouseHoldDialog(){
     this.zone.run(() => {
-      const dialogRef = this.dialog.open(HouseholdDialog, {data: {selected: this.selected, activity: this.activity}, width: "80%"});
-      dialogRef.afterClosed().subscribe(result => {})
+      if(this.selected.records.length === 1){
+        const dialogRef = this.dialog.open(HouseHoldDialog, {data: {selected: this.selected, activity: this.activity}, width: "80%"});
+        dialogRef.afterClosed().subscribe(result => {
+          if(result){
+            var layers = this.layersControl.overlays['HouseHolds']
+            layers.eachLayer(function(layer) {
+              if(layer._latlng.lat === result.houseHold.location.coordinates[1] && 
+                 layer._latlng.lng === result.houseHold.location.coordinates[0]){
+                layer.setStyle({fillColor: 'green', color: 'green'});
+              }
+            })
+          }
+
+        })
+        return
+      }
+
+      const dialogRef = this.dialog.open(ComplexDialog, {data: {selected: this.selected, activity: this.activity}, width: "80%"});
+      dialogRef.afterClosed().subscribe(result => {
+
+        if(result === undefined){
+          return
+        }
+        this.selected.houseHold = result
+        const dialogRef2 = this.dialog.open(HouseHoldDialog, {data: {selected: this.selected, activity: this.activity}, width: "80%"});
+
+        dialogRef2.afterClosed().subscribe(result =>{
+          if(result){
+            var layers = this.layersControl.overlays['HouseHolds']
+            layers.eachLayer(function(layer) {
+              /*
+              if(layer._latlng.lat === result.houseHold.location.coordinates[1] && 
+                 layer._latlng.lng === result.houseHold.location.coordinates[0]){
+                layer.setStyle({fillColor: 'green', color: 'green'});
+              }*/
+
+            })
+          }
+        })
+      })
     })
   }
 
@@ -101,7 +169,7 @@ export class CanvassComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getCanvassHouseholds()
+    this.getCanvassHouseHolds()
     this.getActivity()
   }
 

@@ -3,7 +3,7 @@
 <h3 mat-dialog-title fxLayoutAlign="center">{{fullAddress2}}</h3>
 <mat-dialog-content fxLayout="column" [@.disabled]="disableAnimation">
     <mat-accordion #accordion1="matAccordion">
-        <mat-expansion-panel *ngFor="let resident of houseHold.residents; let i = index" [disabled]='residentsResponded.includes(resident.personID)'>
+        <mat-expansion-panel *ngFor="let resident of houseHold.residents; let i = index" [disabled]='residentsContacted.includes(resident.personID)'>
           <mat-expansion-panel-header>
             <mat-panel-title>{{resident.name.firstName}} {{resident.name.middleName}} {{resident.name.lastName}} </mat-panel-title>
             
@@ -37,7 +37,7 @@
                 <button mat-raised-button color="primary" [disabled]="submittingResponse" fxFlex="100%" (click)="submitScriptResponse(resident, radioAnswers, textAnswers, houseHold._id, houseHold.residents.length);">Submit</button>
               </mat-grid-tile>
               <mat-grid-tile *ngFor="let nonResponse of nonResponseSet.nonResponses;">
-                <button mat-raised-button fxFlex="100%" color="accent" [disabled]="submittingResponse"(click)="submitNonResponse(resident, nonResponse.nonResponse, nonResponse.nonResponseType, houseHold._id, houseHold.residents.length)">{{nonResponse.nonResponse}}</button>
+                <button mat-raised-button fxFlex="100%" color="accent" [disabled]="submittingResponse"(click)="submitNonResponse(resident, nonResponse.nonResponse, nonResponse.nonResponseType, houseHold._id, houseHold.residents.length); accordion1.closeAll()">{{nonResponse.nonResponse}}</button>
               </mat-grid-tile>
             </mat-grid-list>     
           </section>
@@ -46,5 +46,6 @@
 
 </mat-dialog-content>
 <mat-dialog-actions align="end" >
-
+  <mat-progress-bar *ngIf='loading'></mat-progress-bar>
+  <mat-error *ngIf='displayErrorMsg'>{{errorMessage}}</mat-error>
 </mat-dialog-actions>

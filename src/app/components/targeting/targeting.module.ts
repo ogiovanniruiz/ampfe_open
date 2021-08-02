@@ -11,6 +11,7 @@ import { BlockgroupDialog } from './dialogs/blockgroup/blockgroupDialog';
 import { SearchDialog } from './dialogs/search/searchDialog';
 import { QueryBuilderModule } from 'angular2-query-builder';
 import { TargetCreatorDialog } from './dialogs/targetCreator/targetCreatorDialog';
+import { ClinicDialog } from './dialogs/clinic/clinicDialog';
 
 
 const routes: Routes = [
@@ -18,8 +19,8 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  entryComponents: [ TargetSummaryDialog, PolygonDialog, BlockgroupDialog, SearchDialog, TargetCreatorDialog],
-  declarations: [TargetingComponent,  TargetSummaryDialog, PolygonDialog, BlockgroupDialog, SearchDialog, TargetCreatorDialog],
+  entryComponents: [ TargetSummaryDialog, PolygonDialog, BlockgroupDialog, SearchDialog, TargetCreatorDialog, ClinicDialog],
+  declarations: [TargetingComponent,  TargetSummaryDialog, PolygonDialog, BlockgroupDialog, SearchDialog, TargetCreatorDialog, ClinicDialog],
   imports: [
     QueryBuilderModule,
     CommonModule,

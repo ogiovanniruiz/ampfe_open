@@ -189,10 +189,10 @@ export class ConversationComponent implements OnInit {
           var answer = div.viewModel
 
           if(answer && questions.includes(question)){
-            var responses = answer.split(",")[0]
+            var response = answer.split(",")[0]
             var idType = answer.split(',')[1]
-            var response = {question: question, responses: responses, idType: idType}
-            idResponses.push(response)
+            var idResponse = {question: question, response: response, idType: idType}
+            idResponses.push(idResponse)
           }
         });
 
@@ -201,7 +201,7 @@ export class ConversationComponent implements OnInit {
           var answer = div.nativeElement.value
 
           if(answer && questions.includes(question)){
-            var response = {question: question, responses: answer, idType: "NONE"}
+            var response = {question: question, response: answer, idType: "NONE"}
             idResponses.push(response)
           }
         });

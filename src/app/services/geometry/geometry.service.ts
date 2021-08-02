@@ -76,5 +76,9 @@ export class GeometryService {
     return this.http.post(this.API_URL + '/api/getCityDistrictBounderies', {bounds});
   }
 
+  getDistrictBounderies(bounds, type){
+    return this.http.post(this.API_URL + '/api/getDistrictBounderies', {bounds, type})
+  }
+
 
 }

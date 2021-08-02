@@ -4,17 +4,18 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 import { ActivityService } from '../../../../../services/activity/activity.service';
-import {PhonebankService} from '../../../../../services/phonebank/phonebank.service'
+import {CanvassService} from '../../../../../services/canvass/canvass.service'
 import {OrganizationService} from '../../../../../services/organization/organization.service'
 import {User} from '../../../../../models/users/user.model'
-import {HotlineService} from '../../../../../services/hotline/hotline.service'
+import {Activity} from '../../../../../models/activities/activity.model'
+
 
 
 @Component({
-    templateUrl: './hotlineReportDialog.html',
+    templateUrl: './canvassReportDialog.html',
   })
 
-  export class HotlineReportsDialog implements OnInit {
+  export class CanvassReportsDialog implements OnInit {
 
     pageEvent: PageEvent;
 
@@ -34,18 +35,29 @@ import {HotlineService} from '../../../../../services/hotline/hotline.service'
     totalHouseHolds: number = 0
     totalResidents: number = 0
 
+    downloading: boolean = false;
+
     @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
     @ViewChild('reportPickerStart', {static: false}) reportPickerStart: ElementRef;
     @ViewChild('reportPickerEnd', {static: false}) reportPickerEnd: ElementRef;
 
     constructor(public activityService: ActivityService,
                 @Inject(MAT_DIALOG_DATA) public data: any,
-                public phonebankService: PhonebankService,
-                public orgService: OrganizationService,
-                public hotlineService: HotlineService
+                public canvassService: CanvassService,
+                public orgService: OrganizationService
         ) { 
             this.activityID = data.activity._id
+
         }
+    getActivitySize(){
+      this.activityService.getActivitySize(this.activityID).subscribe(
+        (size: Object)=>{
+          console.log(size)
+          this.totalHouseHolds = size['totalHouseHolds']
+          this.getOrgUsers(); 
+        }
+      )
+    }
 
     getActivityReport(){
       var reportPickerStart = '';
@@ -54,8 +66,9 @@ import {HotlineService} from '../../../../../services/hotline/hotline.service'
       if (this.reportPickerEnd){var reportPickerEnd = this.reportPickerEnd['startAt'] ? new Date(this.reportPickerEnd['startAt']).toISOString().slice(0, 10) : ''}
 
       this.completed = true;
-      this.phonebankService.getPhonebankReport(this.activityID, reportPickerStart, reportPickerEnd).subscribe(
+      this.canvassService.getCanvassReport(this.activityID, reportPickerStart, reportPickerEnd).subscribe(
           async (report: unknown[]) =>{
+            console.log(report)
             this.members = [];
             this.sortedMembers = [];
             for(var i = 0; i < report['activities'].length; i++){
@@ -67,7 +80,11 @@ import {HotlineService} from '../../../../../services/hotline/hotline.service'
                     for await (let questions of report['script'].questions) {
                         if (questions.responses.length) {
                             for await (let response of questions.responses) {
-                                report['activities'][i]['scripts'][questions.question + ' - ' + response.response] = report['activities'][i][response.idType];
+                                for (let IDS of report['activities'][i][response.idType]) {
+                                    if(IDS[questions._id] !== undefined){
+                                        report['activities'][i]['scripts'][questions.question + ' - ' + response.response] = IDS[questions._id];
+                                    }
+                                }
                             }
                         }
                     }
@@ -78,14 +95,25 @@ import {HotlineService} from '../../../../../services/hotline/hotline.service'
                 report['activities'][i]['scripts']['DNC'] = report['activities'][i]['DNC'];
                 report['activities'][i]['scripts']['NonResponse'] = report['activities'][i]['NONRESPONSE'];
 
-                await this.members.push({
+                //var avgLengthOfCall = 0
+                //if(report['activities'][i]['avgCallLength']){
+                //  avgLengthOfCall = report['activities'][i]['avgCallLength']
+                //}
+
+                if(this.userList[report['activities'][i]['_id']]){
+                  console.log("This")
+                  await this.members.push({
                     'User Name': this.userList[report['activities'][i]['_id']],
                     //'Number Calls Attempted': report['activities'][i]['called'],
-                    //'Average Call Length(sec)': report['activities'][i]['avgCallLength'],
+                    //'Number Calls Connected': report['activities'][i]['successful'],
+                    //'Average Call Length(sec)': avgLengthOfCall,
                     ...report['activities'][i]['scripts'],
-                });
+                  });
+
+                }
 
                 this.sortedMembers = this.members.slice();
+                console.log(this.sortedMembers)
                 this.totalSize = this.members.length;
                 this.iterator();
             }
@@ -101,15 +129,17 @@ import {HotlineService} from '../../../../../services/hotline/hotline.service'
       var orgID = sessionStorage.getItem('orgID')
 
       this.orgService.getOrgUsers(orgID).subscribe(
-        (users: User[]) =>
-          {
+        (users: User[]) =>{
+          console.log(users)
             for(var i = 0; i < users.length; i++){
               this.userList[users[i]._id] = users[i].name.firstName + " " + users[i].name.lastName
             }
-
+            this.getActivityReport();
           },
         error =>{
           console.log(error)
+          //this.displayErrorMsg = true;
+          //this.errorMessage = 'Failed to get user list due to server error.'
         }
       )
 
@@ -152,42 +182,58 @@ import {HotlineService} from '../../../../../services/hotline/hotline.service'
         return 0;
     }
 
-    downloadHotlineContactHistory(){
-      this.hotlineService.downloadHotlineContactHistory(this.activityID).subscribe(
-        (result: unknown[]) =>{
+    ngOnInit(){
+      this.getActivitySize()
+    }
 
-          let binaryData = ['firstName, lastName, phonenumber, email, address, notes, campaignID, orgID, userID, date\n'];
+    downloadCanvassContactHistory(){
+      this.downloading = true;
+      this.canvassService.downloadCanvassContactHistory(this.activityID).subscribe(
+        (result: unknown[])=>{
+
+          let binaryData = ['residentPhonenumber, userPhonenumber, userName, date,responseType, responses\n'];
 
           for(var i = 0; i < result.length; i++){
-            binaryData.push(result[i]['name']['firstName'] + ',')
-            binaryData.push(result[i]['name']['lastName'] + ',')
-            binaryData.push(result[i]['residentPhoneNum'] + ',')
-            binaryData.push(result[i]['email']+ ',')
-            binaryData.push(result[i]['address']+ ',')
-            binaryData.push(result[i]['notes']+ ',')
-            binaryData.push(result[i]['campaignID']+ ',')
-            binaryData.push(result[i]['orgID']+ ',')
-            binaryData.push(result[i]['contactUserID']+ ',')
-            binaryData.push(result[i]['date']+ '\n')
+              binaryData.push(result[i]['residentPhonenum'] + ',')
+              binaryData.push(result[i]['userPhonenum']+ ',')
+              binaryData.push(result[i]['userName']['fullName'] + ',')
+              var date = result[i]['callInitTime'].substring(0, 10);
+              binaryData.push(date + ',')
+              if(result[i]['scriptResponse']){
+                binaryData.push('scriptResponse' + ',')
+                for(var k = 0; k < result[i]['scriptResponse']['questionResponses'].length; k++){
+                  binaryData.push(result[i]['scriptResponse']['questionResponses'][k]['question']+ ":" +result[i]['scriptResponse']['questionResponses'][k]['response'] + ',')
+                }
+                binaryData.push('\n')
+              }else if (result[i]['nonResponses']){
+                binaryData.push('nonResponse' + ',')
+                for(var k = 0; k < result[i]['nonResponses'].length; k++){
+                  binaryData.push(result[i]['nonResponses'][k]['nonResponse']+ ',')
+                }
+                binaryData.push('\n')
+              }else{
+                binaryData.push('none' + ',')
+                binaryData.push('none' + '\n')
+              }
           }
+
+          this.downloading = false;
 
           let downloadLink = document.createElement('a');
   
           let blob = new Blob(binaryData, {type: 'blob'});
           downloadLink.href = window.URL.createObjectURL(blob);
-          downloadLink.setAttribute('download', 'HotlineContactHistory.csv');
+          downloadLink.setAttribute('download', 'PhonecontactHistory.csv');
           document.body.appendChild(downloadLink);
           downloadLink.click();
-        },
+
+        
+
+        }, 
         error =>{
           console.log(error)
         }
       )
-    }
-
-    ngOnInit(){
-      this.getOrgUsers();
-      this.getActivityReport();
     }
   }
 

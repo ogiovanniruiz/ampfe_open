@@ -14,6 +14,10 @@ import {GeometryService} from '../../services/geometry/geometry.service';
 import * as blockgroupIDSJSON from '../../../assets/blockgroupIDS.json';
 import * as precinctIDSJSON from '../../../assets/precinctIDS.json';
 
+import {AssetService} from '../../services/asset/asset.service'
+
+import {ClinicDialog} from './dialogs/clinic/clinicDialog'
+
 declare global {
   interface Window { GlobalSelected: any; }
 }
@@ -30,6 +34,7 @@ export class TargetingComponent implements OnInit {
               public activityService: ActivityService,
               public campaignService: CampaignService,
               public geoService: GeometryService,
+              public assetService: AssetService
   ) { }
 
   options = {
@@ -61,6 +66,10 @@ export class TargetingComponent implements OnInit {
   polys = [];
   polygons: L.FeatureGroup = L.featureGroup();
   loadPolys: boolean = false;
+
+  clinics: L.FeatureGroup = L.featureGroup()
+
+  clinicArray = []
 
   campaignBlockgroupIDS = [];
   blockgroupIDS = [];
@@ -111,6 +120,7 @@ export class TargetingComponent implements OnInit {
 
     this.layersControl.overlays['Blockgroups'] = L.featureGroup();
     this.layersControl.overlays['Precincts'] = L.featureGroup();
+    this.layersControl.overlays['Clinics'] = L.featureGroup();
 
     this.layersControl.overlays['Precinct Propensity'] = L.featureGroup();
   }
@@ -308,7 +318,6 @@ export class TargetingComponent implements OnInit {
         let layerBlockgroup = await L.geoJSON(targets, {pane: 'bg', onEachFeature: onEachFeature.bind(this)});
 
         function onEachFeature(feature, layerBG) {
-          //console.log(feature.properties.demographics.percentFullVax)
           var tractData = 'GeoID: ' + feature.properties.geoid + '<br>' + 
                           '% Full Vax: ' + feature.properties.demographics.percentFullVax;
 
@@ -361,7 +370,6 @@ export class TargetingComponent implements OnInit {
         } else if (feature.properties.registered.some(registered => registered.campaignID === campaignID) && feature.properties.registered.some(registered => registered.orgID === orgID)) {
           layerPrec.bindTooltip(tractData).setStyle({color: 'red'}).on('mouseup', this.selectBlock, this).on('mousedown', this.getSelected, feature);
 
-          console.log(feature.properties.precinctID)
         } else if (feature.properties.registered.some(registered => registered.campaignID === campaignID)) {
           layerPrec.bindTooltip(tractData).setStyle({fillColor: '#862121', color: '#862121'}).on('mouseup', this.selectBlock, this).on('mousedown', this.getSelected, feature);
         }
@@ -387,11 +395,6 @@ export class TargetingComponent implements OnInit {
         this.layersControl.overlays['Precincts'].removeLayer(this.layersControl.overlays['Precincts'].getLayers()[1]);
         layerPrecinct.addTo(this.layersControl.overlays['Precincts']);
 
-
-
-
-        //////////////////////////////////////////
-
         let layerPrecinctProp = await L.geoJSON(targets, {pane: 'prec', onEachFeature: onEachPropFeature.bind(this)});
 
         function onEachPropFeature(feature, layerPrec) {
@@ -410,8 +413,6 @@ export class TargetingComponent implements OnInit {
 
           }
         }
-
-        
 
         this.layersControl.overlays['Precinct Propensity'].removeLayer(this.layersControl.overlays['Precinct Propensity'].getLayers()[0]);
         layerPrecinctProp.addTo(this.layersControl.overlays['Precinct Propensity'])
@@ -639,8 +640,39 @@ export class TargetingComponent implements OnInit {
     });
   }
 
+  getClinics(){
+
+    var icon = L.icon({
+      iconUrl: '../assets/clinic.png',    
+      iconSize:     [30, 30], // size of the icon
+      shadowSize:   [50, 64], // size of the shadow
+      iconAnchor:   [22, 22], // point of the icon which will correspond to marker's location
+      shadowAnchor: [4, 62],  // the same for the shadow
+      popupAnchor:  [-3, -26] // point from which the popup should open relative to the iconAnchor
+    });
+    this.assetService.getClinics().subscribe((results: any[]) =>{
+      for( var i = 0; i < results.length; i ++){
+        var tooltip = "Provider: " + results[i]['provider'] + '<br>' + "Address: " + results[i]['address']
+        var marker = L.marker([parseFloat(results[i]['_id']['location'].coordinates[1]),parseFloat(results[i]['_id']['location'].coordinates[0])] , {icon: icon})
+
+        marker.bindTooltip(tooltip).on('mouseup', this.openClinicDialog, this).on('mousedown', this.getSelected, results[i]);
+        this.clinics.addLayer(marker)
+        
+      }
+      this.layersControl.overlays['Clinics'] = this.clinics  
+    })
+  
+  }
+
+  openClinicDialog(){
+    this.zone.run(() => {
+      this.dialog.open(ClinicDialog, {data: this.selected, width: "50%"});
+    })
+  }
+
   ngOnInit(): void {
     this.getCampaign();
+    this.getClinics();
   }
 
 }

@@ -73,6 +73,15 @@ import {Questions} from '../../../../models/questions'
         return
       }
 
+      console.log(this.selectedCOI)
+
+      this.selectedCOI.properties.name = coiName
+
+      this.selectedCOI.properties.questions = [{question: this.questions[1].english + '/' + this.questions[1].spanish, answer: q1},
+                                               {question: this.questions[2].english + '/' + this.questions[2].spanish, answer: q2},
+                                               {question: this.questions[3].english + '/' + this.questions[3].spanish, answer: q3}]
+
+                                               /*
       var properties = {
           name: coiName,
           orgID: orgID,
@@ -80,14 +89,14 @@ import {Questions} from '../../../../models/questions'
           questions: [{question: this.questions[1].english + '/' + this.questions[1].spanish, answer: q1},
           {question: this.questions[2].english + '/' + this.questions[2].spanish, answer: q2},
           {question: this.questions[3].english + '/' + this.questions[3].spanish, answer: q3}]
-        }
+        }*/
 
       if (this.shepherdService.isActive) {
-        this.dialogRef.close(properties);
+        this.dialogRef.close(this.selectedCOI.properties);
         return true;
       }
 
-      this.assetService.editCOI(this.selectedCOI._id, properties).subscribe(
+      this.assetService.editCOI(this.selectedCOI._id, this.selectedCOI.properties).subscribe(
         (result: unknown) =>{
           var dialogCloseStatus = {selectedCOI: result, delete: false}
           this.dialogRef.close(dialogCloseStatus);

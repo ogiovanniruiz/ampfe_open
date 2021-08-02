@@ -41,7 +41,6 @@ import {GeometryService} from '../../../../services/geometry/geometry.service'
 
       for (var locked of this.data.properties.locked) {
         if (locked.campaignID === campaignID) {
-          console.log(locked)
           await orgIDs.push(locked.orgID);
           this.locked = true;
           this.finished = locked.finished

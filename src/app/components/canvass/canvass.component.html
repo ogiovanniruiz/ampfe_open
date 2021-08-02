@@ -2,6 +2,7 @@
     <div style="height:calc(100vh - 65px)" leaflet
     [leafletOptions]="options" 
     (leafletMapReady)="onMapReady($event)"
+    [leafletLayersControl]="layersControl" 
     >
     <div fxFlex="20%" fxLayoutAlign="center center" fxLayout="column" fxLayoutGap="2%" style="z-index: 1000">
         <mat-card fxLayoutAlign="center center" fxLayout="column"  fxLayoutGap="10%" > 

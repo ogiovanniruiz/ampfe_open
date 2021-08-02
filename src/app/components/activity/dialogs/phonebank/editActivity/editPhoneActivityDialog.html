@@ -25,7 +25,7 @@
             </mat-select>
         </mat-form-field>
 
-        <button mat-raised-button color="warn" (click)="resetActivity()" fxFlexAlign="center">Reset Activity</button>
+        <button mat-raised-button color="warn" [disabled]='resetting' (click)="resetActivity()" fxFlexAlign="center">Reset Activity</button>
         <p *ngIf='activity'>Passes: {{activity.passes}}</p>
         <mat-progress-bar mode='indeterminate' *ngIf='resetting'></mat-progress-bar>
 

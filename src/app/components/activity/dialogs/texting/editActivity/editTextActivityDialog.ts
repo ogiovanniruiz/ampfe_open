@@ -65,6 +65,8 @@ export class EditTextActivityDialog implements OnInit{
 
   userURL: string;
 
+  resetting = false;
+
   @ViewChild('activityName', {static: true}) activityName: ElementRef;
   @ViewChild('description' , {static: true}) description: ElementRef;
 
@@ -93,11 +95,13 @@ export class EditTextActivityDialog implements OnInit{
 
   resetActivity(){
     var activityID = this.data.activity._id
+    this.resetting = true
 
     if (confirm('Are you sure you want reset this Activity?')) {
       this.activityService.resetActivity(activityID).subscribe(
         (activity: Activity) =>{
           this.activity = activity
+          this.resetting = false;
         }
       )
     }
@@ -154,8 +158,7 @@ export class EditTextActivityDialog implements OnInit{
     this.campaignOrgsUpdate = [this.activity['orgIDs'][0]].concat(this.activityAllOrgs['ngControl'].viewModel);
     this.usersUpdate = [this.activity['userIDs'][0]].concat(this.activityAllUsers['ngControl'].viewModel);
 
-    console.log(this.senderNameFlag)
-    
+
     this.savingEdits = true
 
     var edits: unknown = {name: this.activityName.nativeElement.value,
@@ -243,7 +246,6 @@ export class EditTextActivityDialog implements OnInit{
   close(){this.dialogRef.close()}
 
   prefillActivtyData(){
-    console.log(this.activity)
 
     this.activityName.nativeElement.value = this.activity['name']
     if (this.activity['description']) this.description.nativeElement.value = this.activity['description']

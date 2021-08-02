@@ -92,7 +92,8 @@
                                 <h2 matLine> {{script.title}}</h2>
                                 <button mat-button color="primary" (click)="editScript(script)">Edit</button>
                                 <button mat-button color="accent" (click)="archiveScript(script)">Archive</button>
-                                <button mat-button color="warn" (click)="removeScript(script)">Delete</button>
+                                <!--
+                                <button mat-button color="warn" (click)="removeScript(script)">Delete</button>-->
                                 <mat-divider></mat-divider>
                             </mat-list-item>
                             <mat-list-item *ngIf="orgScripts.length === 0">

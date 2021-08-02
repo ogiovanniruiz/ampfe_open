@@ -69,6 +69,12 @@ export class AssetsComponent implements OnInit {
   cois: L.FeatureGroup = L.featureGroup();
   counties: L.FeatureGroup = L.featureGroup();
   cities: L.FeatureGroup = L.featureGroup();
+  assembly: L.FeatureGroup = L.featureGroup()
+
+  senate: L.FeatureGroup = L.featureGroup()
+
+  congressional: L.FeatureGroup = L.featureGroup()
+
   jsonPolygonCreated: any;
   orgLevel: string;
 
@@ -80,6 +86,10 @@ export class AssetsComponent implements OnInit {
   loadingCities: boolean = false;
   loadCities: boolean = false;
   editMode: boolean = false;
+
+  loadDistricts: boolean = false;
+  loadingDistricts: boolean = false;
+  loadingDistrictType: string;
 
   editGeometryMode: boolean = false;
   editDetailsMode: boolean = false;
@@ -155,7 +165,8 @@ export class AssetsComponent implements OnInit {
       //this.map.dragging.disable();
       this.layerLoaded = false;
       for(var i = 0; i < event.layers.length; i++){
-        if(!event.layers[i].feature.properties.districtType){
+
+        if(event.layers[i].feature.properties.districtType != "COUNTY"){
           polygonList.push(event.layers[i])
 
           //console.log (event.layers[i].feature.properties.demographics)
@@ -213,6 +224,9 @@ export class AssetsComponent implements OnInit {
     this.layersControl.overlays['Blockgroups'] = L.featureGroup();
     this.layersControl.overlays['Cities'] = L.featureGroup();
     this.layersControl.overlays['Counties'] = L.featureGroup();
+    this.layersControl.overlays['ASSEMBLY'] = L.featureGroup();
+    this.layersControl.overlays['SENATE'] = L.featureGroup();
+    this.layersControl.overlays['CONGRESSIONAL'] = L.featureGroup();
     this.getCountyDistrictBounderies()
   }
 
@@ -230,6 +244,14 @@ export class AssetsComponent implements OnInit {
       if(this.zoom >= this.loadingZoomLevel) {
         this.bounds = this.map.getBounds();
         this.getCityDistrictBounderies(this.bounds);
+      }
+    }
+    if(e.name === 'ASSEMBLY' || e.name === 'CONGRESSIONAL' || e.name === 'SENATE' ){
+      this.loadingDistrictType = e.name
+      this.loadDistricts = true;
+      if(this.zoom >= this.loadingZoomLevel - 3){
+        this.bounds = this.map.getBounds();
+        this.getDistrictBounderies(this.bounds, e.name)
       }
     }
   }
@@ -254,6 +276,10 @@ export class AssetsComponent implements OnInit {
     }
     if(e.name === 'Cities'){
       this.loadCities = false;
+    }
+
+    if(e.name === 'ASSEMBLY' || e.name === 'CONGRESSIONAL' || e.name === 'SENATE' ){
+      this.loadDistricts = false;
     }
   }
 
@@ -306,6 +332,11 @@ export class AssetsComponent implements OnInit {
     if (e.target._zoom >= (this.loadingZoomLevel -1)){
       this.bounds = this.map.getBounds();
       this.getCityDistrictBounderies(this.bounds);
+    }
+
+    if(this.loadDistricts && e.target._zoom >= (this.loadingZoomLevel -3)){
+      this.bounds = this.map.getBounds();
+      this.getDistrictBounderies(this.bounds, this.loadingDistrictType)
     }
   }
 
@@ -569,6 +600,29 @@ export class AssetsComponent implements OnInit {
 
   }
 
+  getDistrictBounderies(bounds, type){
+    this.assembly.clearLayers();
+    this.senate.clearLayers();
+    this.congressional.clearLayers();
+
+    this.layersControl.overlays[type].clearLayers();
+
+    //if(this.loadCongressional || this.loadAssembly || this.loadSenate){
+      this.geoService.getDistrictBounderies(bounds, type).subscribe((result: any)=>{
+        let layer = L.geoJSON(result, {onEachFeature: onEachFeature.bind(this)});
+
+        function onEachFeature(feature, layerPoly){
+
+          var toolTip = type + " " + feature.properties.name
+          layerPoly.bindTooltip(toolTip).setStyle({color: 'blue', opacity: 0.5, fillOpacity: 0.1});
+        }
+        this.assembly.addLayer(layer)
+        layer.addTo(this.layersControl.overlays[type])
+        console.log(result)
+      })
+    //}
+  }
+
   getCountyDistrictBounderies(){
     this.counties.clearLayers();
     this.layersControl.overlays['Counties'].clearLayers();
@@ -604,16 +658,18 @@ export class AssetsComponent implements OnInit {
         if(coi){
           this.shapeCreated = false;
 
-
-
+          if (coi === 'cancel'){
+            this.shepherdService.back();
+            return;
+          }
+          
+          
           if (this.shepherdService.isActive){
-            if (coi === 'cancel'){
-              this.shepherdService.back();
-              return;
-            }
+
 
             this.shepherdService.next();
 
+            /*
             this.map.eachLayer(function(layer: L.Layer){
               if(layer.getTooltip()){
                 if(layer.getTooltip()['_content'] === 'Click to create new community of interest.' ||
@@ -623,9 +679,9 @@ export class AssetsComponent implements OnInit {
                   layer.remove();
                 }
               }
-            });
+            });*/
 
-            return;
+            //return;
           }
 
           if(coi === 'cancel'){
@@ -883,16 +939,33 @@ export class AssetsComponent implements OnInit {
 
         var folder = zip.folder(this.cois.getLayers()[i]['feature'].properties.name);
 
+        if(this.cois.getLayers()[i]['feature'].properties.user){
+          this.cois.toGeoJSON()['features'][i].properties.userName = this.cois.getLayers()[i]['feature'].properties.user.name.fullName
+        }
+
+
+
         var geoJSON = {features: [this.cois.toGeoJSON()['features'][i]], type: "FeatureCollection"}
 
-        folder = shpwrite.zip(geoJSON, options, folder)
+
 
         var COI_Details_string = "";
 
+        if(this.cois.getLayers()[i]['feature'].properties.user){
+          COI_Details_string += "User Name: " + this.cois.getLayers()[i]['feature'].properties.user.name.fullName + '\n'
+        }
+
+
         for(var j = 0; j < this.cois.getLayers()[i]['feature'].properties.questions.length; j++){
+
+          this.cois.toGeoJSON()['features'][i].properties[this.cois.getLayers()[i]['feature'].properties.questions[j].question] = this.cois.getLayers()[i]['feature'].properties.questions[j].answer
+
+          
           COI_Details_string += "Question: " + this.cois.getLayers()[i]['feature'].properties.questions[j].question + '\n' +
               "Answer: " + this.cois.getLayers()[i]['feature'].properties.questions[j].answer + '\n'
         }
+
+        folder = shpwrite.zip(geoJSON, options, folder)
 
         folder.file("COI_Details.txt", COI_Details_string);
 
@@ -907,6 +980,7 @@ export class AssetsComponent implements OnInit {
                            "% Black Ethinicity: " + this.cois.getLayers()[i]['feature'].properties.demographics.percentBlack + "\n" +
                            "% White Ethnicity: " + this.cois.getLayers()[i]['feature'].properties.demographics.percentWhite + "\n" +
                            "% Pacific Island Ethnicity: " + this.cois.getLayers()[i]['feature'].properties.demographics.percentPI + "\n" +
+                           "% Hispanic Ethnicity: " + this.cois.getLayers()[i]['feature'].properties.demographics.percentHispanic + "\n" +
                            "% Male: " + this.cois.getLayers()[i]['feature'].properties.demographics.percentMale + "\n" +
                            "% Female: " + this.cois.getLayers()[i]['feature'].properties.demographics.percentFemale + "\n"
 

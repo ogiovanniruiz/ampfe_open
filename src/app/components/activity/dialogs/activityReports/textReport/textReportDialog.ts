@@ -178,14 +178,20 @@ import {Activity} from '../../../../../models/activities/activity.model'
               if(result[i]['scriptResponse']){
                 binaryData.push('scriptResponse' + ',')
                 for(var k = 0; k < result[i]['scriptResponse']['questionResponses'].length; k++){
-                  binaryData.push(result[i]['scriptResponse']['questionResponses'][k]['question']+ ":" +result[i]['scriptResponse']['questionResponses'][k]['response'] + ',')
+                  if(result[i]['scriptResponse']['questionResponses'][k]['response']){
+                    binaryData.push(result[i]['scriptResponse']['questionResponses'][k]['question']+ ":" +result[i]['scriptResponse']['questionResponses'][k]['response'] + ',')
+                  }else{
+                    binaryData.push(result[i]['scriptResponse']['questionResponses'][k]['question']+ ":" +result[i]['scriptResponse']['questionResponses'][k]['idType'] + ',')
+
+                  }
+                  
                 }
                 binaryData.push('\n')
-              }else if (result[i]['nonResponses']){
+              }else if (result[i]['nonResponse']){
                 binaryData.push('nonResponse' + ',')
-                for(var k = 0; k < result[i]['nonResponses'].length; k++){
-                  binaryData.push(result[i]['nonResponses'][k]['nonResponse']+ ',')
-                }
+                //for(var k = 0; k < result[i]['nonResponses'].length; k++){
+                  binaryData.push(result[i]['nonResponse']['nonResponse'])
+                //}
                 binaryData.push('\n')
               }else{
                 binaryData.push('none' + ',')

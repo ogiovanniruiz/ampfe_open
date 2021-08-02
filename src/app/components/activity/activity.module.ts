@@ -14,7 +14,7 @@ import { PhonebankReportsDialog } from './dialogs/activityReports/phonebankRepor
 import { PetitionReportsDialog } from './dialogs/activityReports/petitionReport/petitionReportDialog';
 import { CreateCanvassActivityDialog} from './dialogs/canvass/createCanvass/createCanvassActivityDialog'
 import {EditCanvassActivityDialog} from './dialogs/canvass/editCanvass/editCanvassActivityDialog'
-import {HotlineReportsDialog} from './dialogs/activityReports/hotlineReport/hotlineReportDialog'
+import {CanvassReportsDialog} from './dialogs/activityReports/canvassReport/canvassReportDialog'
 
 
 
@@ -23,8 +23,8 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [HotlineReportsDialog, CreateCanvassActivityDialog, EditCanvassActivityDialog,PetitionReportsDialog, PhonebankReportsDialog, TextReportsDialog, ActivityComponent, CreateTextActivityDialog, EditTextActivityDialog, CreatePhoneActivityDialog, EditPhoneActivityDialog, CreatePetitionActivityDialog, EditPetitionActivityDialog],
-  entryComponents: [HotlineReportsDialog,CreateCanvassActivityDialog, EditCanvassActivityDialog, PetitionReportsDialog, PhonebankReportsDialog, TextReportsDialog, CreateTextActivityDialog, EditTextActivityDialog, CreatePhoneActivityDialog, EditPhoneActivityDialog, CreatePetitionActivityDialog, EditPetitionActivityDialog],
+  declarations: [CanvassReportsDialog, CreateCanvassActivityDialog, EditCanvassActivityDialog,PetitionReportsDialog, PhonebankReportsDialog, TextReportsDialog, ActivityComponent, CreateTextActivityDialog, EditTextActivityDialog, CreatePhoneActivityDialog, EditPhoneActivityDialog, CreatePetitionActivityDialog, EditPetitionActivityDialog],
+  entryComponents: [CanvassReportsDialog,CreateCanvassActivityDialog, EditCanvassActivityDialog, PetitionReportsDialog, PhonebankReportsDialog, TextReportsDialog, CreateTextActivityDialog, EditTextActivityDialog, CreatePhoneActivityDialog, EditPhoneActivityDialog, CreatePetitionActivityDialog, EditPetitionActivityDialog],
   imports: [
     CommonModule,
     MaterialModule,

@@ -13,12 +13,28 @@ export class CanvassService {
   private API_URL = environment.API_URL;
   constructor(private http: HttpClient, private storage: StorageMap) {}
 
-  getCanvassHouseholds(activityID: string){
+  getCanvassHouseHolds(activityID: string){
     return this.http.post(this.API_URL + '/api/getCanvassHouseholds', {activityID})
   }
 
   submitScriptResponse(activity, idResponses, personID, user, orgID, houseHoldID, hhSize){
     return this.http.post(this.API_URL + '/api/submitCanvassScriptResponse', {activity, idResponses, personID, user, orgID, houseHoldID, hhSize})
+  }
+
+  submitNonResponse(activity, nonResponse: string, nonResponseType: string, personID: string, user: object, orgID: string, houseHoldID: unknown, hhSize: number, nonResponseSetID: string){
+    return this.http.post(this.API_URL + '/api/submitCanvassNonResponse', {activity, nonResponse, nonResponseType, personID, user, orgID, houseHoldID, hhSize, nonResponseSetID})
+  }
+
+  getCanvassHouseHold(activityID: string, houseHoldID: unknown){
+    return this.http.post(this.API_URL + '/api/getCanvassHouseHold', {activityID, houseHoldID})
+  }
+
+  getCanvassReport(activityID, reportPickerStart, reportPickerEnd){
+    return this.http.post(this.API_URL + '/api/getCanvassReport', {activityID, reportPickerEnd, reportPickerStart})
+  }
+
+  downloadCanvassContactHistory(activityID){
+    return this.http.post(this.API_URL + '/api/downloadCanvassContactHistory', {activityID})
   }
 
   /////////////////////////////////////////

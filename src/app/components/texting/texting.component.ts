@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild, ElementRef, ViewChildren, QueryList, AfterViewInit} from '@angular/core';
 import { ActivityService} from '../../services/activity/activity.service'
+import { Component, OnInit, ViewChild, ElementRef, ViewChildren, QueryList, AfterViewInit} from '@angular/core';
 import {TextingService} from '../../services/texting/texting.service'
 import {OrganizationService} from '../../services/organization/organization.service'
 
@@ -299,37 +299,14 @@ export class TextingComponent implements OnInit {
       idBy: this.activity.idByHousehold
     }
 
-    console.log(resident)
-
     this.textingService.sendInitText(resident, houseHoldRecord, tbContactRecord).subscribe(
       async (textContactHistory: TextContactRecord) =>{
-        console.log(textContactHistory)
         this.loadHouseHolds()
 
-        /*
-        for (var i = 0; i < this.sentHouseHolds.length; i++){
-          if(this.sentHouseHolds[i]['indexNum'] === indexNum){
-            this.sentHouseHolds[i]['initTextSent'] = true;
-            this.sentHouseHolds[i]['numTextSent'] = await (this.sentHouseHolds[i]['numTextSent'] + 1);
-            break;
-          }
-        }
-
-        for (var i = 0; i < this.houseHolds.length; i++){
-          if(this.houseHolds[i]['indexNum'] === indexNum){
-            this.houseHolds[i]['initTextSent'] = true;
-            this.houseHolds[i]['numTextSent'] = await (this.houseHolds[i]['numTextSent'] + 1);
-            await this.sentHouseHolds.push(this.houseHolds[i]);
-            await this.houseHolds.splice(i, 1);
-            break;
-          }
-        }*/
-
         if(!this.residentsSent.includes(textContactHistory.personID)){
-          await this.residentsSent.push(textContactHistory.personID);
+          this.residentsSent.push(textContactHistory.personID);
         }
 
-        //await this.loadHouseHolds(this.houseHolds, this.sentHouseHolds);
         this.sendingText = false;
       },
       error =>{

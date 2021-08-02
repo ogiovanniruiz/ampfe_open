@@ -15,7 +15,7 @@ import { ReportService } from '../../services/report/report.service';
 import { TextReportsDialog } from './dialogs/activityReports/textReport/textReportDialog';
 import { PhonebankReportsDialog } from './dialogs/activityReports/phonebankReport/phonebankReportDialog';
 import { PetitionReportsDialog } from './dialogs/activityReports/petitionReport/petitionReportDialog';
-import { HotlineReportsDialog } from './dialogs/activityReports/hotlineReport/hotlineReportDialog';
+import { CanvassReportsDialog } from './dialogs/activityReports/canvassReport/canvassReportDialog';
 import { environment } from '../../../environments/environment';
 import { CompileShallowModuleMetadata } from '@angular/compiler';
 
@@ -141,7 +141,7 @@ export class ActivityComponent implements OnInit {
     }
 
     if(this.activityType === 'Canvass'){
-      const dialogRef = this.dialog.open(HotlineReportsDialog,  { data: {activity}});
+      const dialogRef = this.dialog.open(CanvassReportsDialog,  { data: {activity}});
       dialogRef.afterClosed().subscribe(result => {this.getActivities()});
     }
   }

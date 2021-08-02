@@ -40,6 +40,7 @@
   <mat-progress-bar mode="indeterminate" *ngIf="gettingEstimate"></mat-progress-bar>
 
   <button fxLayout="row" fxLayoutGap="2%" (click)="getEstimate()">
+    <p>Get Estimate:</p>
     <section fxLayout="row"># HouseHolds: <p *ngIf="estimate.totalHouseHolds> 499999"> > </p> {{estimate.totalHouseHolds}}</section>
     <section fxLayout="row"># Residents: <p *ngIf="estimate.totalResidents> 499999"> > </p> {{estimate.totalResidents}}</section>
   </button>

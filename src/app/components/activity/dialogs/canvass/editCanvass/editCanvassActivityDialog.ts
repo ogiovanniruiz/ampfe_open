@@ -118,7 +118,7 @@ export class EditCanvassActivityDialog implements OnInit{
   deleteActivity(){
       if(confirm("Are you sure you want to delete this activity?")){
           var _id: string = this.activity['_id']
-          this.activityService.deleteActivity(_id, 'Hotline').subscribe(
+          this.activityService.deleteActivity(_id, 'Canvass').subscribe(
               (result: unknown)=>{
                   this.dialogRef.close(result)
               },
