@@ -65,6 +65,8 @@ export class AssetsComponent implements OnInit {
   center;
   campaignBoundary;
 
+  dev: boolean = false;
+
   coiIDS = {};
   cois: L.FeatureGroup = L.featureGroup();
   counties: L.FeatureGroup = L.featureGroup();
@@ -127,6 +129,8 @@ export class AssetsComponent implements OnInit {
   shapeCreated: boolean = false
 
   showLassoDisclaimer: boolean = false;
+
+  downloadAll: boolean = false;
 
   @HostListener('window:resize', ['$event'])
 
@@ -442,6 +446,14 @@ export class AssetsComponent implements OnInit {
     );
   }
 
+  toggleDownloadAll(){
+    if(this.downloadAll){
+      this.downloadAll = false
+    }else{
+      this.downloadAll = true
+    }
+  }
+
   getCOIs(){
     this.cois.clearLayers();
     this.coiIDS = {};
@@ -449,22 +461,29 @@ export class AssetsComponent implements OnInit {
     var campaignID: number = parseInt(sessionStorage.getItem('campaignID'));
     var userID: string = JSON.parse(sessionStorage.getItem('user'))._id
 
-      this.assetService.getCOIs(campaignID).subscribe(
+      this.assetService.getCOIs(campaignID, userID).subscribe(
         (features: any[]) =>{
 
           for(var i = 0; i < features.length; i++){
             var layer;
+            
             if(features[i].orgID === orgID){
-              layer = L.geoJSON(features[i]['cois'], {onEachFeature: onEachMyOrgFeature.bind(this)}).addTo(this.map)
-              if(this.editMode){
-                layer.pm.enable({limitMarkersToCount: 3});
-              }
-            }else{
-              layer = L.geoJSON(features[i]['cois'], {onEachFeature: onEachOtherOrgFeature.bind(this), pmIgnore: true}).addTo(this.map);
-            }
+              console.log(features[i])
 
-            this.orgNames[features[i].orgID] = features[i].orgName;
-            this.layersControl.overlays[features[i].orgName] = layer;
+              for(var j = 0; j < features[i]['cois'].length; j++){
+                layer = L.geoJSON(features[i]['cois'][j], {onEachFeature: onEachMyOrgFeature.bind(this)}).addTo(this.map)
+                if(this.editMode){
+                    layer.pm.enable({limitMarkersToCount: 3});
+                }
+                this.layersControl.overlays[features[i]['cois'][j]['properties']['name']] = layer;
+              }
+
+              //this.orgNames[features[i].orgID] = features[i].orgName;
+              //this.layersControl.overlays[features[i].orgName] = layer;
+
+            }else{
+              layer = L.geoJSON(features[i]['cois'], {onEachFeature: onEachOtherOrgFeature.bind(this), pmIgnore: true});
+            }
 
           }
 
@@ -506,19 +525,23 @@ export class AssetsComponent implements OnInit {
             this.cois.addLayer(layerPoly);
           }
 
+          
+
           function onEachOtherOrgFeature(feature, layerPoly){
+            
             if(this.editDetailsMode){
-              layerPoly.bindTooltip(feature.properties.name)
-              .setStyle({color: 'orange', opacity: 0.5, fillOpacity: 0.1})
-              .on('mouseup', this.clonePolygon, this)
-              .on('mousedown', this.getSelected, feature);
+              layerPoly//.bindTooltip(feature.properties.name)
+              .setStyle({color: 'orange', opacity: 0.0, fillOpacity: 0.0})
+              //.on('mouseup', this.clonePolygon, this)
+              //.on('mousedown', this.getSelected, feature);
 
             }else{
-              layerPoly.bindTooltip(feature.properties.name)
-              .setStyle({color: 'orange', opacity: 0.5, fillOpacity: 0.1});
+              layerPoly//.bindTooltip(feature.properties.name)
+              .setStyle({color: 'orange', opacity: 0.0, fillOpacity: 0.0});
             }
             this.coiIDS[feature._id] = feature.properties.name;
 
+            console.log(this.cois)
             this.cois.addLayer(layerPoly);
           }
 
@@ -732,7 +755,8 @@ export class AssetsComponent implements OnInit {
           }
 
           this.cois.addLayer(layerPoly);
-          this.layersControl.overlays[this.orgNames[coi.properties.orgID]].addLayer(layerPoly);
+          this.layersControl.overlays[coi.properties.name] = L.featureGroup();
+          this.layersControl.overlays[coi.properties.name].addLayer(layerPoly);
 
           this.map.eachLayer(function(layer: L.Layer){
             if(layer.getTooltip()){
@@ -754,6 +778,7 @@ export class AssetsComponent implements OnInit {
     });
   }
 
+  /*
   clonePolygon(){
     if(!this.dragging) {
       this.zone.run(() => {
@@ -789,7 +814,7 @@ export class AssetsComponent implements OnInit {
         });
       });
     }
-  }
+  }*/
 
   editPolygon(){
     if(!this.dragging) {
@@ -853,6 +878,8 @@ export class AssetsComponent implements OnInit {
   getOrgLevel(){
     var orgID: string = sessionStorage.getItem('orgID')
     var user: User = JSON.parse(sessionStorage.getItem('user'))
+
+    this.dev = user.dev
 
     for (var i = 0; i< user.orgPermissions.length; i++){
       if(user.orgPermissions[i].orgID === orgID){
@@ -934,16 +961,16 @@ export class AssetsComponent implements OnInit {
         return;
       }
 
+      console.log(this.downloadAll)
 
-      if(this.cois.getLayers()[i]['feature'].properties.orgID === orgID){
+
+      if(this.cois.getLayers()[i]['feature'].properties.orgID === orgID || this.downloadAll){
 
         var folder = zip.folder(this.cois.getLayers()[i]['feature'].properties.name);
 
         if(this.cois.getLayers()[i]['feature'].properties.user){
           this.cois.toGeoJSON()['features'][i].properties.userName = this.cois.getLayers()[i]['feature'].properties.user.name.fullName
         }
-
-
 
         var geoJSON = {features: [this.cois.toGeoJSON()['features'][i]], type: "FeatureCollection"}
 
@@ -1037,6 +1064,7 @@ export class AssetsComponent implements OnInit {
     var northEast = L.point((currentPoint.lat + 150), (currentPoint.lng + 125));
     var bounds = L.latLngBounds(this.map.containerPointToLatLng(southWest), this.map.containerPointToLatLng(northEast));
 
+    /*
     if(tutorial === 'cloneCOI'){
 
       rectangle = L.rectangle(bounds)
@@ -1046,7 +1074,8 @@ export class AssetsComponent implements OnInit {
           .bringToFront()
           .addTo(this.map);
 
-    } else if(tutorial === 'editCOI'){
+    } else*/ 
+    if(tutorial === 'editCOI'){
 
       rectangle = L.rectangle(bounds)
           .bindTooltip('COI')
@@ -1075,6 +1104,7 @@ export class AssetsComponent implements OnInit {
 
     this.map.fitBounds(rectangle.getBounds(), {padding: [80, 80]});
 
+    /*
     if(tutorial === 'cloneCOI') {
 
       if(this.langMode === 'ENGLISH'){
@@ -1083,7 +1113,7 @@ export class AssetsComponent implements OnInit {
         this.shepherdService.addSteps(cloneCOI_spanish);
       }
 
-    } else if(tutorial === 'editCOI') {
+    } else */ if(tutorial === 'editCOI') {
 
       if(this.langMode === 'ENGLISH'){
         this.shepherdService.addSteps(editCOI);
@@ -1132,9 +1162,10 @@ export class AssetsComponent implements OnInit {
                 if(document.getElementsByClassName('regTutorial').length){
                   document.getElementsByClassName('regTutorial')[0].classList.remove('regTutorial');
                 }
-              } else if (tutorial === 'cloneCOI') {
-                this.tutorialPoly('cloneCOI');
-              } else if (tutorial === 'editCOI') {
+              } //else if (tutorial === 'cloneCOI') {
+                //this.tutorialPoly('cloneCOI');
+              //} 
+              else if (tutorial === 'editCOI') {
                 this.tutorialPoly('editCOI');
               } else if (tutorial === 'deleteCOI') {
                 this.tutorialPoly('deleteCOI');

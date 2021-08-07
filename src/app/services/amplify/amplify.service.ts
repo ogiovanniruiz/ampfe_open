@@ -27,7 +27,7 @@ export class AmplifyService {
   }
 
   massGeocode(){
-    return this.http.post(this.API_URL + '/api/massGeocode', {});
+    return this.http.post(this.API_URL + '/api/massGeocodeVoters', {});
   }
 
   appendGeoids(){

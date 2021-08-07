@@ -1,7 +1,6 @@
 <mat-progress-bar mode="indeterminate" *ngIf="!sortedMembers && completed"></mat-progress-bar>
 <div *ngIf="!completed">No records found</div>
 <mat-dialog-content >
-    <div *ngIf="!completed">No records found</div>
     <section *ngIf="sortedMembers && completed">
         <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1%">
             <mat-form-field style="width:140px;">

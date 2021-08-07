@@ -38,6 +38,9 @@
 
           <button mat-fab color='primary' (click)='download()' *ngIf="langMode === 'ENGLISH'" matTooltip='Download Map'><mat-icon>cloud_download</mat-icon></button>
           <button mat-fab color='primary' (click)='download()' *ngIf="langMode === 'SPANISH'" matTooltip='Descargar Mapa'><mat-icon>cloud_download</mat-icon></button>
+          
+          <mat-slide-toggle *ngIf='dev' (click)="toggleDownloadAll()">Download All</mat-slide-toggle>
+          
           <mat-slide-toggle (click)='toggleLangMode()'>Español</mat-slide-toggle>
           <mat-spinner *ngIf='loadingBlockgroups'></mat-spinner>
           <p *ngIf='loadingBlockgroups'>Loading Blockgroups....</p>
