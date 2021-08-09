@@ -77,10 +77,9 @@
                     </ng-template>
                     <mat-list *ngIf="textReceivedContactRecords">
                         <div *ngFor="let textReceivedContactRecord of textReceivedContactRecords;" >
-                            <mat-list-item>
+                            <mat-list-item *ngIf='textReceivedContactRecord.person'>
                                 <mat-icon>perm_identity</mat-icon>
-                                
-                                <div fxFlex="90%">{{textReceivedContactRecord.person.resident.name.firstName}} {{textReceivedContactRecord.person.resident.name.lastName}}</div>
+                                <div fxFlex="90%" *ngIf='textReceivedContactRecord.person'>{{textReceivedContactRecord.person.resident.name.firstName}} {{textReceivedContactRecord.person.resident.name.lastName}}</div>
                                 <button mat-icon-button (click)="getConversation(textReceivedContactRecord)" style="float: right;"><mat-icon>chat</mat-icon></button>
                                 <mat-divider></mat-divider>
                             </mat-list-item>
