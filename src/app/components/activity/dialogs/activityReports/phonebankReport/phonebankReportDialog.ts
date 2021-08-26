@@ -110,7 +110,7 @@ import {Activity} from '../../../../../models/activities/activity.model'
                 }
 
                 this.sortedMembers = this.members.slice();
-                console.log(this.sortedMembers)
+
                 this.totalSize = this.members.length;
                 this.iterator();
             }
@@ -187,7 +187,7 @@ import {Activity} from '../../../../../models/activities/activity.model'
       this.phonebankService.downloadPhonebankContactHistory(this.activityID).subscribe(
         (result: unknown[])=>{
 
-          let binaryData = ['residentPhonenumber, userPhonenumber, userName, date,responseType, responses\n'];
+          let binaryData = ['residentPhonenumber, userPhonenumber, userName, date, responseType, responses\n'];
 
           for(var i = 0; i < result.length; i++){
               binaryData.push(result[i]['residentPhonenum'] + ',')
@@ -208,9 +208,7 @@ import {Activity} from '../../../../../models/activities/activity.model'
                 binaryData.push('\n')
               }else if (result[i]['nonResponse']){
                 binaryData.push('nonResponse' + ',')
-                //for(var k = 0; k < result[i]['nonResponses'].length; k++){
-                  binaryData.push(result[i]['nonResponse']['nonResponse'])
-                //}
+                binaryData.push(result[i]['nonResponse']['nonResponse'])
                 binaryData.push('\n')
               }else{
                 binaryData.push('none' + ',')
@@ -227,15 +225,31 @@ import {Activity} from '../../../../../models/activities/activity.model'
           downloadLink.setAttribute('download', 'PhonecontactHistory.csv');
           document.body.appendChild(downloadLink);
           downloadLink.click();
-
-        
-
+      
         }, 
         error =>{
           console.log(error)
         }
       )
     }
+
+
+    downloadPhonebankCORDReport(){
+      this.downloading = true;
+
+
+      this.phonebankService.downloadPhonebankContactHistory(this.activityID).subscribe(
+        (result: unknown[])=>{
+          console.log(result)
+
+          let binaryData = ['residentPhonenumber, userPhonenumber, userName, date, responseType, responses\n'];
+
+        }
+      )
+    }
+
+
+  
   }
 
   function compare(a: number | string, b: number | string, isAsc: boolean) {

@@ -363,7 +363,7 @@ import {MembershipService} from '../../../../services/membership/membership.serv
 
       //let binaryData = ['firstName,lastName,middleName,address,city,zip,affidavit\n'];
 
-      let binaryData = ['affidavit, generalPropensity, primaryPropensity,city\n'];
+      let binaryData = ['affidavit, phone\n'];
 
       for(var i = 0; i < this.estimate.houseHolds['length']; i++){
         for(var k = 0; k < this.estimate.houseHolds[i]['residents'].length; k++){
@@ -382,9 +382,7 @@ import {MembershipService} from '../../../../services/membership/membership.serv
           //binaryData.push(this.estimate.houseHolds[i]['_id']['city'] + ',')
           //binaryData.push(this.estimate.houseHolds[i]['_id']['zip'] )
           binaryData.push(this.estimate.houseHolds[i]['residents'][k]['affidavit'] + "," +
-                          this.estimate.houseHolds[i]['residents'][k]['generalPropensity'] + "," + 
-                          this.estimate.houseHolds[i]['residents'][k]['primaryPropensity'] + "," + 
-                          this.estimate.houseHolds[i]['_id']['city'] + '\n')
+                          this.estimate.houseHolds[i]['residents'][k]['phones'][0]['number'] + '\n')
         }
         
       }

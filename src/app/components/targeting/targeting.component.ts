@@ -8,6 +8,7 @@ import {PolygonDialog} from './dialogs/polygon/polygonDialog';
 import {BlockgroupDialog} from './dialogs/blockgroup/blockgroupDialog';
 import { CampaignService } from 'src/app/services/campaign/campaign.service';
 import {SearchDialog} from './dialogs/search/searchDialog';
+import { LockingDialog } from './dialogs/precincts/lockingDialog';
 import {TargetCreatorDialog} from './dialogs/targetCreator/targetCreatorDialog';
 import {GeometryService} from '../../services/geometry/geometry.service';
 
@@ -17,6 +18,9 @@ import * as precinctIDSJSON from '../../../assets/precinctIDS.json';
 import {AssetService} from '../../services/asset/asset.service'
 
 import {ClinicDialog} from './dialogs/clinic/clinicDialog'
+
+import 'leaflet-lasso';
+
 
 declare global {
   interface Window { GlobalSelected: any; }
@@ -85,6 +89,10 @@ export class TargetingComponent implements OnInit {
   drawnItems: L.FeatureGroup = L.featureGroup();
   registeredPrecinctIDs: string[] = []
 
+  lasso;
+
+  selectedPrecincts: any[]
+
   drawOptions = {
     position: 'topright',
     draw: {
@@ -123,6 +131,32 @@ export class TargetingComponent implements OnInit {
     this.layersControl.overlays['Clinics'] = L.featureGroup();
 
     this.layersControl.overlays['Precinct Propensity'] = L.featureGroup();
+
+    this.lasso = L.control.lasso({ intersect: true }).addTo(map).setPosition('topleft')
+
+    var campaignID: number = parseInt(sessionStorage.getItem('campaignID'));
+    var orgID: string = sessionStorage.getItem('orgID');
+
+    map.on('lasso.finished', (event: any) => {
+      var polygonList = []
+      for(var i = 0; i < event.layers.length; i++){
+        if(event.layers[i].feature.properties.locked){
+          for(var j = 0; j < event.layers[i].feature.properties.locked.length; j++){
+            if(event.layers[i].feature.properties.locked[j].campaignID === campaignID && event.layers[i].feature.properties.locked[j].finished){
+              return
+            }
+          }
+
+        }
+
+        if(event.layers[i].feature.properties.districtType != "COUNTY"){
+          polygonList.push(event.layers[i].feature)
+          event.layers[i].setStyle({color: 'red', opacity: 0.5, fillOpacity: 0.1})
+        }
+      }
+
+      this.lockGeometries(polygonList)
+    })
   }
 
   overlayadd = (e) =>{
@@ -353,8 +387,8 @@ export class TargetingComponent implements OnInit {
         var tractData = 'Precinct Number: ' + feature.properties.precinctID;
         if (feature.properties.locked.some(locked => locked.campaignID === campaignID && locked.orgID === orgID && !locked.finished)) {
           layerPrec.bindTooltip(tractData).setStyle({color: 'green'})
-                                          .on('mouseup', this.selectBlock, this)
-                                          .on('mousedown', this.getSelected, feature);
+                                          //.on('mouseup', this.selectBlock, this)
+                                          //.on('mousedown', this.getSelected, feature);
           if(this.geographical){ this.precinctIDS.push(feature.properties.precinctID); }
         }else if(feature.properties.locked.some(locked => locked.campaignID === campaignID && locked.orgID === orgID && locked.finished)){
           layerPrec.bindTooltip(tractData).setStyle({color: 'purple'})
@@ -363,16 +397,21 @@ export class TargetingComponent implements OnInit {
 
         }
         else if(feature.properties.locked.some(locked => locked.campaignID === campaignID)){
-          layerPrec.bindTooltip(tractData).setStyle({color: 'yellow'})
+          layerPrec.bindTooltip(tractData).setStyle({color: 'black'})
           //.on('mouseup', this.selectBlock, this)
           //.on('mousedown', this.getSelected, feature);
         
-        } else if (feature.properties.registered.some(registered => registered.campaignID === campaignID) && feature.properties.registered.some(registered => registered.orgID === orgID)) {
-          layerPrec.bindTooltip(tractData).setStyle({color: 'red'}).on('mouseup', this.selectBlock, this).on('mousedown', this.getSelected, feature);
+        } //else if (feature.properties.registered.some(registered => registered.campaignID === campaignID) && feature.properties.registered.some(registered => registered.orgID === orgID)) {
+          //layerPrec.bindTooltip(tractData).setStyle({color: 'red'})
+                                          //.on('mouseup', this.selectBlock, this)
+                                          //.on('mousedown', this.getSelected, feature);
 
-        } else if (feature.properties.registered.some(registered => registered.campaignID === campaignID)) {
-          layerPrec.bindTooltip(tractData).setStyle({fillColor: '#862121', color: '#862121'}).on('mouseup', this.selectBlock, this).on('mousedown', this.getSelected, feature);
-        }
+        //} 
+        //else if (feature.properties.registered.some(registered => registered.campaignID === campaignID)) {
+         // layerPrec.bindTooltip(tractData).setStyle({fillColor: '#862121', color: '#862121'})
+                                          //.on('mouseup', this.selectBlock, this)
+                                          //.on('mousedown', this.getSelected, feature);
+       // }
       }
 
       layerPrecinct.addTo(this.layersControl.overlays['Precincts']);
@@ -389,11 +428,16 @@ export class TargetingComponent implements OnInit {
 
         function onEachFeature(feature, layerPrec) {
           var tractData = 'Precinct Number: ' + feature.properties.precinctID;
-          layerPrec.bindTooltip(tractData).on('mouseup', this.selectBlock, this).on('mousedown', this.getSelected, feature).bringToBack();
+          layerPrec.bindTooltip(tractData)
+                   //.on('mouseup', this.selectBlock, this)
+                   //.on('mousedown', this.getSelected, feature).bringToBack();
         }
 
         this.layersControl.overlays['Precincts'].removeLayer(this.layersControl.overlays['Precincts'].getLayers()[1]);
         layerPrecinct.addTo(this.layersControl.overlays['Precincts']);
+
+
+
 
         let layerPrecinctProp = await L.geoJSON(targets, {pane: 'prec', onEachFeature: onEachPropFeature.bind(this)});
 
@@ -484,10 +528,71 @@ export class TargetingComponent implements OnInit {
 
   onEachFeaturePREC(feature, layerPrec) {
     var tractData = 'Precinct Number: ' + feature.properties.precinctID;
-    layerPrec.bindTooltip(tractData).setStyle({color: 'red'}).on('mouseup', this.selectBlock, this).on('mousedown', this.getSelected, feature);
+    layerPrec.bindTooltip(tractData).setStyle({color: 'green'})//.on('mouseup', this.selectBlock, this).on('mousedown', this.getSelected, feature);
     this.layersControl.overlays['Precincts'].getLayers()[0].addLayer(layerPrec);
   }
 
+  lockGeometries(polygonList){
+    const dialogRef = this.dialog.open(LockingDialog, {data: polygonList});
+    
+    dialogRef.afterClosed().subscribe((result: any[]) =>{
+      if(result){
+        var layers1 = this.layersControl.overlays['Precincts'].getLayers()[1];
+        var layers0 = this.layersControl.overlays['Precincts'].getLayers()[0];
+        layers1.eachLayer((layer) => {
+          for(var i = 0; i < result.length; i++){
+            if(layer.feature._id === result[i].precinct._id){
+              layer.feature.properties = result[i].precinct.properties;
+            
+              if(result[i].mode === 'Locked'){
+                layer.setStyle({fillColor: 'green', color: 'green'});
+                this.precinctIDS.push(result[i].precinct.properties.precinctID);
+                L.geoJSON(layer.feature, {pane: 'preclock', onEachFeature: this.onEachFeaturePREC.bind(this)});
+                return
+              }
+
+              if(result[i].mode === 'Finished'){
+                layer.setStyle({fillColor: 'purple', color: 'purple'});
+                this.precinctIDS = this.precinctIDS.filter(precinctID => {return precinctID !== result[i].precinct.properties.precinctID});
+                L.geoJSON(layer.feature, {pane: 'preclock', onEachFeature: this.onEachFeaturePREC.bind(this)});
+                return
+                
+              }
+            }
+          }
+        })
+
+        layers0.eachLayer((layer) => {
+          for(var i = 0; i < result.length; i++){
+            if(layer.feature._id === result[i].precinct._id){
+              if(result[i].mode === 'Finished'){
+                layer.feature.properties = result[i].precinct.properties;
+                layer.setStyle({fillColor: 'purple', color: 'purple'});
+              }
+
+              if(result[i].mode === 'Locked'){
+                layer.feature.properties = result[i].precinct.properties;
+                layer.setStyle({fillColor: 'green', color: 'green'});
+
+              }
+
+            }
+          }
+        })
+      }else{
+        var layers1 = this.layersControl.overlays['Precincts'].getLayers()[1];
+        for(var i = 0; i < polygonList.length; i++){
+          layers1.eachLayer((layer) => {
+            if(layer.feature._id === polygonList[i]._id){
+              layer.setStyle({fillColor: 'blue', color: 'blue'});
+            }
+          })
+        }
+      }
+    })
+  }
+
+  
   selectBlock() {
     if(!this.dragging) {
       this.zone.run(() => {

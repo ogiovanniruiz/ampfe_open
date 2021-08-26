@@ -11,6 +11,10 @@ export class GeometryService {
 
   constructor(private http: HttpClient) {}
 
+  lockGeometries(data, orgID: string, campaignID: number){
+    return this.http.post(this.API_URL + '/api/lockGeometries', {data, orgID, campaignID});
+  }
+
   getPolygons(campaignID: number, orgID: string){
     return this.http.post(this.API_URL + '/api/getPolys', {campaignID, orgID});
   }

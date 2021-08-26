@@ -42,7 +42,7 @@
       <button fxFlex color="primary" mat-button (click)="enterEventsModule()">EVENTS</button>
     </mat-card>
   </mat-grid-tile>-->
-  <mat-grid-tile *ngIf="(orgLevel === 'ADMINISTRATOR' || dev) && dataLoaded && campaignActive">
+  <mat-grid-tile *ngIf="(dataManager || dev) && dataLoaded && campaignActive">
     <mat-card fxFlex=80%>
       <button fxFlex color="primary" mat-button (click)="enterTargetingModule()">TARGETING</button>
     </mat-card>

@@ -26,6 +26,7 @@ import { createCOI, cloneCOI, editCOI, deleteCOI, defaultStepOptions} from './tu
 import { createCOI_spanish, cloneCOI_spanish, editCOI_spanish, deleteCOI_spanish} from './tutorial-data_spanish';
 import * as blockgroupIDSJSON from '../../../assets/blockgroupIDS.json';
 import * as turf from '@turf/turf';
+import { CompileShallowModuleMetadata } from '@angular/compiler';
 
 declare global {
   interface Window { GlobalSelected: any; }
@@ -190,7 +191,6 @@ export class AssetsComponent implements OnInit {
     });
 
     map.on('lasso.enabled', (event:any) =>{
-      console.log(event)
       this.showLassoDisclaimer = true
     })
 
@@ -373,8 +373,6 @@ export class AssetsComponent implements OnInit {
           this.percentPIEthnicity = result['demographics']['percentPI']
           this.percentBlackEthnicity = result['demographics']['percentBlack']
           
-          console.log(result)
-      
         })
 
       }
@@ -468,7 +466,6 @@ export class AssetsComponent implements OnInit {
             var layer;
             
             if(features[i].orgID === orgID){
-              console.log(features[i])
 
               for(var j = 0; j < features[i]['cois'].length; j++){
                 layer = L.geoJSON(features[i]['cois'][j], {onEachFeature: onEachMyOrgFeature.bind(this)}).addTo(this.map)
@@ -482,6 +479,7 @@ export class AssetsComponent implements OnInit {
               //this.layersControl.overlays[features[i].orgName] = layer;
 
             }else{
+
               layer = L.geoJSON(features[i]['cois'], {onEachFeature: onEachOtherOrgFeature.bind(this), pmIgnore: true});
             }
 
@@ -504,19 +502,21 @@ export class AssetsComponent implements OnInit {
               '% Female: ' + feature.properties.demographics.percentFemale;
             }
 
-            if(this.editDetailsMode && (userID === feature.properties.userID || this.orgLevel === 'ADMINISTRATOR' || this.orgLevel === 'LEAD') ){
+            if(this.editDetailsMode){
+
               layerPoly.bindTooltip(coiData)
               .setStyle({color: 'green', opacity: 0.5, fillOpacity: 0.1})
               .on('mouseup', this.editPolygon, this)
               .on('mousedown', this.getSelected, feature)
               .on('pm:edit', this.drawEdited, this)
-            }else if(this.editMode && (userID === feature.properties.userID || this.orgLevel === 'ADMINISTRATOR' || this.orgLevel === 'LEAD') ){
+
+            }else if(this.editMode){
+
               layerPoly.bindTooltip(coiData)
               .setStyle({color: 'green', opacity: 0.5, fillOpacity: 0.1})
               .on('pm:edit', this.drawEdited, this)
 
             }else{
-
               layerPoly.bindTooltip(coiData)
               .setStyle({color: 'green', opacity: 0.5, fillOpacity: 0.1})
             }
@@ -541,7 +541,6 @@ export class AssetsComponent implements OnInit {
             }
             this.coiIDS[feature._id] = feature.properties.name;
 
-            console.log(this.cois)
             this.cois.addLayer(layerPoly);
           }
 
@@ -641,7 +640,6 @@ export class AssetsComponent implements OnInit {
         }
         this.assembly.addLayer(layer)
         layer.addTo(this.layersControl.overlays[type])
-        console.log(result)
       })
     //}
   }
@@ -663,10 +661,12 @@ export class AssetsComponent implements OnInit {
 
 
   get selected() {
+    console.log("GETTING SELECTED 2")
     return window.GlobalSelected;
   }
 
   public getSelected() {
+    console.log("getting Selected")
     window.GlobalSelected = this;
   }
 
@@ -817,7 +817,9 @@ export class AssetsComponent implements OnInit {
   }*/
 
   editPolygon(){
+    console.log("EDITING POLYGON")
     if(!this.dragging) {
+      console.log("EDITING POLYGON2")
       this.zone.run(() => {
         if (this.shepherdService.isActive){
           setTimeout(() => {this.shepherdService.next()}, 300);
@@ -838,7 +840,6 @@ export class AssetsComponent implements OnInit {
                 for(var i = 0; i < this.cois.getLayers().length; i++){
                   if (this.cois.getLayers()[i]['feature']._id === this.selected._id) {
                         this.cois.getLayers()[i]['feature'].properties = result['selectedCOI'].properties;
-                        console.log(result)
                         var coiData = 'Name: ' + result['selectedCOI']['properties'].name
                         this.cois.getLayers()[i].bindTooltip(coiData);
                         this.coiIDS[this.selected._id] = this.selected.properties.name;
@@ -914,7 +915,6 @@ export class AssetsComponent implements OnInit {
 
               if(results['type'] === 'location'){
 
-                console.log(results)
                 this.map.flyTo([results['value'][1], results['value'][0]], results['zoom'])
 
                 this.marker = L.layerGroup().addTo(this.map);
@@ -923,20 +923,36 @@ export class AssetsComponent implements OnInit {
               }
 
               const onEachFeature = function(feature, layer) {
-                console.log(layer)
                 this.map.flyToBounds(layer['_bounds']);
 
                 this.marker = L.layerGroup().addTo(this.map);
                 L.marker(layer.getBounds().getCenter(), { icon: customIcon }).addTo(this.marker);
               }
 
-              //console.log(results)
-
               L.geoJSON(results['value'], {onEachFeature: onEachFeature.bind(this)});
             }
           }
       );
     });
+  }
+
+
+  downloadCOIs(){
+    this.downloading = true;
+    const zip = new JSZip();
+
+    var options = {
+      folder: 'shapefiles',
+      types: {
+        point: 'points',
+        polygon: 'polygons'
+      }
+    }
+
+    var orgID: string = sessionStorage.getItem('orgID')
+
+
+
   }
 
   download(){
@@ -960,9 +976,6 @@ export class AssetsComponent implements OnInit {
       if(!this.cois.getLayers()[i]['feature']){
         return;
       }
-
-      console.log(this.downloadAll)
-
 
       if(this.cois.getLayers()[i]['feature'].properties.orgID === orgID || this.downloadAll){
 

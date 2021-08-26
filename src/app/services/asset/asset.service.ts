@@ -25,6 +25,10 @@ export class AssetService {
     return this.http.post(this.API_URL + '/api/getCOI', {coiID});
   }
 
+  getOrgCOIs(orgID: string){
+    return this.http.post(this.API_URL + '/api/getOrgCOIs', {orgID});
+  }
+
   getCOIs(campaignID: number, userID: string){
     return this.http.post(this.API_URL + '/api/getCOIs', {campaignID, userID});
   }

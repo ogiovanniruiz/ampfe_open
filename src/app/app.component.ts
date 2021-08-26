@@ -4,7 +4,8 @@ import {ErrorStateMatcher} from '@angular/material/core';
 import {Router, ActivatedRoute, Params } from "@angular/router";
 
 import { OAuthService } from 'angular-oauth2-oidc';
-import { JwksValidationHandler} from 'angular-oauth2-oidc';
+//import { JwksValidationHandler} from 'angular-oauth2-oidc';
+import { JwksValidationHandler } from 'angular-oauth2-oidc-jwks';
 import { authConfig } from './auth.config';
 import { KeyValueDiffers } from '@angular/core';
 

@@ -225,7 +225,6 @@ export class ReportsComponent implements OnInit {
 
     this.campaignService.downloadCampaignContactHistory(campaignID).subscribe(
       (report: unknown[])=>{
-        console.log(report)
 
         let binaryData = ['UserName, campaignID, activityType, affidavit, date, responseType, responses\n'];
 
@@ -233,13 +232,25 @@ export class ReportsComponent implements OnInit {
           binaryData.push(report[i]['user']['name']['fullName'] + ',')
           binaryData.push(report[i]['campaignID'] + ',')
           binaryData.push(report[i]['activityType'] + ',')
-          binaryData.push(report[i]['person']['resident']['affidavit']+ ',')
+          //binaryData.push(report[i]['person']['resident']['affidavit']+ ',')
+
+          if(report[i]['affidavit']){
+            binaryData.push(report[i]['affidavit']+ ',')
+          }else if(report[i]['person']){
+            binaryData.push(report[i]['person']['resident']['affidavit']+ ',')
+          }else{
+            binaryData.push("unknown,")
+          }
+
           binaryData.push(report[i]['date']+ ',')
           if(report[i]['scriptResponse']){
             binaryData.push('scriptResponse' + ',')
             for(var j = 0; j < report[i]['scriptResponse']['questionResponses'].length; j++){
-              binaryData.push(report[i]['scriptResponse']['questionResponses'][j]['question']+ ":" +report[i]['scriptResponse']['questionResponses'][j]['response'] + ',')
-
+              if(report[i]['scriptResponse']['questionResponses'][j]['response']){
+                binaryData.push(report[i]['scriptResponse']['questionResponses'][j]['question']+ ":" +report[i]['scriptResponse']['questionResponses'][j]['response'] + ',')
+              }else{
+                binaryData.push(report[i]['scriptResponse']['questionResponses'][j]['question']+ ":" +report[i]['scriptResponse']['questionResponses'][j]['idType'] + ',')
+              }
             }
             binaryData.push('\n')
           }

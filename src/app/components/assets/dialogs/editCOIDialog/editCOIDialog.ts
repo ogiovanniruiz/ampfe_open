@@ -81,15 +81,6 @@ import {Questions} from '../../../../models/questions'
                                                {question: this.questions[2].english + '/' + this.questions[2].spanish, answer: q2},
                                                {question: this.questions[3].english + '/' + this.questions[3].spanish, answer: q3}]
 
-                                               /*
-      var properties = {
-          name: coiName,
-          orgID: orgID,
-          userID: userID,
-          questions: [{question: this.questions[1].english + '/' + this.questions[1].spanish, answer: q1},
-          {question: this.questions[2].english + '/' + this.questions[2].spanish, answer: q2},
-          {question: this.questions[3].english + '/' + this.questions[3].spanish, answer: q3}]
-        }*/
 
       if (this.shepherdService.isActive) {
         this.dialogRef.close(this.selectedCOI.properties);
