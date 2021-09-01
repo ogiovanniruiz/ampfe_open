@@ -25,8 +25,8 @@ export class UserService {
     return this.http.post<any>(this.API_URL + '/api/contactDevs', {subject, message, user});
   }
 
-  updateUserOrgLevel(user: Object, org: Object, level: string){
-    return this.http.post(this.API_URL + '/api/updateUserOrgLevel', {user, org, level});
+  updateUserOrgLevel(userID: string, orgID: string, level: string){
+    return this.http.post(this.API_URL + '/api/updateUserOrgLevel', {userID, orgID, level});
   }
 
   updateDevStatus(user: Object, developer: boolean){

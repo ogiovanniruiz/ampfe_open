@@ -2,6 +2,8 @@
 <mat-toolbar color="primary" >
     <button mat-icon-button (click)="sidenav.toggle()" *ngIf ="(this.router.url != '/' && this.router.url != '/register' && this.router.url.split('?')[0] != '/passwordreset')"><mat-icon>menu</mat-icon></button>
     <button mat-icon-button (click)="back();" *ngIf ="(this.router.url != '/' && this.router.url != '/register' && this.router.url.split('?')[0] != '/passwordreset' && this.router.url != '/home' && this.router.url != '/login' && this.router.url != '/hotline')"><mat-icon>arrow_back</mat-icon></button>
+    <span class="spacer"></span>
+    <button mat-icon-button *ngIf="(this.router.url != '/')" matTooltip="User Profile"><mat-icon>person</mat-icon></button>
 </mat-toolbar>
 <mat-sidenav-container style="height: calc(100vh - 64px)" >
     <mat-sidenav #sidenav mode="over" closed>
@@ -25,7 +27,7 @@
                 </span>
                 <p fxLayoutAlign="center">v {{version}}</p>
                 <mat-error fxLayoutAlign="center" *ngIf='demoVersion'> Development Version</mat-error>
-                <mat-progress-bar *ngIf="checkingVersion" mode="indeterminate"></mat-progress-bar>
+
                 <mat-error fxLayoutAlign="center" *ngIf="!synced && !checkingVersion">Amplify version is out of sync. Latest version is: {{serverVersion}} </mat-error>
                 <mat-error fxLayoutAlign="center" *ngIf="!synced  && !checkingVersion">Please refresh your page or clear browsing history.</mat-error>
                 <div *ngIf="synced" fxLayout="column" fxLayoutGap="2%">
@@ -38,18 +40,21 @@
                     <mat-form-field >
                         <input matInput type="password" placeholder="Password" #password required [errorStateMatcher]="matcher">
                     </mat-form-field>
-                    <button mat-raised-button color="primary" (click)="localLogin()">LOGIN</button>
+                    
                     <section fxLayout="row" fxLayoutWrap  fxLayoutGap="5%" fxLayoutAlign="center">
+                        <button mat-button color="primary" fxFlex="40"(click)="localLogin()">LOGIN</button>
                         <button mat-button color="accent" fxFlex="40"(click)="localRegister()">REGISTER</button>
                         <button mat-button color="accent" fxFlex="40"(click)="localForgotPassword()">FORGOT PASSWORD</button>
                     </section>
                     <div fxLayoutAlign="center" style="width: 100%;padding: 1% 0% 3%;"><span style="background:white;padding:0px 10px;z-index: 1;">OR</span><span style="height: 1px;width: 94%;position: absolute;background: black;margin-top: 9px;"></span></div>
                     <div fxLayoutGap="4%" fxLayout="column" >
-                        <button mat-raised-button color="accent" (click)="initOauthLogin()">GOOGLE LOGIN</button>
+                        <button mat-raised-button (click)="initOauthLogin()"><img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
+                            Login with Google</button>
                     </div>
                     <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
                 </div>
                 <mat-error fxLayoutAlign="center" *ngIf="displayErrorMessage">{{errorMessage}}</mat-error>
+                <mat-progress-bar *ngIf="checkingVersion" mode="indeterminate"></mat-progress-bar>
             </mat-card>
 
         </div>

@@ -39,7 +39,7 @@
                     <br>
                     <div fxLayout="row" fxLayoutGap="20%" fxLayoutGap.lg="15px" fxLayoutGap.md="10%" fxLayoutGap.sm="5%">
                         <button mat-mini-fab color="accent" matTooltip="Activity Report" *ngIf="orgLevel === 'ADMINISTRATOR' || dev" (click)="openReportsDialog(completedActivity)"><mat-icon>insert_chart</mat-icon></button>
-                        <button mat-raised-button color="primary" (click)="reactivate(completedActivity)">REACTIVATE</button>
+                        <button mat-raised-button color="primary" *ngIf="dev" (click)="reactivate(completedActivity)">REACTIVATE</button>
                     </div>
                 </mat-card>
                 <br>

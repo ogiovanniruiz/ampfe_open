@@ -41,6 +41,11 @@ export class OrganizationService {
     return this.http.post(this.API_URL + '/api/getOrgUsers', {orgID});
   }
 
+  getOrgUserRequests(orgID: string){
+    return this.http.post(this.API_URL + '/api/getOrgUserRequests', {orgID})
+
+  }
+
   createTwilioSubAccount(orgID: string){
     return this.http.post(this.API_URL + '/api/createTwilioAccount', {orgID})
   }

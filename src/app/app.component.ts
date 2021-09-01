@@ -4,7 +4,6 @@ import {ErrorStateMatcher} from '@angular/material/core';
 import {Router, ActivatedRoute, Params } from "@angular/router";
 
 import { OAuthService } from 'angular-oauth2-oidc';
-//import { JwksValidationHandler} from 'angular-oauth2-oidc';
 import { JwksValidationHandler } from 'angular-oauth2-oidc-jwks';
 import { authConfig } from './auth.config';
 import { KeyValueDiffers } from '@angular/core';
@@ -18,6 +17,7 @@ import { UpdatedUser } from './models/users/user.model';
 import {ContactFormDialog} from './dialogs/contactForm';
 
 import { version } from '../environments/version';
+import {User} from './models/users/user.model'
 
 
 /** Error when invalid control is dirty, touched, or submitted. */
@@ -31,7 +31,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.sass']
+  styleUrls: ['./app.component.scss']
 })
 
 export class AppComponent implements OnInit{
@@ -65,6 +65,8 @@ export class AppComponent implements OnInit{
 
   errorMessage: string = '';
   displayErrorMessage: boolean = false;
+
+  user: User;
 
   logo_dir: string = environment.LOGO_DIR;
   theme: string = environment.THEME;

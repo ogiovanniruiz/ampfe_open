@@ -1,6 +1,73 @@
-<h2 mat-dialog-title fxLayoutAlign="center">{{orgName}} Users</h2>
+<h2 mat-dialog-title fxLayoutAlign="center">{{orgName}}'s' Team</h2>
 <mat-dialog-content>
     <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+    <mat-tab-group mat-stretch-tabs>
+        <mat-tab label="Active Team Members">
+            <input matInput type="text" (keyup)="applyFilter($event.target.value)" (focus)="setFilter($event.target.value)" placeholder="Search">
+            <mat-list>
+
+                <mat-list-item *ngFor="let approvedUser of approvedUsers">
+                    <mat-icon matListIcon>group</mat-icon>
+                    <h3 matLine> {{approvedUser.name.fullName}}</h3>
+                    <p matLine><span>{{approvedUser.loginEmail}}</span></p>
+                    <button mat-button [disabled]="getOrgLevel(approvedUser) === 'ADMINISTRATOR' && !user.dev" color="primary" [matMenuTriggerFor]="menu">{{getOrgLevel(approvedUser)}}</button>
+                    <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="updateUserOrgLevel(user._id,'ADMINISTRATOR')">
+                            <mat-icon>account_circle</mat-icon>
+                            <span>Admin</span>
+                        </button>
+                        <button mat-menu-item (click)="updateUserOrgLevel(user._id,'LEAD')">
+                            <mat-icon>how_to_reg</mat-icon>
+                            <span>Lead</span>
+                        </button>
+                        <button mat-menu-item (click)="updateUserOrgLevel(user._id,'VOLUNTEER')">
+                            <mat-icon>person_add</mat-icon>
+                            <span>Volunteer</span>
+                        </button>
+                        <button (click)="updateUserOrgLevel(user._id, 'REMOVE')" mat-button color="warn">
+                            <span>REMOVE</span>
+                        </button>
+                    </mat-menu>
+                </mat-list-item>
+
+            </mat-list>
+
+        </mat-tab>
+        <mat-tab>
+            <ng-template matTabLabel>
+                <span matBadge={{requests.length}}  [matBadgeHidden]="requests.length === 0" matBadgeColor="warn" matBadgeOverlap="false">Member Requests</span>
+            </ng-template>
+            <mat-list>
+                <mat-list-item *ngFor="let user of requests">
+                  <mat-icon matListIcon>group</mat-icon>
+                  <h3 matLine> {{user.name.fullName}}</h3>
+                  <p matLine><span>{{user.loginEmail}}</span></p>
+                  <button mat-button color="warn" [matMenuTriggerFor]="menu">WAITING APPROVAL</button>
+                  <mat-menu #menu="matMenu">
+                    <button mat-menu-item (click)="updateUserOrgLevel(user._id,'ADMINISTRATOR')">
+                        <mat-icon>account_circle</mat-icon>
+                        <span>Admin</span>
+                    </button>
+                    <button mat-menu-item (click)="updateUserOrgLevel(user._id,'LEAD')">
+                        <mat-icon>how_to_reg</mat-icon>
+                        <span>Lead</span>
+                    </button>
+                    <button mat-menu-item (click)="updateUserOrgLevel(user._id,'VOLUNTEER')">
+                        <mat-icon>person_add</mat-icon>
+                        <span>Volunteer</span>
+                    </button>
+                    <button (click)="updateUserOrgLevel(user._id, 'REMOVE')" mat-button color="warn">
+                        <span>REMOVE</span>
+                    </button>
+                </mat-menu>
+                </mat-list-item>
+              </mat-list>
+
+        </mat-tab>
+
+    </mat-tab-group>
+
+    <!--
     <div fxLayout="row" fxLayoutAlign="space-around center" *ngIf="sortedUsers">
         <mat-form-field>
             <input matInput type="text" (keyup)="applyFilter($event.target.value)" (focus)="setFilter($event.target.value)" placeholder="Search">
@@ -44,7 +111,7 @@
             </td>
             <mat-divider></mat-divider>
         </tr>
-    </table>
+    </table>-->
 </mat-dialog-content> 
 <mat-dialog-actions align="end">
         <button mat-raised-button color="accent" (click)="return();" >CLOSE</button>

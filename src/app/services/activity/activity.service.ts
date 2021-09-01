@@ -56,4 +56,9 @@ export class ActivityService {
     return this.http.post(this.API_URL + '/api/resetActivity', {activityID})
   }
 
+  downloadCordReport(activityID: string, activityType: string){
+    return this.http.post(this.API_URL + '/api/downloadCordReport', {activityID, activityType})
+
+  }
+
 }

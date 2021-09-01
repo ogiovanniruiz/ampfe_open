@@ -29,7 +29,7 @@
       <br>
       <div fxLayout="row" fxLayoutGap="20%" fxLayoutGap.lg="15%" fxLayoutGap.md="10%" fxLayoutGap.sm="5%" *ngIf="org.active">
         <button mat-raised-button color="primary" fxLayoutAlign="center" (click)="enterOrganization(org)">ENTER</button>
-        <button mat-raised-button color="accent" fxLayoutAlign="center" (click)="openUserList(org)" >USERS</button>
+        <button mat-raised-button color="accent" matBadge={{org.requests.length}}  [matBadgeHidden]="org.requests.length === 0" matBadgeColor="warn" fxLayoutAlign="center" (click)="openUserList(org)" >USERS</button>
       </div>
       <mat-error *ngIf="!org.active">Organization is Inactive</mat-error>
     </mat-card>

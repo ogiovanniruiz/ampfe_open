@@ -30,6 +30,7 @@
     <section>
         Total HouseHolds: {{totalHouseHolds}}
         <button mat-stroked-button (click)='downloadPhonebankContactHistory()'>Download Phone Contact History</button>
+        <button mat-stroked-button (click)='downloadPhonebankCORDReport()'>Download CORD Report</button>
         <mat-progress-bar mode="indeterminate" *ngIf="downloading"></mat-progress-bar>
     </section>
    

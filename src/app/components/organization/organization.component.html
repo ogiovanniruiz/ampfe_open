@@ -1,6 +1,6 @@
 <h1 fxLayoutAlign="center" *ngIf="dataLoaded">{{org.name}}'s Campaigns</h1>
 <br>
-<mat-tab-group>
+<mat-tab-group mat-stretch-tabs>
     <mat-tab label="Active Campaigns"> 
         <div style="margin-top: 10%" fxLayout.xs="column" fxLayout="row" fxLayoutWrap fxLayoutAlign="center" fxLayoutGap="5%" *ngIf="!dataLoaded">
             <mat-card fxLayoutGap="10%" fxLayout="column" fxFlex="40" fxFlex.sm="60">
@@ -70,68 +70,6 @@
         <button  mat-fab *ngIf="dev || orgLevel === 'ADMINISTRATOR'" color="primary" matTooltip="Subscription" (click)="openOrgBillingDialog()"><mat-icon>monetization_on</mat-icon></button>
     </section>
 </section>
-<!--
-<h1 fxLayoutAlign="center" *ngIf="(orgLevel === 'ADMINISTRATOR' || dev) && dataLoaded">{{org.name}}'s Dashboard</h1>
-<mat-grid-list #grid rowHeight="2:1">
-
-    
-    <mat-grid-tile *ngIf="(orgLevel === 'ADMINISTRATOR' || dev) && dataLoaded">
-        <mat-card fxFlex=80% fxLayout="column">
-            <section>
-                <button mat-icon-button width="40" height="40" style="float: right;">
-                    <img width="40" height="40" alt="campaign" src="../assets/members.jpg">
-                </button>
-                <h2>{{org.name}}'s Membership List</h2>
-                <h4>A place to manage Membership, tags and uploaded lists.</h4>
-            </section>
-            <br>
-            <button mat-raised-button color="primary" fxFlex=80% (click)="openMembership()">ENTER</button>
-        </mat-card>
-        <br>
-        <br>
-    </mat-grid-tile>
-    <mat-grid-tile *ngIf="(orgLevel === 'ADMINISTRATOR' || dev) && dataLoaded">
-        <mat-card fxFlex=80% fxLayout="column">
-            <div>
-                <button mat-icon-button width="40" height="40" style="float: right;">
-                    <img width="40" height="40" alt="campaign" src="../assets/wrench.png">
-                </button>
-              <h2>{{org.name}}'s Settings</h2>
-              <h4>A place to manage Organization's Logo and more.</h4>
-            </div>
-            <br>
-            <button mat-raised-button fxFlex=80%  color="primary" (click)="openOrgSettingsDialog()">ENTER</button>
-        </mat-card>
-    </mat-grid-tile>
-    <mat-grid-tile *ngIf="(orgLevel === 'ADMINISTRATOR' || dev) && dataLoaded">
-        <mat-card fxFlex=80% fxLayout="column">
-            <div>
-                <button mat-icon-button width="40" height="40" style="float: right;">
-                    <img width="40" height="40" alt="campaign" src="../assets/phone.png">
-                </button>
-              <h2>{{org.name}}'s Twilio Account</h2>
-              <h4>A place to manage Organization's Phone Numbers and more.</h4>
-            </div>
-            <br>
-            <button mat-raised-button color="primary" fxFlex=100% (click)="openTwilioAccountDialog()" *ngIf="funded">ENTER</button>
-            <mat-error *ngIf="!funded">Organization is not funded.</mat-error>
-        </mat-card>
-    </mat-grid-tile>
-    <mat-grid-tile *ngIf="(orgLevel === 'ADMINISTRATOR'|| dev) && dataLoaded ">
-        <mat-card fxFlex=80% fxLayout="column">
-            <div>
-                <button mat-icon-button width="40" height="40" style="float: right;">
-                    <img width="40" height="40" alt="campaign" src="../assets/funding.png">
-                </button>
-              <h2>{{org.name}}'s Billing</h2>
-              <h4>A place to manage Organization's Billing and more.</h4>
-            </div>
-            <br>
-            <button mat-raised-button color="primary" fxFlex=100% (click)="openOrgBillingDialog()">ENTER</button>
-        </mat-card>
-    </mat-grid-tile>
-</mat-grid-list>
--->
 <mat-error fxLayoutAlign="center" *ngIf="displayErrorMsg">{{errorMessage}}</mat-error>
 
 

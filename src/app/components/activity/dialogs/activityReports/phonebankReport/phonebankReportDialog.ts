@@ -119,7 +119,10 @@ import {Activity} from '../../../../../models/activities/activity.model'
                 this.completed = false;
             }
         }
-      )
+      ), error =>{
+        this.sortedMembers = [];
+
+      }
     }
 
     getOrgUsers(){
@@ -236,14 +239,53 @@ import {Activity} from '../../../../../models/activities/activity.model'
 
     downloadPhonebankCORDReport(){
       this.downloading = true;
+      this.activityService.downloadCordReport(this.activityID, 'Phonebank').subscribe(
+        (data: unknown[])=>{
 
+          var result = data['report']
 
-      this.phonebankService.downloadPhonebankContactHistory(this.activityID).subscribe(
-        (result: unknown[])=>{
-          console.log(result)
+          let binaryData = ['firstName, lastName, organization, date, responses\n'];
 
-          let binaryData = ['residentPhonenumber, userPhonenumber, userName, date, responseType, responses\n'];
+          for(var i = 0; i < result.length; i++){
 
+            if(result[i]['scriptResponse']){
+
+              binaryData.push(result[i]['userName']['firstName'] + ',')
+              binaryData.push(result[i]['userName']['lastName'] + ',')
+              binaryData.push(result[i]['orgName']+ ',')
+              var date = result[i]['callInitTime'].substring(0, 10);
+              binaryData.push(date + ',')
+
+              for(var k = 0; k < result[i]['scriptResponse']['questionResponses'].length; k++){
+                var question = result[i]['scriptResponse']['questionResponses'][k]['question'].replace(/,/g,"")
+
+                var answer = result[i]['scriptResponse']['questionResponses'][k]['idType']
+
+                if(result[i]['scriptResponse']['questionResponses'][k]['response']){
+                  answer = result[i]['scriptResponse']['questionResponses'][k]['response']
+                }
+
+                if(answer != "NONE"){
+                  binaryData.push(question + ":" + answer + ',')
+                }
+              }
+
+              binaryData.push('\n')
+            }
+
+          }
+
+          this.downloading = false;
+
+          let downloadLink = document.createElement('a');
+
+          var filename = data['activityName'] + "_" + "phonebank.csv"
+  
+          let blob = new Blob(binaryData, {type: 'blob'});
+          downloadLink.href = window.URL.createObjectURL(blob);
+          downloadLink.setAttribute('download', filename );
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
         }
       )
     }
