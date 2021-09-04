@@ -8,7 +8,7 @@ export const environment = {
   LOGO_DIR: '../assets/amplify.png',
   THEME: "",
   demoVersion: true,
-  testCallingNumber: '+19512580698',
+  testCallingNumber: '+1957682069',
 };
 
 /*
