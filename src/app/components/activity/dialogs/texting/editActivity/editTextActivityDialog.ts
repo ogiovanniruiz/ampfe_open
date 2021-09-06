@@ -42,6 +42,10 @@ export class EditTextActivityDialog implements OnInit{
   receiverNameFlag: boolean = true;
   senderNameFlag: boolean = true;
 
+  attachImageFlag: boolean = false;
+
+  sendImageFlag: boolean = false;
+
   quickResponses: string[] = []
 
   userFirstName: string;
@@ -75,6 +79,9 @@ export class EditTextActivityDialog implements OnInit{
 
   @ViewChild('senderNameActive', {static: false}) senderNameActive: ElementRef;
   @ViewChild('receiverNameActive', {static: false}) receiverNameActive: ElementRef;
+
+  @ViewChild('attachImage', {static: false}) attachImage: ElementRef;
+  @ViewChild('imageURL', {static: false}) imageURL: ElementRef;
 
   @ViewChild('activityAllOrgs', {static: false}) activityAllOrgs: ElementRef;
   @ViewChild('activityAllUsers', {static: false}) activityAllUsers: ElementRef;
@@ -155,6 +162,13 @@ export class EditTextActivityDialog implements OnInit{
       return
     }
 
+    if(this.attachImageFlag && this.imageURL.nativeElement.value === ''){
+      this.displayMessage = true;
+      this.userMessage = 'The Texting Activity needs an image url.';
+      return
+
+    }
+
     this.campaignOrgsUpdate = [this.activity['orgIDs'][0]].concat(this.activityAllOrgs['ngControl'].viewModel);
     this.usersUpdate = [this.activity['userIDs'][0]].concat(this.activityAllUsers['ngControl'].viewModel);
 
@@ -167,6 +181,8 @@ export class EditTextActivityDialog implements OnInit{
                           initTextMsg: this.initTextMsg.nativeElement.value,
                           sendSenderName: this.senderNameFlag,
                           sendReceiverName: this.receiverNameFlag,
+                          attachImage: this.attachImageFlag,
+                          imageUrl: this.imageURL.nativeElement.value,
                           orgIDs: this.campaignOrgsUpdate,
                           userIDs: this.usersUpdate,
                         }
@@ -243,6 +259,12 @@ export class EditTextActivityDialog implements OnInit{
     this.senderNameFlag = !toggle.checked
   }
 
+  toggleAttachImage(toggle){
+    console.log(toggle.checked)
+    this.attachImageFlag = !toggle.checked
+
+  }
+
   close(){this.dialogRef.close()}
 
   prefillActivtyData(){
@@ -254,11 +276,15 @@ export class EditTextActivityDialog implements OnInit{
 
     this.receiverNameFlag = this.activity['textMetaData']['sendReceiverName']
     this.senderNameFlag = this.activity['textMetaData']['sendSenderName']
+
+    this.attachImageFlag = this.activity['textMetaData']['attachImage']
+    this.imageURL.nativeElement.value = this.activity['textMetaData']['imageUrl']
       
     setTimeout(()=>{
       this.initTextMsg.nativeElement.value = this.activity['textMetaData']['initTextMsg'];
       this.senderNameActive['checked'] = this.senderNameFlag;
       this.receiverNameActive['checked'] = this.receiverNameFlag;
+      this.attachImage['checked'] = this.attachImageFlag
     })
 
     this.userPhoneNumbers = this.activity['textMetaData']['activityPhonenums']

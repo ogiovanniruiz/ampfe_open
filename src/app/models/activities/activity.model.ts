@@ -22,6 +22,8 @@ export class TextMetaData {
     quickResponses: string[];
     sendSenderName: boolean;
     sendReceiverName: boolean;
+    attachImage: boolean;
+    imageUrl: string;
 }
 
 export class TextContactRecord  {

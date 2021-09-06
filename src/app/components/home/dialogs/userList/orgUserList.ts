@@ -17,7 +17,7 @@ export class OrgUserListDialog implements OnInit{
   displayErrorMsg: boolean = false;
   
   dev: boolean = false;
-  user: User;
+  currentUser: User;
 
   orgName: string = '';
   orgID: string = ''
@@ -37,11 +37,11 @@ export class OrgUserListDialog implements OnInit{
         this.orgID = data._id
     
         this.dev =  JSON.parse(sessionStorage.getItem('user')).dev;
-        this.user =  JSON.parse(sessionStorage.getItem('user'))
+        this.currentUser =  JSON.parse(sessionStorage.getItem('user'))
       }
 
   getApprovedUsers(){
-    var currentUser = JSON.parse(sessionStorage.getItem('user'));
+    //var currentUser = JSON.parse(sessionStorage.getItem('user'));
 
     this.loading = true;
     this.dialogRef.updateSize('500px');
@@ -49,7 +49,7 @@ export class OrgUserListDialog implements OnInit{
         (users: User[]) =>
           {
             if(!this.dev){
-              users = users.filter(user => {return user._id != currentUser._id});
+              users = users.filter(user => {return user._id != this.currentUser._id});
             }
 
             this.approvedUsersOriginal = users

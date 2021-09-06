@@ -91,6 +91,10 @@
             </mat-select>
         </mat-card>
         <br> 
+        <mat-slide-toggle style="float: right;" checked="false" #attachImage (click)='toggleAttachImage(attachImage)'>Attach An Image</mat-slide-toggle>
+        <mat-form-field > 
+            <input matInput #imageURL type="text" placeholder="Image URL">
+        </mat-form-field >
 
     </section>
 

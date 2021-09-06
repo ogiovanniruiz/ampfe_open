@@ -3,6 +3,8 @@
         <mat-progress-bar *ngIf='!activityLoaded' mode="indeterminate"></mat-progress-bar>
         <mat-card  fxLayoutGap="5%" fxLayout="column" >
             <p *ngIf="userPhoneNumber != '' && activityLoaded">Your Texting Phone Number: {{userPhoneNumber}}</p>
+            <p *ngIf="activityLoaded && sendImage">Image Attached: {{imageUrl}}</p>
+            <p *ngIf="activityLoaded && !sendImage">No Image Attached</p>
             <mat-error *ngIf="numbersUnavailable">
                 There are no phone numbers available. Administrator should add more numbers.
             </mat-error>

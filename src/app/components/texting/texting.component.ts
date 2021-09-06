@@ -10,6 +10,7 @@ import {SwPush} from '@angular/service-worker';
 import { environment } from '../../../environments/environment';
 import * as _ from 'underscore';
 import {Resident} from '../../models/houseHolds/houseHold.model'
+import { ThisMonthInstance } from 'twilio/lib/rest/api/v2010/account/usage/record/thisMonth';
 
 @Component({
   selector: 'app-texting',
@@ -55,6 +56,9 @@ export class TextingComponent implements OnInit {
   alreadyLocked: boolean = false;
   demoVersion: boolean = environment.demoVersion;
 
+  sendImage: boolean = false
+  imageUrl: string = ''
+
   constructor(private activityService: ActivityService, 
               private textingService: TextingService,
               public orgService: OrganizationService,
@@ -96,6 +100,8 @@ export class TextingComponent implements OnInit {
     this.activityService.getActivity(activityID).subscribe(
       (activity: Activity) =>{
         this.activity = activity
+        this.sendImage = activity.textMetaData.attachImage
+        this.imageUrl = activity.textMetaData.imageUrl
 
         var numberAllocated: boolean = this.getUserPhoneNumber(activity.textMetaData.activityPhonenums);
 
@@ -296,7 +302,9 @@ export class TextingComponent implements OnInit {
       userPhonenum: this.userPhoneNumber,
       personID: resident['personID'],
       pass: this.activity.passes,
-      idBy: this.activity.idByHousehold
+      idBy: this.activity.idByHousehold,
+      imageUrl: this.imageUrl,
+      sendImage: this.sendImage,
     }
 
     this.textingService.sendInitText(resident, houseHoldRecord, tbContactRecord).subscribe(

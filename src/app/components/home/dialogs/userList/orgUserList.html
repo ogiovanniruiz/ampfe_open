@@ -10,21 +10,21 @@
                     <mat-icon matListIcon>group</mat-icon>
                     <h3 matLine> {{approvedUser.name.fullName}}</h3>
                     <p matLine><span>{{approvedUser.loginEmail}}</span></p>
-                    <button mat-button [disabled]="getOrgLevel(approvedUser) === 'ADMINISTRATOR' && !user.dev" color="primary" [matMenuTriggerFor]="menu">{{getOrgLevel(approvedUser)}}</button>
+                    <button mat-button [disabled]="getOrgLevel(approvedUser) === 'ADMINISTRATOR' && !currentUser.dev" color="primary" [matMenuTriggerFor]="menu">{{getOrgLevel(approvedUser)}}</button>
                     <mat-menu #menu="matMenu">
-                        <button mat-menu-item (click)="updateUserOrgLevel(user._id,'ADMINISTRATOR')">
+                        <button mat-menu-item (click)="updateUserOrgLevel(approvedUser._id,'ADMINISTRATOR')">
                             <mat-icon>account_circle</mat-icon>
                             <span>Admin</span>
                         </button>
-                        <button mat-menu-item (click)="updateUserOrgLevel(user._id,'LEAD')">
+                        <button mat-menu-item (click)="updateUserOrgLevel(approvedUser._id,'LEAD')">
                             <mat-icon>how_to_reg</mat-icon>
                             <span>Lead</span>
                         </button>
-                        <button mat-menu-item (click)="updateUserOrgLevel(user._id,'VOLUNTEER')">
+                        <button mat-menu-item (click)="updateUserOrgLevel(approvedUser._id,'VOLUNTEER')">
                             <mat-icon>person_add</mat-icon>
                             <span>Volunteer</span>
                         </button>
-                        <button (click)="updateUserOrgLevel(user._id, 'REMOVE')" mat-button color="warn">
+                        <button (click)="updateUserOrgLevel(approvedUser._id, 'REMOVE')" mat-button color="warn">
                             <span>REMOVE</span>
                         </button>
                     </mat-menu>

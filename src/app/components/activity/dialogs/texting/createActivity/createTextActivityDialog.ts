@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import {Organization} from '../../../../../models/organizations/organization.model';
 import {User} from '../../../../../models/users/user.model';
 
+
 @Component({
   templateUrl: './createTextActivityDialog.html',
   providers: [DatePipe]
@@ -48,6 +49,8 @@ export class CreateTextActivityDialog implements OnInit{
   receiverNameFlag: boolean = true;
   senderNameFlag:boolean = true;
 
+  attachImageFlag: boolean = false;
+
   dev:boolean = false;
 
   loading = false;
@@ -67,6 +70,8 @@ export class CreateTextActivityDialog implements OnInit{
 
   @ViewChild('senderNameActive', {static: false}) senderNameActive: ElementRef;
   @ViewChild('receiverNameActive', {static: false}) receiverNameActive: ElementRef;
+  @ViewChild('attachImage', {static: false}) attachImage: ElementRef;
+  @ViewChild('imageURL', {static: false}) imageURL: ElementRef;
   @ViewChild('selectedNonResponseSet', {static: false}) selectedNonResponseSet: ElementRef;
   @ViewChild('selectedScript', {static: false}) selectedScript: ElementRef;
   @ViewChild('selectedTarget', {static: false}) selectedTarget: ElementRef;
@@ -176,6 +181,8 @@ export class CreateTextActivityDialog implements OnInit{
                         initTextMsg: this.initTextMsg.nativeElement.value,
                         sendReceiverName: this.receiverNameFlag,
                         sendSenderName: this.senderNameFlag,
+                        attachImage: this.attachImageFlag,
+                        imageUrl: this.imageURL.nativeElement.value
                       }
 
     var newActivity = {
@@ -274,6 +281,11 @@ export class CreateTextActivityDialog implements OnInit{
 
   toggleSenderName(toggle){
     this.senderNameFlag = !toggle.checked
+  }
+
+  toggleAttachImage(toggle){
+    this.attachImageFlag = !toggle.checked
+
   }
 
   close(){this.dialogRef.close()}
