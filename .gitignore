@@ -10,6 +10,7 @@
 
 src/environments/environment.prod.ts
 src/environments/environment.dev.ts
+src/environments/environment.ts
 
 #documentation
 /documentation
