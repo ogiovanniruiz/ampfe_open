@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild,AfterContentInit} from '@angular/core';
 
 import { MediaChange, MediaObserver } from '@angular/flex-layout';
 import {MatDialog} from '@angular/material/dialog';
 import {Router} from "@angular/router";
+
+import { MatGridList } from '@angular/material/grid-list';
 
 import {OrganizationService} from '../../services/organization/organization.service'
 import {UserService} from '../../services/user/user.service'
@@ -31,21 +33,31 @@ export class HomeComponent implements OnInit {
 
   logo_dir: string = environment.LOGO_DIR;
 
-  leadOrgs: Organization[] = [];
-  volOrgs: Organization[] = [];
-  adminOrgs: Organization[] = [];
+  activeOrgs: Organization[];
+  inactiveOrgs: Organization[];
 
-  leadOrgsResults: Organization[] = [];
-  volOrgsResults: Organization[] = [];
-  adminOrgsResults: Organization[] = [];
+  activeOrgResults: Organization[];
 
-  gridColumns: Number;
+  //leadOrgs: Organization[] = [];
+  //volOrgs: Organization[] = [];
+  //adminOrgs: Organization[] = [];
+
+  //leadOrgsResults: Organization[] = [];
+  //volOrgsResults: Organization[] = [];
+  //adminOrgsResults: Organization[] = [];
+
+  //gridColumns: Number;
   dev: boolean = false;
   dataLoaded:boolean = false;
   userAgreementVersion: string = "1.0";
 
+  user: User;
+
   errorMessage: string = "";
   displayErrorMsg: boolean = false;
+
+  @ViewChild('orgGrid', {static: true}) orgGrid: MatGridList;
+  @ViewChild('inactiveOrgGrid', {static: true }) inactiveOrgGrid: MatGridList;
   
   gridByBreakpoint = {
     xl: 4,
@@ -95,28 +107,33 @@ export class HomeComponent implements OnInit {
   }
 
   getOrgPermissions(){
-    var user: User = JSON.parse(sessionStorage.getItem('user'));
+    this.user = JSON.parse(sessionStorage.getItem('user'));
     
-    this.dev = user.dev;
-    this.orgService.getOrgPermissions(user).subscribe(
+    this.dev = this.user.dev;
+    this.orgService.getOrgPermissions(this.user).subscribe(
       (orgs: Organization[]) => {
 
+        this.activeOrgs = orgs.filter(function(org) { return org['active'] });
+        this.activeOrgResults = this.activeOrgs
+        this.inactiveOrgs = orgs.filter(function(org) { return !org['active'] });
+
+        /*
         if(this.dev) {this.adminOrgs = orgs; this.adminOrgsResults = orgs}
         else{
 
-          var adminOrgIDs: string[] = user.orgPermissions.map(function(orgPermission){ 
+          var adminOrgIDs: string[] = this.user.orgPermissions.map(function(orgPermission){ 
             if(orgPermission.level === "ADMINISTRATOR"){
               return orgPermission.orgID
             }
           })
 
-          var leadOrgIDs: string[] = user.orgPermissions.map(function(orgPermission){ 
+          var leadOrgIDs: string[] = this.user.orgPermissions.map(function(orgPermission){ 
             if(orgPermission.level === "LEAD"){
               return orgPermission.orgID
             }
           })
 
-          var volOrgIDs: string[] = user.orgPermissions.map(function(orgPermission){ 
+          var volOrgIDs: string[] = this.user.orgPermissions.map(function(orgPermission){ 
             if(orgPermission.level === "VOLUNTEER"){
               return orgPermission.orgID
             }
@@ -128,7 +145,7 @@ export class HomeComponent implements OnInit {
           this.adminOrgsResults = orgs.filter(org => {return adminOrgIDs.includes(org._id)})
           this.volOrgs = orgs.filter(org => {return volOrgIDs.includes(org._id)})
           this.volOrgsResults = orgs.filter(org => {return volOrgIDs.includes(org._id)})
-        }
+        }*/
 
         this.dataLoaded = true;
       },
@@ -138,6 +155,10 @@ export class HomeComponent implements OnInit {
         console.log(error)
       }
     )
+  }
+
+  checkOrgPermissions(permissions){
+    return permissions.level === 'ADMINISTRATOR'
   }
 
   enterOrganization(org: Organization){
@@ -205,19 +226,13 @@ export class HomeComponent implements OnInit {
   }
 
   applyFilter(value: string) {
+    
     if (value) {
-      this.leadOrgs = this.leadOrgsResults;
-      this.leadOrgs = this.leadOrgsResults.filter(org => org.name.toLowerCase().startsWith(value.toLowerCase()));
+      this.activeOrgs = this.activeOrgResults;
+      this.activeOrgs = this.activeOrgResults.filter(org => org.name.toLowerCase().startsWith(value.toLowerCase()));
 
-      this.volOrgs = this.volOrgsResults;
-      this.volOrgs = this.volOrgsResults.filter(org => org.name.toLowerCase().startsWith(value.toLowerCase()));
-
-      this.adminOrgs = this.adminOrgsResults;
-      this.adminOrgs = this.adminOrgsResults.filter(org => org.name.toLowerCase().startsWith(value.toLowerCase()));
     } else {
-      this.leadOrgs = this.leadOrgsResults;
-      this.volOrgs = this.volOrgsResults;
-      this.adminOrgs = this.adminOrgsResults;
+      this.activeOrgs = this.activeOrgResults;
     }
   }
 
@@ -235,6 +250,9 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.refreshUserProfile();
+
+    this.orgGrid.cols = 1;  
+    this.inactiveOrgGrid.cols = 1;  
 
     if(sessionStorage.getItem('rdr')){
       console.log("You are being redirected.")
@@ -268,7 +286,9 @@ export class HomeComponent implements OnInit {
 
   ngAfterContentInit() {
     this.observableMedia.media$.subscribe((change: MediaChange) => {
-      this.gridColumns = this.gridByBreakpoint[change.mqAlias];
+      this.orgGrid.cols = this.gridByBreakpoint[change.mqAlias]
+      this.inactiveOrgGrid.cols = this.gridByBreakpoint[change.mqAlias]
+      //this.gridColumns = this.gridByBreakpoint[change.mqAlias];
     });
   }
 

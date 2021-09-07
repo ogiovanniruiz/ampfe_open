@@ -352,9 +352,21 @@ export class TargetingComponent implements OnInit {
         let layerBlockgroup = await L.geoJSON(targets, {pane: 'bg', onEachFeature: onEachFeature.bind(this)});
 
         function onEachFeature(feature, layerBG) {
-          var tractData = 'GeoID: ' + feature.properties.geoid + '<br>' + 
-                          '% Full Vax: ' + feature.properties.demographics.percentFullVax;
+          var tractData = 'GeoID: ' + feature.properties.geoid + '<br>' //+ 
+                          //'% Full Vax: ' + feature.properties.demographics.percentFullVax;
 
+                          
+          if(feature.properties.demographics.percentPI >=40){
+            layerBG.setStyle({color: 'brown'}).bindTooltip(tractData).on('mouseup', this.selectBlock, this).on('mousedown', this.getSelected, feature).bringToBack();
+          }/*else if (feature.properties.demographics.percentPI > 25 && feature.properties.demographics.percentPI <= 50){
+            layerBG.setStyle({color: 'orange'}).bindTooltip(tractData).on('mouseup', this.selectBlock, this).on('mousedown', this.getSelected, feature).bringToBack();
+          }else if (feature.properties.demographics.percentPI > 50 && feature.properties.demographics.percentPI <= 75){
+            layerBG.setStyle({color: 'yellow'}).bindTooltip(tractData).on('mouseup', this.selectBlock, this).on('mousedown', this.getSelected, feature).bringToBack();
+          }else{
+            layerBG.bindTooltip(tractData).on('mouseup', this.selectBlock, this).on('mousedown', this.getSelected, feature).bringToBack();
+          }*/
+
+                   /*       
           if(feature.properties.demographics.percentFullVax <= 25){
             layerBG.setStyle({color: 'brown'}).bindTooltip(tractData).on('mouseup', this.selectBlock, this).on('mousedown', this.getSelected, feature).bringToBack();
           }else if (feature.properties.demographics.percentFullVax > 25 && feature.properties.demographics.percentFullVax <= 50){
@@ -364,7 +376,7 @@ export class TargetingComponent implements OnInit {
           }else{
             layerBG.bindTooltip(tractData).on('mouseup', this.selectBlock, this).on('mousedown', this.getSelected, feature).bringToBack();
           }
-
+*/
         }
 
         this.layersControl.overlays['Blockgroups'].removeLayer(this.layersControl.overlays['Blockgroups'].getLayers()[1]);

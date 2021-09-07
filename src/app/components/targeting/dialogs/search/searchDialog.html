@@ -2,6 +2,7 @@
 <mat-dialog-content fxLayout="column">
   <mat-progress-bar mode="indeterminate" *ngIf="loadingAddressData"></mat-progress-bar>
   <mat-tab-group>
+    <!--
     <mat-tab label="By Address">
       <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
         <mat-form-field fxFlex="25%"> 
@@ -27,14 +28,14 @@
             <mat-option *ngFor="let city of cities" [value]="city">{{city}}</mat-option>
           </mat-select>
         </mat-form-field>
-        <!--
+        
         <mat-form-field fxFlex="30%"> 
           <mat-select #county placeholder="County">
             <mat-option>None</mat-option>
             <mat-option *ngFor="let county of counties" [value]="county">{{county}}</mat-option>
           </mat-select>
         </mat-form-field>
-      -->
+    
       <mat-form-field fxFlex="30%"> 
         <mat-select #zip placeholder="Zip">
           <mat-option *ngFor="let zip of zips" [value]="zip">{{zip}}</mat-option>
@@ -47,8 +48,9 @@
         <button mat-button  color="primary" (click)="searchAddress()">SEARCH</button>
         <button mat-button color="accent" (click)="cancel()">CANCEL</button>
       </section>
-    </mat-tab>
-
+    
+    </mat-tab>-->
+<!--
     <mat-tab label="By Precinct">
       <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
         <mat-form-field>
@@ -62,21 +64,21 @@
         <button mat-button  color="primary" (click)="searchPrecinct()">SEARCH</button>
         <button mat-button color="accent" (click)="cancel()">CANCEL</button>
       </section>
-    </mat-tab>
+    </mat-tab>-->
 
     <mat-tab label="By Census Blockgroup">
       <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
         <mat-form-field>
-          <mat-select #blockgroup placeholder="Blockgroup">
-            <mat-option *ngFor="let blockgroup of blockgroups" [value]="blockgroup">{{blockgroup}}</mat-option>
-          </mat-select>
+          <input matInput #blockgroup type="text" placeholder="Blockgroup Geoid">
         </mat-form-field>
+        <button mat-stroked-button (click)='searchBlockgroup()'>Search</button>
       </section>
 
+      <!--
       <section *ngIf="blockgroups.length">
         <button mat-button  color="primary" (click)="searchBlockgroup()">SEARCH</button>
         <button mat-button color="accent" (click)="cancel()">CANCEL</button>
-      </section>
+      </section>-->
     </mat-tab>
 
   </mat-tab-group>
