@@ -51,9 +51,10 @@ import * as L from 'leaflet';
         public ampService: AmplifyService,
         public geoService: GeometryService,
         ){
-          this.campaignBoundary = data.campaignBoundary;
-          this.precincts = data.precincts;
-          this.blockgroups = data.blockgroups;
+          //this.campaignBoundary = data.campaignBoundary;
+          //this.precincts = data.precincts;
+          //this.blockgroups = data.blockgroups;
+          
 
         }
 
@@ -118,7 +119,7 @@ import * as L from 'leaflet';
     }
 
     searchBlockgroup() {
-        this.geoService.getBlockgroup(this.blockgroup['selected'].value).subscribe((target: any) => {
+        this.geoService.getBlockgroup(this.blockgroup.nativeElement.value).subscribe((target: any) => {
             var blockgroup = {
                 type: 'Blockgroup',
                 value: target
@@ -142,9 +143,10 @@ import * as L from 'leaflet';
     }
 
     ngOnInit(){
-      this.getCities();
-      this.getSufficies();
-      this.getZips();
+      //this.getCities();
+      //this.getSufficies();
+      //this.getZips();
+      this.loadingAddressData = false;
 
     }
 }

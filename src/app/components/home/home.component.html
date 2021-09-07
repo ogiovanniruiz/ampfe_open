@@ -1,28 +1,66 @@
-<div style="margin-top: 10%" fxLayout.xs="column" fxLayout="row" fxLayoutWrap fxLayoutAlign="center" fxLayoutGap="5%" *ngIf="!dataLoaded">
-  <mat-card fxLayoutGap="10%" fxLayout="column" fxFlex="40" fxFlex.sm="60">
-    <span fxLayoutAlign="center">
-      <img width="373" height="81" alt="censusIE Logo" src="{{logo_dir}}">
-    </span>
-    <section fxLayout="column" fxLayoutGap="10%">
-        <p fxLayoutAlign="center">Loading Organizations...</p>
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-        <br>
-    </section>
-  </mat-card>
-</div>
+
 <mat-tab-group mat-stretch-tabs>
   <mat-tab label="Active Organizations"> 
+    <div fxLayout="column" fxLayoutAlign="stretch center" *ngIf="dataLoaded">
+      <input style="width:93%;margin-top:1.2%;padding:12px;font-size:14px;" (keyup)="applyFilter($event.target.value)" placeholder="Search for organization" >
+    </div>
+    <div style="margin-top: 10%" fxLayout.xs="column" fxLayout="row" fxLayoutWrap fxLayoutAlign="center" fxLayoutGap="5%" *ngIf="!dataLoaded">
+      <mat-card fxLayoutGap="10%" fxLayout="column" fxFlex="40" fxFlex.sm="60">
+        <span fxLayoutAlign="center">
+          <img width="373" height="81" alt="censusIE Logo" src="{{logo_dir}}">
+        </span>
+        <section fxLayout="column" fxLayoutGap="10%">
+            <p fxLayoutAlign="center">Loading Organizations...</p>
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            <br>
+        </section>
+      </mat-card>
+    </div>
+    <mat-grid-list #orgGrid rowHeight="2:1">
+      <mat-grid-tile *ngFor='let org of activeOrgs'>
+        <mat-card fxFlex=80% *ngIf="dataLoaded">
+          <mat-card-header>
+            <button mat-card-avatar class="header-image" (click)="editOrganization(org)"></button>
+            <mat-card-title>{{org.name}}</mat-card-title>
+            <mat-card-subtitle>Team Members: {{org.userIDs.length}}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content><p>{{org.description}}</p></mat-card-content>
+            <mat-card-actions>
+              <button mat-stroked-button color="primary" (click)="enterOrganization(org)">ENTER</button>
+              <button mat-stroked-button matBadge={{org.requests.length}}  [matBadgeHidden]="org.requests.length === 0" *ngIf='user.orgPermissions.some(checkOrgPermissions) || dev' matBadgeColor="warn" color="accent" (click)="openUserList(org)">TEAM</button>
+            </mat-card-actions>
+        </mat-card>
+        <br>
+        <br>
+      </mat-grid-tile>
+
+    </mat-grid-list>
 
   </mat-tab>
   <mat-tab label="Inactive Organizations"> 
+    <mat-grid-list #inactiveOrgGrid rowHeight="2:1">
+      <mat-grid-tile *ngFor='let org of inactiveOrgs'>
+        <mat-card fxFlex=80% *ngIf="dataLoaded">
+          <mat-card-header>
+            <button mat-card-avatar class="header-image" (click)="editOrganization(org)"></button>
+            <mat-card-title>{{org.name}}</mat-card-title>
+            <mat-card-subtitle>Team Members: {{org.userIDs.length}}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content><p>{{org.description}}</p></mat-card-content>
+        </mat-card>
+        <br>
+        <br>
+
+      </mat-grid-tile>
+
+    </mat-grid-list>
+    
     
   </mat-tab>
 
 </mat-tab-group>
-<div fxLayout="column" fxLayoutAlign="stretch center" *ngIf="dataLoaded">
-  <input style="width:93%;margin-top:1.2%;padding:12px;font-size:14px;" (keyup)="applyFilter($event.target.value)" placeholder="Search for organization" >
-</div>
 
+<!--
 <mat-grid-list [cols]="gridColumns || 1" rowHeight="2:1" *ngIf="dataLoaded">
   <mat-grid-tile *ngFor="let org of adminOrgs" >
     <mat-card fxFlex = 80% >
@@ -73,7 +111,7 @@
       <button mat-stroked-button color="primary" fxLayoutAlign="center" (click)="enterOrganization(org)" *ngIf="org.active">Enter</button>
     </mat-card>
   </mat-grid-tile>
-</mat-grid-list>
+</mat-grid-list>-->
 <mat-error fxLayoutAlign="center" *ngIf="displayErrorMsg">{{errorMessage}}</mat-error>
 
 <footer fxLayoutGap="10%" *ngIf="dataLoaded"> 
@@ -88,6 +126,7 @@
             <mat-icon>create</mat-icon>
             <span>Update Developer Status</span>
           </button> 
+          <!--
           
           <button mat-menu-item (click)="massGeocode()">
             <mat-icon>create</mat-icon>
@@ -96,7 +135,7 @@
           <button mat-menu-item (click)="appendGeoids()">
             <mat-icon>create</mat-icon>
             <span>Append Geoids</span>
-          </button>      
+          </button>  -->    
         </div>
       </mat-menu>
     </section>
