@@ -3,8 +3,10 @@
     <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
     <mat-tab-group mat-stretch-tabs>
         <mat-tab label="Active Team Members">
-            <input matInput type="text" (keyup)="applyFilter($event.target.value)" (focus)="setFilter($event.target.value)" placeholder="Search">
             <mat-list>
+                <mat-list-item>
+                    <input matInput type="text" (keyup)="applyFilter($event.target.value)" placeholder="Search By First Name">
+                </mat-list-item>
 
                 <mat-list-item *ngFor="let approvedUser of approvedUsers">
                     <mat-icon matListIcon>group</mat-icon>

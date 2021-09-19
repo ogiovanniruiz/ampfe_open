@@ -211,7 +211,6 @@ export class OrganizationComponent implements OnInit {
   }
 
   ngOnInit() {
-   // this.grid.cols = 1; 
     this.campaignGrid.cols = 1;    
     this.inactiveCampaignGrid.cols = 1;
     this.refreshUserProfile();
@@ -219,7 +218,6 @@ export class OrganizationComponent implements OnInit {
 
   ngAfterContentInit() {
     this.observableMedia.media$.subscribe((change: MediaChange) => {
-      //this.grid.cols = this.gridByBreakpoint[change.mqAlias];
       this.campaignGrid.cols = this.gridByBreakpoint[change.mqAlias];
       this.inactiveCampaignGrid.cols =  this.gridByBreakpoint[change.mqAlias];
     });

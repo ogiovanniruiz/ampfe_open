@@ -15,8 +15,6 @@
                             (leafletMapMoveEnd)="mapMoved($event)">
                             <div [leafletLayer]="drawnItems"></div>
                             <div [leafletLayer]="polygons"></div>
-                            <!--
-                            <div [leafletLayer]="clinics"></div>-->
     <div fxFlex="20%" fxLayoutAlign="center center" fxLayout="column" fxLayoutGap="2%" style="z-index: 1000">
       <mat-card fxLayoutAlign="center center" fxLayout="column" fxLayoutGap="5%" *ngIf="!loadingBlockgroups && !loadingPrecincts">
         <button mat-icon-button matTooltip="Search" (click)="openSearchDialog()"><mat-icon>search</mat-icon></button>

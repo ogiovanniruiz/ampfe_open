@@ -23,8 +23,8 @@
 <mat-dialog-actions  *ngIf="!loading && !accountExists" align="end">
   <button mat-raised-button color='primary' (click)="createTwilioAccount()">CREATE ACCOUNT</button>
 </mat-dialog-actions>
-<!--
-<mat-dialog-actions *ngIf="!loading && accountExists" align="end">
+
+<mat-dialog-actions *ngIf="!loading && accountExists && user.dev" align="end">
   <button mat-raised-button color='warn' (click)="updateTwilioAccount()">Update Twilio URL's</button>
-</mat-dialog-actions>-->
+</mat-dialog-actions>
 <mat-error fxLayoutAlign="center" *ngIf="displayErrorMsg">{{errorMessage}}</mat-error> 

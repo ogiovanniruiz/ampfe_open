@@ -3,7 +3,6 @@
     <span fxLayoutAlign="center">
       <img width="373" height="81" alt="censusIE Logo" src="{{logo_dir}}">
     </span>
-        
     <section fxLayout="column" fxLayoutGap="10%">
         <p fxLayoutAlign="center">Loading Campaign Dashboard...</p>
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
@@ -20,7 +19,7 @@
     </mat-card>
   </mat-grid-tile>
   
-  <mat-grid-tile *ngIf="dataLoaded" >
+  <mat-grid-tile *ngIf="dataLoaded && dev" >
     <mat-card fxFlex=80%>
       <button fxFlex color="primary" mat-button [disabled]='!dev' (click)="enterActivityDashboard('Canvass')">CANVASS</button>
     </mat-card>

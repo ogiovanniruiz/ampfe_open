@@ -11,6 +11,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatButtonModule,} from '@angular/material/button';
 import {MatCardModule,} from '@angular/material/card';
 import {MatToolbarModule,} from '@angular/material/toolbar';
+import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
 
 import {MatInputModule, } from '@angular/material/input';
 import {MatSelectModule, } from '@angular/material/select';
@@ -36,6 +37,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'
 
 @NgModule({
   declarations: [],
+
   imports: [
 
     MatIconModule,
@@ -54,9 +56,12 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'
     MatRadioModule,
     MatCheckboxModule,
    MatTabsModule,
+   MatBottomSheetModule,
 
     MatDialogModule,
     MatSlideToggleModule,
+    //MatBottomSheet,
+    //MatBottomSheetRef,
 
     //MatAutocompleteModule,
     MatProgressBarModule,
@@ -86,6 +91,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'
     MatMenuModule,
     MatExpansionModule,
   //  MatButtonToggleModule,
+  MatBottomSheetModule,
+  //MatBottomSheetRef,
     MatTooltipModule,
     MatRadioModule,
    MatCheckboxModule,
@@ -105,6 +112,6 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'
     FlexLayoutModule,
     ReactiveFormsModule,
     FormsModule,
-  ]
+  ],
 })
 export class MaterialModule { }

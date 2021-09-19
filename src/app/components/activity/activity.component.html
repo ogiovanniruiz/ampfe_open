@@ -1,7 +1,7 @@
 <br>
 <h1 fxLayoutAlign="center" >{{activityType}} Activities</h1>
 <section class="full-height">
-<mat-tab-group>
+<mat-tab-group mat-stretch-tabs>
     <mat-tab label="Activities">
         <mat-grid-list #grid cols="3" rowHeight="2:1">
             <mat-grid-tile *ngFor="let activity of activities; let i = index">

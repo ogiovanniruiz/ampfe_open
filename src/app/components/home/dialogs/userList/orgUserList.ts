@@ -116,14 +116,14 @@ export class OrgUserListDialog implements OnInit{
 
   }
 
-  setFilter(value: string) {
-    if (!value) {
+  applyFilter(value: string) {
+    console.log(value)
+
+    if(value){
+      this.approvedUsers = this.approvedUsersOriginal.filter(singleItem => singleItem.name.firstName.toLowerCase().includes(value.toLowerCase()));
+    }else{
       this.approvedUsers = this.approvedUsersOriginal
     }
-  }
-
-  applyFilter(value: string) {
-    this.approvedUsers = this.approvedUsers.filter(singleItem => singleItem.name.firstName.toLowerCase().includes(value.toLowerCase()));
   }
 }
 

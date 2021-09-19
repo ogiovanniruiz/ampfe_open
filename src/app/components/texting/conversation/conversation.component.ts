@@ -6,6 +6,9 @@ import {TextContactRecord} from '../../../models/activities/activity.model';
 import { EventEmitter } from '@angular/core';
 import {Activity} from '../../../models/activities/activity.model';
 import {Script} from '../../../models/scripts/script.model';
+import {MatBottomSheet, MatBottomSheetRef} from '@angular/material/bottom-sheet';
+import {QuickResponseBottomSheet} from '../actions/quickResponses';
+import { FinishIDBottomSheet } from '../actions/finishIdentification';
 
 @Component({
     selector: 'conversation',
@@ -20,11 +23,10 @@ export class ConversationComponent implements OnInit {
     @Input() activity: Activity;
     @Output() activityChange = new EventEmitter();
 
-    @Input() textReceivedContactRecords: TextContactRecord;
+    @Input() textReceivedContactRecords: TextContactRecord[];
     @Output() textReceivedContactRecordsChange = new EventEmitter();
 
     @Input() userPhonenumber: string;
-    quickResponses: string[];
 
     script: Script;
     nonResponseSet: unknown;
@@ -48,6 +50,7 @@ export class ConversationComponent implements OnInit {
                 private scriptService: ScriptService, 
                 private textingService: TextingService,
                 public orgService: OrganizationService,
+                private bottomSheet: MatBottomSheet
                 ) {}
 
     public getOrgLevel(){
@@ -115,57 +118,14 @@ export class ConversationComponent implements OnInit {
         )
     }
 
-    submitNonResponse(nonResponse: string, nonResponseType: string){
-        var activityID: string = sessionStorage.getItem('activityID')
-        var user: object = JSON.parse(sessionStorage.getItem('user'))
-        this.submitingResponse = true;
+    
 
-        this.textingService.submitTextNonResponse(this.activity, user, nonResponse, nonResponseType, this.selectedTextContactRecord, this.nonResponseSet['_id']).subscribe(
-            (textContactRecord: TextContactRecord)=>{
-                //this.selectedTextContactRecord = textContactRecord
-                this.getTextbankContactHistory(activityID);
-
-            },
-            error =>{
-                console.log(error)
-                this.errorMessage = 'There was an unknown error with the server.';
-                this.displayErrorMsg = true;
-            }
-
-        );
-    }
-
-    submitScriptResponse(){
-        var idResponses = this.generateIdResponses(this.script)
-
-        if(idResponses.length === 0){
-            this.userMessage = 'Script Responses are required.';
-            this.displayMessage = true;
-            return;
-        }
-
-        var activityID: string = sessionStorage.getItem('activityID')
-        var user: object = JSON.parse(sessionStorage.getItem('user'))
-        this.submitingResponse = true;
-
-        this.textingService.submitTextScriptResponse(this.activity, user, idResponses, this.selectedTextContactRecord).subscribe(
-            (textContactRecord: TextContactRecord)=>{
-                //this.selectedTextContactRecord = textContactRecord
-                this.getTextbankContactHistory(activityID)
-            },
-            error =>{
-                console.log(error)
-                this.errorMessage = 'There was an unknown error with the server.';
-                this.displayErrorMsg = true;
-            }
-        )
-    }
-
-    getTextbankContactHistory(activityID: string){
+    getTextbankContactHistory(){
         var userID: string = JSON.parse(sessionStorage.getItem('user'))._id
+        var activityID: string = sessionStorage.getItem('activityID')
 
         this.textingService.getTextbankContactHistory(activityID, userID, this.orgLevel).subscribe(
-          (residentIDs: unknown[]) =>{
+          (residentIDs) =>{
             this.textReceivedContactRecords = residentIDs['residentsResponded']
             this.textReceivedContactRecordsChange.emit(this.textReceivedContactRecords)
             this.submitingResponse = false;
@@ -179,44 +139,24 @@ export class ConversationComponent implements OnInit {
 
       }
 
-    generateIdResponses(script: unknown): any[]{
-        var idResponses = [];
+    openBottomSheet(): void {
+        const bottomSheetRef = this.bottomSheet.open(QuickResponseBottomSheet, {data: this.activity.textMetaData.quickResponses});
+        bottomSheetRef.afterDismissed().subscribe((selectedResponse) => {
+            if(selectedResponse){this.inputResponse.nativeElement.value = selectedResponse;}
+          });
+    }
 
-        var questions = script['questions'].map(x => {return x.question})
-
-        this.radioAnswers.forEach(div => {
-          var question = div.name
-          var answer = div.viewModel
-
-          if(answer && questions.includes(question)){
-            var response = answer.split(",")[0]
-            var idType = answer.split(',')[1]
-            var idResponse = {question: question, response: response, idType: idType}
-            idResponses.push(idResponse)
-          }
-        });
-
-        this.textAnswers.forEach(div => {
-          var question = div.nativeElement.name
-          var answer = div.nativeElement.value
-
-          if(answer && questions.includes(question)){
-            var response = {question: question, response: answer, idType: "NONE"}
-            idResponses.push(response)
-          }
-        });
-
-        return idResponses;
-
-      }
-
-    public onResponseChange(selectedResponse: string){
-        this.inputResponse.nativeElement.value = selectedResponse;
-      }
+    openFinishIDBottomSheet(): void {
+        const bottomSheetRef = this.bottomSheet.open(FinishIDBottomSheet, {data: {activity: this.activity, script: this.script, nonResponseSet: this.nonResponseSet, selectedTextContactRecord: this.selectedTextContactRecord}});
+        bottomSheetRef.afterDismissed().subscribe((submitionResult) => {
+            if(submitionResult){
+                this.getTextbankContactHistory()
+            }
+          });
+    }
 
     ngOnInit(){
         this.getOrgLevel();
-        this.quickResponses = this.activity.textMetaData.quickResponses;
         this.getNonresponseSet()
         this.getScript()
     }

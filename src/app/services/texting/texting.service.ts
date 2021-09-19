@@ -53,8 +53,8 @@ export class TextingService {
     return this.http.post(this.API_URL + '/api/submitTextScriptResponse', {activity, user, idResponses, textContactRecord})
   }
 
-  getTextbankContactHistory(activity: unknown, userID: string, orgLevel: string){
-    return this.http.post(this.API_URL + '/api/getTextbankContactHistory', {activity, userID, orgLevel})
+  getTextbankContactHistory(activityID: string, userID: string, orgLevel: string){
+    return this.http.post(this.API_URL + '/api/getTextbankContactHistory', {activityID, userID, orgLevel})
   }
 
   downloadTextContactHistory(activityID){

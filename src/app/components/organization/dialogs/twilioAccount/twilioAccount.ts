@@ -4,6 +4,7 @@ import {OrganizationService} from '../../../../services/organization/organizatio
 
 
 import {TwilioAccount, UpdatedOrg, TwilioNumber} from '../../../../models/organizations/organization.model'
+import {User} from '../../../../models/users/user.model'
 
 @Component({
   templateUrl: './twilioAccount.html',
@@ -23,6 +24,8 @@ export class TwilioAccountDialog implements OnInit{
 
   loading: boolean = true;
 
+  user: User;
+
   @ViewChild("areaCode", {static: false}) areaCode: ElementRef;
 
   constructor(public dialogRef: MatDialogRef<TwilioAccountDialog>, 
@@ -30,9 +33,6 @@ export class TwilioAccountDialog implements OnInit{
               public dialog: MatDialog) {
               }
   
-  onNoClick(): void {this.dialogRef.close()}
-  closeDialog(): void{this.dialogRef.close()}
-
   createTwilioAccount(){
     this.loading = true;
     var orgID: string = sessionStorage.getItem('orgID')
@@ -153,5 +153,7 @@ export class TwilioAccountDialog implements OnInit{
 
   ngOnInit(){
     this.checkTwilioAccount()
+    this.user = JSON.parse(sessionStorage.getItem('user'));
+
   }
 } 

@@ -1,68 +1,25 @@
-<section class="full-height" fxFlex="60%" fxFlex.sm="100%" fxFlex.xs="100%">
-    <mat-card fxLayout="column" fxFlex="100%">
-
-        <mat-card-header fxFlexAlign="center"><mat-card-title><h2>{{selectedTextContactRecord.person.resident.name.firstName}} {{selectedTextContactRecord.person.resident.name.lastName}}</h2></mat-card-title></mat-card-header>
-        <mat-card-content fxFlex="90%" fxLayout="column" fxLayoutGap="3%">
-            <mat-progress-bar *ngIf='sendingText' mode="indeterminate"></mat-progress-bar>
-            <mat-divider></mat-divider>
-            <div *ngFor="let responses of selectedTextContactRecord.textConvo" >
-                <div [ngClass]="{'volunteer' : responses.origin === 'USER', 'voter' : responses.origin === 'PERSON'}">
-                    <div class="text">{{responses.msg}}</div>
+<section fxFlex="100%" fxLayout="column" fxFlexAlign="center">
+    <section fxFlex="100%">
+        <mat-card fxLayout="column" fxFlex="100%" fxFlexAlign="center">
+            <mat-card-content fxFlex="90%" fxLayout="column" fxLayoutGap="3%">
+                <mat-progress-bar *ngIf='sendingText' mode="indeterminate"></mat-progress-bar>
+                <div *ngFor="let responses of selectedTextContactRecord.textConvo" >
+                    <div [ngClass]="{'volunteer' : responses.origin === 'USER', 'voter' : responses.origin === 'PERSON'}">
+                        <div class="text">{{responses.msg}}</div>
+                    </div>
                 </div>
-            </div>
-        </mat-card-content>
-        <mat-card-actions fxFlex="60px" >
-            <mat-divider></mat-divider>
-            <mat-form-field fxFlex="90%">
-                    <input matInput placeholder="Input a response" #inputResponse (keyup.enter)="sendFollowUpText(inputResponse.value)">
-            </mat-form-field>
-            <button mat-icon-button (click)="sendFollowUpText(inputResponse.value)" style="float: right;"><mat-icon>send</mat-icon></button>
-        </mat-card-actions>
-    </mat-card>
-</section>
-
-<section class="full-height" fxFlex="40%" fxFlex.sm="100%" fxFlex.xs="100%" fxLayoutGap="5%">
-    <mat-card fxLayout="column" fxFlex="100%">
-        <mat-card-header fxFlexAlign="center"><mat-card-title><h2>Quick Responses</h2></mat-card-title></mat-card-header>
-        <mat-card-actions fxLayout="column" fxLayoutGap="5%">
-            <div *ngFor="let response of quickResponses;" fxLayoutAlign="center">
-                <button mat-stroked-button fxFlex="90%" color="primary" (click)="onResponseChange(response)">{{response}}</button>
-            </div>
-            <br>
-        </mat-card-actions>
-
-        <mat-card-content fxLayout="column" fxLayoutGap="3%">
-            <h2 fxFlexAlign="center">Script</h2>
-            <mat-accordion *ngIf='script'>
-                <mat-expansion-panel *ngFor="let question of script.questions; let k = index" [ngSwitch]="question.questionType" >
-                    <mat-expansion-panel-header  class="right-aligned-header">
-                      <mat-panel-title>{{k + 1}}</mat-panel-title>
-                      <mat-panel-description>{{question.question}}</mat-panel-description>
-                    </mat-expansion-panel-header>
-                    <section *ngSwitchCase="'SINGLESELECT'" >
-                        <mat-radio-group fxLayout="column" fxLayoutGap="5%" [ngModel] #radioAnswers="ngModel" name="{{question.question}}">
-                            <mat-radio-button *ngFor="let responses of question.responses" value="{{responses.response}},{{responses.idType}}">{{responses.response}} <p color="primary">{{responses.idType}}</p></mat-radio-button>
-                        </mat-radio-group>
-                    </section>
-                    <section *ngSwitchCase="'TEXT'" >
-                        <mat-form-field fxFlex="100%"> 
-                          <input matInput #textAnswers placeholder="Type your answer here" name="{{question.question}}">
-                        </mat-form-field>
-                    </section>
-                </mat-expansion-panel>
-                <mat-expansion-panel>
-                    <mat-expansion-panel-header>
-                        <mat-panel-title>Non Response Codes</mat-panel-title>
-                        <mat-panel-description></mat-panel-description>                   
-                    </mat-expansion-panel-header>
-                    <section fxLayout="column"  fxLayoutGap="5%">
-                        <button *ngFor="let nonResponse of nonResponseSet.nonResponses;" mat-raised-button fxFlex="100%" color="primary"  [disabled]='submitingResponse' (click)="submitNonResponse(nonResponse.nonResponse, nonResponse.nonResponseType)">{{nonResponse.nonResponse}}</button>
-                    </section>      
-                </mat-expansion-panel>
-            </mat-accordion>
-            <button mat-raised-button color="primary" (click)="submitScriptResponse();" fxFlexAlign="center" [disabled]='submitingResponse'>FINISH IDENTIFICATION</button> 
-            <mat-progress-bar *ngIf='submitingResponse' mode="indeterminate"></mat-progress-bar>
+            </mat-card-content>
+            <mat-card-actions fxFlex="60px" >
+                <mat-divider></mat-divider>
+                <button mat-icon-button (click)="openFinishIDBottomSheet()" matTooltip='Finish Identification'><mat-icon>done</mat-icon></button>
+                <button mat-icon-button (click)="openBottomSheet()" matTooltip='Quick Responses'><mat-icon>bolt</mat-icon></button>
+                <mat-form-field fxFlex="90%">
+                        <input matInput placeholder="Input a response" #inputResponse (keyup.enter)="sendFollowUpText(inputResponse.value)">
+                </mat-form-field>
+                <button mat-icon-button (click)="sendFollowUpText(inputResponse.value)" matTooltip='Send Response' style="float: right;"><mat-icon>send</mat-icon></button>
+            </mat-card-actions>
             <mat-error *ngIf='displayMessage'>{{userMessage}}</mat-error>
-        </mat-card-content>
-    </mat-card>
+        </mat-card>
+    </section>
+
 </section>

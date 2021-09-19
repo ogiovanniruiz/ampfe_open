@@ -117,36 +117,6 @@ export class HomeComponent implements OnInit {
         this.activeOrgResults = this.activeOrgs
         this.inactiveOrgs = orgs.filter(function(org) { return !org['active'] });
 
-        /*
-        if(this.dev) {this.adminOrgs = orgs; this.adminOrgsResults = orgs}
-        else{
-
-          var adminOrgIDs: string[] = this.user.orgPermissions.map(function(orgPermission){ 
-            if(orgPermission.level === "ADMINISTRATOR"){
-              return orgPermission.orgID
-            }
-          })
-
-          var leadOrgIDs: string[] = this.user.orgPermissions.map(function(orgPermission){ 
-            if(orgPermission.level === "LEAD"){
-              return orgPermission.orgID
-            }
-          })
-
-          var volOrgIDs: string[] = this.user.orgPermissions.map(function(orgPermission){ 
-            if(orgPermission.level === "VOLUNTEER"){
-              return orgPermission.orgID
-            }
-          })
-
-          this.leadOrgs = orgs.filter(org => {return leadOrgIDs.includes(org._id)})
-          this.leadOrgsResults = orgs.filter(org => {return leadOrgIDs.includes(org._id)})
-          this.adminOrgs = orgs.filter(org => {return adminOrgIDs.includes(org._id)})
-          this.adminOrgsResults = orgs.filter(org => {return adminOrgIDs.includes(org._id)})
-          this.volOrgs = orgs.filter(org => {return volOrgIDs.includes(org._id)})
-          this.volOrgsResults = orgs.filter(org => {return volOrgIDs.includes(org._id)})
-        }*/
-
         this.dataLoaded = true;
       },
       error =>{
@@ -228,7 +198,6 @@ export class HomeComponent implements OnInit {
   applyFilter(value: string) {
     
     if (value) {
-      this.activeOrgs = this.activeOrgResults;
       this.activeOrgs = this.activeOrgResults.filter(org => org.name.toLowerCase().startsWith(value.toLowerCase()));
 
     } else {
@@ -288,7 +257,6 @@ export class HomeComponent implements OnInit {
     this.observableMedia.media$.subscribe((change: MediaChange) => {
       this.orgGrid.cols = this.gridByBreakpoint[change.mqAlias]
       this.inactiveOrgGrid.cols = this.gridByBreakpoint[change.mqAlias]
-      //this.gridColumns = this.gridByBreakpoint[change.mqAlias];
     });
   }
 

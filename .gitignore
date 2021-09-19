@@ -9,6 +9,7 @@
 /node_modules
 
 src/environments/environment.prod.ts
+src/environments/environment.prod.p64.ts
 src/environments/environment.dev.ts
 src/environments/environment.ts
 

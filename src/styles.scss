@@ -81,6 +81,13 @@ h1 {
 
 }
 
+.full-height{
+  height: calc(100vh - 64px);
+}
+
+
+body { background-color: grey !important; }
+
 .right-aligned-header > .mat-content {
   justify-content: start;
 }

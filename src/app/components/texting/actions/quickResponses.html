@@ -1,0 +1,6 @@
+<section fxLayoutAlign="center">Quick Responses </section>
+<mat-nav-list>
+  <div *ngFor="let response of quickResponses;" fxLayoutAlign="center">
+    <button mat-stroked-button fxFlex="90%" color="primary" (click)="onResponseChange(response)">{{response}}</button>
+  </div>
+  </mat-nav-list>

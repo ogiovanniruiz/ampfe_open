@@ -3,14 +3,14 @@ import { Component, OnInit, ViewChild, ElementRef, ViewChildren, QueryList, Afte
 import {TextingService} from '../../services/texting/texting.service'
 import {OrganizationService} from '../../services/organization/organization.service'
 
-import {Address} from '../../models/address/address.model'
+
 import {Activity, TextContactRecord} from '../../models/activities/activity.model'
 import {ConversationComponent} from './conversation/conversation.component'
 import {SwPush} from '@angular/service-worker';
 import { environment } from '../../../environments/environment';
 import * as _ from 'underscore';
 import {Resident} from '../../models/houseHolds/houseHold.model'
-import { ThisMonthInstance } from 'twilio/lib/rest/api/v2010/account/usage/record/thisMonth';
+
 
 @Component({
   selector: 'app-texting',
@@ -18,7 +18,7 @@ import { ThisMonthInstance } from 'twilio/lib/rest/api/v2010/account/usage/recor
   styleUrls: ['./texting.component.scss'],
 })
 
-export class TextingComponent implements OnInit {
+export class TextingComponent implements OnInit{
 
   vapidKey = {publicKey:"BNePgr0mFlyTAfrgaWgIyeqSyV3uy-gqCKBB5JFa2OmO2dcChvZaP_VCuvy7aoKad2TOam9y2cdYgocdoCe2wtk"}
 
@@ -62,6 +62,7 @@ export class TextingComponent implements OnInit {
   constructor(private activityService: ActivityService, 
               private textingService: TextingService,
               public orgService: OrganizationService,
+              private elementRef: ElementRef,
               private swPush: SwPush,
               ) {
                 this.swPush.messages.subscribe(event=>{
@@ -117,6 +118,7 @@ export class TextingComponent implements OnInit {
         }
         
         this.loadHouseHolds();
+        this.getTextbankContactHistory();
         
         this.sendingText = false;
       },
@@ -131,10 +133,11 @@ export class TextingComponent implements OnInit {
   getTextbankContactHistory(){
     var userID: string = JSON.parse(sessionStorage.getItem('user'))._id;
 
-    this.textingService.getTextbankContactHistory(this.activity, userID, this.orgLevel).subscribe(
+    this.textingService.getTextbankContactHistory(this.activity._id, userID, this.orgLevel).subscribe(
       (residentIDs: unknown[]) =>{
         this.textReceivedContactRecords = residentIDs['residentsResponded'];
-        this.textReceivedContactRecordsIDS = residentIDs['residentsRespondedIDS'];
+        this.textReceivedContactRecordsIDS = residentIDs['residentsResponded'].map(x =>{return x['personID']});
+
         this.residentsSent = residentIDs['residentsSent'];
       },
       error =>{
@@ -218,6 +221,7 @@ export class TextingComponent implements OnInit {
 
     this.textingService.loadHouseHolds(activityID, userID).subscribe(
       result =>{
+
         this.houseHoldRecords = result['lockedHouseHoldRecords'];
         this.houseHoldsLoaded = true;
 
@@ -227,17 +231,8 @@ export class TextingComponent implements OnInit {
           this.houseHoldsCompleted = false;
         }
 
-        this.sentHouseHoldRecords = result['sentHouseHoldRecords'];
-
-        for(var j = this.sentHouseHoldRecords.length - 1; j >= 0; j--){
-          if(this.sentHouseHoldRecords[j]['houseHold']['residents'].length === this.sentHouseHoldRecords[j]['numTextSent']){
-            this.sentHouseHoldRecords.splice(j, 1);
-          }
-        }
-
-        this.getTextbankContactHistory();
-
         this.loadingHouseHolds = false;
+        this.sendingText = false;
       }
     );
   }
@@ -255,6 +250,7 @@ export class TextingComponent implements OnInit {
           this.loadingHouseHolds = false;
           this.alreadyLocked = true;
         } else {
+          
           this.houseHoldsNewLockCompleted = true;
         }
       },
@@ -308,13 +304,25 @@ export class TextingComponent implements OnInit {
     }
 
     this.textingService.sendInitText(resident, houseHoldRecord, tbContactRecord).subscribe(
-      async (textContactHistory: TextContactRecord) =>{
-        this.loadHouseHolds()
+      async (recordsUpdated: any) =>{
 
-        if(!this.residentsSent.includes(textContactHistory.personID)){
-          this.residentsSent.push(textContactHistory.personID);
+        if(!this.residentsSent.includes(recordsUpdated['tbContactHistory']['personID'])){
+          this.residentsSent.push(recordsUpdated['tbContactHistory']['personID']);
         }
 
+        for(var j = this.houseHoldRecords.length - 1; j >= 0; j--){
+          if(this.houseHoldRecords[j]['_id'] === recordsUpdated['tbHHRecord']._id){
+            if(this.activity.idByHousehold === 'HOUSEHOLD' ){
+              this.houseHoldRecords.splice(j, 1);
+            }else{
+              if(recordsUpdated['tbHHRecord']['houseHold']['residents'].length <= recordsUpdated['tbHHRecord']['numTextSent']){
+                this.houseHoldRecords.splice(j, 1);
+              }
+            }
+            break
+          }
+        }
+        
         this.sendingText = false;
       },
       error =>{
@@ -328,6 +336,7 @@ export class TextingComponent implements OnInit {
   public getConversation(textContactRecord: TextContactRecord){
     this.selectedTextContactRecord = textContactRecord
   }
+
 
   ngOnInit() {
     this.getOrgLevel();

@@ -70,6 +70,8 @@ import {MembershipService} from '../../../../services/membership/membership.serv
           this.hhConfig.fields.polygons.options = []
           this.memberConfig.fields.polygons.options = []
 
+          this.memberConfig.fields.uploads.options = []
+
           for(var i = 0; i < data.blockgroups.length; i++){
             this.indivConfig.fields.blockgroups.options.push({name: data.blockgroups[i], value: data.blockgroups[i]});
             this.hhConfig.fields.blockgroups.options.push({name: data.blockgroups[i], value: data.blockgroups[i]});

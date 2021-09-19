@@ -60,58 +60,6 @@
 
 </mat-tab-group>
 
-<!--
-<mat-grid-list [cols]="gridColumns || 1" rowHeight="2:1" *ngIf="dataLoaded">
-  <mat-grid-tile *ngFor="let org of adminOrgs" >
-    <mat-card fxFlex = 80% >
-      <button mat-icon-button width="40" height="40" style="float: right;" (click)="editOrganization(org)">
-        <img width="40" height="40" alt="org" src="../assets/org.png">
-      </button>
-      <div>
-        <h1>{{org.name}}</h1>
-        <h4>{{org.description}}</h4>
-        <h4>Role: Admin</h4>
-      </div>
-      <br>
-      <div fxLayout="row" fxLayoutGap="20%" fxLayoutGap.lg="15%" fxLayoutGap.md="10%" fxLayoutGap.sm="5%" *ngIf="org.active">
-        <button mat-stroked-button color="primary" fxLayoutAlign="center" (click)="enterOrganization(org)">Enter</button>
-        <button mat-stroked-button color="accent" matBadge={{org.requests.length}}  [matBadgeHidden]="org.requests.length === 0" matBadgeColor="warn" fxLayoutAlign="center" (click)="openUserList(org)" >Team</button>
-      </div>
-      <mat-error *ngIf="!org.active">Organization is Inactive</mat-error>
-    </mat-card>
-  </mat-grid-tile>
-  <mat-grid-tile *ngFor="let org of leadOrgs">
-      <mat-card fxFlex=80%>
-        <button mat-icon-button width="40" height="40" style="float: right;">
-          <img width="40" height="40" alt="org" src="../assets/org.png">
-        </button>
-        <div>
-          <h1>{{org.name}}</h1>
-          <h4>{{org.description}}</h4>
-          <h4>Role: Lead</h4>
-        </div>
-        <br>
-        <div fxLayout="row" fxLayoutGap="20%" fxLayoutGap.lg="15%" fxLayoutGap.md="10%" fxLayoutGap.sm="5%" *ngIf="org.active">
-          <button mat-stroked-button color="primary" fxLayoutAlign="center" (click)="enterOrganization(org)">Enter</button>
-          <button mat-stroked-button color="accent" fxLayoutAlign="center" (click)="openUserList(org)">Team</button>
-        </div>
-      </mat-card>
-  </mat-grid-tile>
-  <mat-grid-tile *ngFor="let org of volOrgs" >
-    <mat-card fxFlex=80%> 
-      <button mat-icon-button width="40" height="40" style="float: right;" >
-          <img width="40" height="40" alt="org" src="../assets/org.png">
-      </button>
-      <div>
-        <h1>{{org.name}}</h1>
-        <h4>{{org.description}}</h4>
-        <h4>Role: Volunteer</h4>
-      </div>
-      <br>
-      <button mat-stroked-button color="primary" fxLayoutAlign="center" (click)="enterOrganization(org)" *ngIf="org.active">Enter</button>
-    </mat-card>
-  </mat-grid-tile>
-</mat-grid-list>-->
 <mat-error fxLayoutAlign="center" *ngIf="displayErrorMsg">{{errorMessage}}</mat-error>
 
 <footer fxLayoutGap="10%" *ngIf="dataLoaded"> 

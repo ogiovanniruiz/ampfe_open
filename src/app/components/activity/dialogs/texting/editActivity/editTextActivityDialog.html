@@ -1,6 +1,5 @@
 <section fxLayout="column" fxLayoutAlign="center">
     <h2 mat-dialog-title fxLayoutAlign="center">Edit Texting Activity </h2> 
-    <p fxLayoutAlign="center">v 0.8.7</p>
 </section>
 <mat-dialog-content fxLayout="row" fxLayout.xs="column"  fxLayout.sm="column" fxLayoutGap="5%" [style.display]="!loading ? 'flex' : 'none'">
     <!--Left Hand Section-->
@@ -28,7 +27,7 @@
                 <mat-slide-toggle style="float: right;" checked="true" #receiverNameActive (click)="toggleReceiverName(receiverNameActive)">Include Receiver's Name</mat-slide-toggle>
             </div>
             <mat-form-field floatLabel="never" fxFill>
-                <textarea matInput placeholder="Inital Text Message" #initTextMsg maxlength="150"></textarea>
+                <textarea matInput placeholder="Inital Text Message" #initTextMsg maxlength="250"></textarea>
             </mat-form-field>
 
         </mat-card>
@@ -82,7 +81,7 @@
             <mat-list>
                 <mat-list-item>
                     <mat-form-field fxFlex="100%">
-                        <input matInput (keyup.enter)="addQuickResponse(newQuickResponse.value)" placeholder="Add New Quick Response" #newQuickResponse maxlength="150">
+                        <input matInput (keyup.enter)="addQuickResponse(newQuickResponse.value)" placeholder="Add New Quick Response" #newQuickResponse maxlength="250">
                     </mat-form-field>
                     <button mat-icon-button (click)="addQuickResponse(newQuickResponse.value)" style="float: right;"><mat-icon>add</mat-icon></button>
                 </mat-list-item>
