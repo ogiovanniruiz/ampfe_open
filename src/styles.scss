@@ -36,13 +36,10 @@ $theme: mat-light-theme($primary, $accent, $warn);
 
 @include angular-material-theme($theme);
 
-
-
 .alternate-theme {
   $alternate-primary: mat-palette($mat-blue, 300);
-$alternate-accent:  mat-palette($mat-orange, 700);
-$alternate-warn:    mat-palette($mat-red, 400);
-
+  $alternate-accent:  mat-palette($mat-orange, 700);
+  $alternate-warn:    mat-palette($mat-red, 400);
 
   $alternate-theme: mat-light-theme($alternate-primary, $alternate-accent, $alternate-warn);
 
@@ -57,6 +54,8 @@ $alternate-warn:    mat-palette($mat-red, 400);
 body {
   font-family: mat-font-family($config);
   font-weight: normal;
+  background-color: rgb(211, 211, 211) !important;
+  overflow: auto;
 }
 
 h2{
@@ -85,8 +84,6 @@ h1 {
   height: calc(100vh - 64px);
 }
 
-
-body { background-color: grey !important; }
 
 .right-aligned-header > .mat-content {
   justify-content: start;
