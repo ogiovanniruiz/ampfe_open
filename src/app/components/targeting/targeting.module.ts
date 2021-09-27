@@ -6,22 +6,19 @@ import { MaterialModule } from '../../material.module';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { TargetSummaryDialog } from './dialogs/summary/targetSummaryDialog';
 import { LeafletDrawModule } from '@asymmetrik/ngx-leaflet-draw';
-import { PolygonDialog } from './dialogs/polygon/polygonDialog';
-import { BlockgroupDialog } from './dialogs/blockgroup/blockgroupDialog';
+import { CreatePolygonDialog } from './dialogs/polygon/createPolygon/createPolygonDialog';
 import { SearchDialog } from './dialogs/search/searchDialog';
 import { QueryBuilderModule } from 'angular2-query-builder';
 import { TargetCreatorDialog } from './dialogs/targetCreator/targetCreatorDialog';
-import { ClinicDialog } from './dialogs/clinic/clinicDialog';
-import { LockingDialog } from './dialogs/precincts/lockingDialog';
-
+import { EditPolygonDialog } from './dialogs/polygon/editPolygon/editPolygonDialog';
 
 const routes: Routes = [
   { path: '', component: TargetingComponent}
 ];
 
 @NgModule({
-  entryComponents: [ TargetSummaryDialog, PolygonDialog, BlockgroupDialog, SearchDialog, TargetCreatorDialog, ClinicDialog, LockingDialog],
-  declarations: [TargetingComponent,  TargetSummaryDialog, PolygonDialog, BlockgroupDialog, SearchDialog, TargetCreatorDialog, ClinicDialog, LockingDialog],
+  entryComponents: [ TargetSummaryDialog, CreatePolygonDialog, EditPolygonDialog,SearchDialog, TargetCreatorDialog ],
+  declarations: [TargetingComponent,  TargetSummaryDialog, CreatePolygonDialog, EditPolygonDialog,  SearchDialog, TargetCreatorDialog],
   imports: [
     QueryBuilderModule,
     CommonModule,

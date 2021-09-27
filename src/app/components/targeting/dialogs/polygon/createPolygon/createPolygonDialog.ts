@@ -1,37 +1,31 @@
 import { Component, OnInit, ViewChild, ElementRef, Inject} from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
-import {TargetService} from '../../../../services/target/target.service'
-import {OrganizationService} from '../../../../services/organization/organization.service'
-import {ScriptService} from '../../../../services/script/script.service'
-import {GeometryService} from '../../../../services/geometry/geometry.service'
+import {TargetService} from '../../../../../services/target/target.service'
+import {GeometryService} from '../../../../../services/geometry/geometry.service'
 
 
 @Component({
-    templateUrl: './polygonDialog.html',
+    templateUrl: './createPolygonDialog.html',
   })
   
-  export class PolygonDialog implements OnInit{
+  export class CreatePolygonDialog implements OnInit{
 
     @ViewChild('polygonName', {static: true}) polygonName:ElementRef;
+    @ViewChild('description', {static: true}) description:ElementRef;
 
     userMessage: string = ''
     displayMessage: boolean = false;
 
     constructor(
-        public dialogRef: MatDialogRef<PolygonDialog>, 
+        public dialogRef: MatDialogRef<CreatePolygonDialog>, 
         @Inject(MAT_DIALOG_DATA) public data: any, 
         public geoService: GeometryService,
-        public targetService: TargetService) {
-          console.log(data)
-        }
+        public targetService: TargetService) {}
   
-    onNoClick(): void {
-      this.dialogRef.close();
-    }
-
-
     createPolygon(){
       var polygonName: string = this.polygonName.nativeElement.value;
+
+      var description: string = this.description.nativeElement.value;
 
       var campaignID: number = parseInt(sessionStorage.getItem('campaignID'))
       var orgID: string = sessionStorage.getItem('orgID')
@@ -47,6 +41,7 @@ import {GeometryService} from '../../../../services/geometry/geometry.service'
         properties: {
           name: polygonName,
           orgID: orgID,
+          description: description,
           campaignID: campaignID,
           userID: userID
         },
@@ -55,14 +50,7 @@ import {GeometryService} from '../../../../services/geometry/geometry.service'
       
       this.geoService.createPolygon(polygonDetail).subscribe(
         (polygon: any) => {
-          if(polygon['success']){
-            this.dialogRef.close(polygon);
-
-          }else{
-            console.log("Error?")
-          }
-
-
+            this.dialogRef.close({polygon: polygon});
         }, 
         error =>{
           console.log(error)
@@ -72,4 +60,8 @@ import {GeometryService} from '../../../../services/geometry/geometry.service'
     }
 
     ngOnInit(){}
+
+    cancel(){
+      this.dialogRef.close({cancel: true});
+    }
 }

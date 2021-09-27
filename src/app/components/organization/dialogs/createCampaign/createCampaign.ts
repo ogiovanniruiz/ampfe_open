@@ -16,7 +16,7 @@ export class CreateCampaignDialog implements OnInit{
   errorMessage: string = '';
 
   stateList = ['California'];
-  districtBoundariesType = ['County', 'Citywide', 'Cityward', 'Assembly', 'Congressional', 'Board Of Equalization', 'Senate', 'Recreational', 'School', 'Water', 'None'];
+  districtBoundariesType = ['County', 'Citywide', 'Cityward', 'Assembly', 'Congressional', 'Board Of Equalization', 'Senate', 'Recreational', 'School', 'Water', 'Statewide'];
   districtBoundaries = [];
   districtBoundariesResults = [];
   electionTypes = ['General', 'Primary', 'Presidential General', 'Presidential Primary', 'Special', 'Local', 'None'];
@@ -29,7 +29,7 @@ export class CreateCampaignDialog implements OnInit{
 
   @ViewChild('campaignName', {static: true}) campaignName: ElementRef;
   @ViewChild('description', {static: true}) description: ElementRef;
-  @ViewChild('state', {static: true}) state: ElementRef;
+  //@ViewChild('state', {static: true}) state: ElementRef;
   @ViewChild('districtBoundaryType', {static: true}) districtBoundaryType: ElementRef;
   @ViewChild('districtBoundary', {static: true}) districtBoundary: ElementRef;
   @ViewChild('electionType', {static: true}) electionType: ElementRef;
@@ -37,7 +37,6 @@ export class CreateCampaignDialog implements OnInit{
   constructor(public dialogRef: MatDialogRef<CreateCampaignDialog>,
               public campaignService: CampaignService) {}
 
-  onNoClick(): void {this.dialogRef.close()}
   closeDialog(): void{this.dialogRef.close()}
 
   createCampaign(){
@@ -50,12 +49,12 @@ export class CreateCampaignDialog implements OnInit{
 
     var description: string = this.description.nativeElement.value;
 
-    var state: string = this.stateList[0];
-    if (!state) {
-        this.displayMessage = true;
-        this.userMessage = 'Please choose a state.';
-        return;
-    }
+    //var state: string = this.stateList[0];
+    //if (!state) {
+        //this.displayMessage = true;
+        //this.userMessage = 'Please choose a state.';
+        //return;
+    //}
 
     var districtBoundaryType: string = this.districtBoundaryType['value'];
     if (!districtBoundaryType) {
@@ -86,20 +85,21 @@ export class CreateCampaignDialog implements OnInit{
     }
 
     var boundaryID: object = this.districtBoundary['value'];
-    if ((!boundaryID || Object.keys(this.districtBoundaries).length === 0) && (districtBoundaryType !== 'Statewide') && (districtBoundaryType !== 'None')) {
+    if ((!boundaryID || Object.keys(this.districtBoundaries).length === 0) //&& (districtBoundaryType !== 'Statewide') && (districtBoundaryType !== 'None')
+    ) {
       this.displayMessage = true;
       this.userMessage = 'Please choose a district.';
       return;
     }
 
     let boundaryType: string;
-    if (districtBoundaryType === 'Statewide') {
-      boundaryType = 'STATEWIDE';
-    } else if (districtBoundaryType === 'None') {
-      boundaryType = 'NONE';
-    } else {
+    //if (districtBoundaryType === 'Statewide') {
+     // boundaryType = 'STATEWIDE';
+   // } else if (districtBoundaryType === 'None') {
+    //  boundaryType = 'NONE';
+    //} else {
       boundaryType = 'DISTRICT';
-    }
+    //}
 
     var orgID: string = sessionStorage.getItem('orgID');
     var userID: string = JSON.parse(sessionStorage.getItem('user'))['_id'];
@@ -125,10 +125,12 @@ export class CreateCampaignDialog implements OnInit{
 
   getDistricts() {
     if(this.stateList[0] && this.districtBoundaryType['value']) {
+    //if(this.districtBoundaryType['value']) {
       this.districtBoundary['value'] = undefined;
       this.districtBoundaries = [];
       this.districtBoundariesResults = [];
       this.loadingIDS = true;
+      /*
       if(this.districtBoundaryType['value'] === 'Statewide') {
         this.campaignService.getStatewide(this.stateList[0]).subscribe(
             (results: any) => {
@@ -141,14 +143,17 @@ export class CreateCampaignDialog implements OnInit{
               this.errorMessage = 'There was a problem with the server.';
             }
         );
-      } else {
-        this.campaignService.getDistricts(this.stateList[0], this.districtBoundaryType['value']).subscribe(
+      } else {*/
+        //this.campaignService.getDistricts(this.stateList[0], this.districtBoundaryType['value']).subscribe(
+          
+          
+          this.campaignService.getDistricts(this.stateList[0], this.districtBoundaryType['value']).subscribe(
             (results: any) => {
-              if (this.districtBoundaryType['value'] !== 'Statewide') {
+              //if (this.districtBoundaryType['value'] !== 'Statewide') {
                 this.loadingIDS = false;
                 this.districtBoundaries = results;
                 this.districtBoundariesResults = results;
-              }
+              //}
             },
             error => {
               this.loadingIDS = false;
@@ -156,7 +161,7 @@ export class CreateCampaignDialog implements OnInit{
               this.errorMessage = 'There was a problem with the server.';
             }
         );
-      }
+      //}
     }
   }
 

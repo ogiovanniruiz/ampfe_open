@@ -129,7 +129,7 @@ import * as L from 'leaflet';
     }
 
     searchPrecinct() {
-        this.geoService.getPrecinct(this.precinct['selected'].value).subscribe((target: any) => {
+        this.geoService.getPrecinct(this.precinct.nativeElement.value).subscribe((target: any) => {
             var precinct = {
                 type: 'Precinct',
                 value: target

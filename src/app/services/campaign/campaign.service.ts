@@ -46,7 +46,7 @@ export class CampaignService {
     return this.http.post(this.API_URL + '/api/removeOrg', {campaignID, orgID});
   }
 
-  getCampaignBoundery(campaignID: number){
+  getCampaignBoundary(campaignID: number){
     return this.http.post(this.API_URL + '/api/getCampaignBoundary', {campaignID});
   }
 

@@ -55,7 +55,7 @@ export class AssetsComponent implements OnInit {
     center: [33.971839, -117.381739],
   };
 
-  @ViewChild('container', {static: true}) container: ElementRef;
+  @ViewChild('condeclare var shpwrite: any;er', {static: true}) container: ElementRef;
 
   layersControl = {overlays: {}};
   orgNames = {};
@@ -564,7 +564,7 @@ export class AssetsComponent implements OnInit {
       this.map.dragging.disable();
       this.loadingBlockgroups = true;
 
-      this.geoService.getBlockgroupsByBounds(this.campaignBlockgroupIDS, bounds).subscribe((targets: any) => {
+      this.geoService.getBlockgroupsByBounds(bounds).subscribe((targets: any) => {
 
         let layerBlockgroup = L.geoJSON(targets, {onEachFeature: onEachFeature.bind(this)});
 

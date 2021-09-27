@@ -127,7 +127,7 @@ export class OrganizationComponent implements OnInit {
   }
 
   openCreateCampaignDialog(): void {
-    const dialogRef = this.dialog.open(CreateCampaignDialog, {width: "50%", disableClose: true});
+    const dialogRef = this.dialog.open(CreateCampaignDialog, {width: "50%"});
     dialogRef.afterClosed().subscribe(result => {
       if(result){
         this.getOrgCampaigns()
@@ -139,7 +139,7 @@ export class OrganizationComponent implements OnInit {
   openEditCampaignDialog(campaign): void{
     var orgID: string = sessionStorage.getItem('orgID');
     if(campaign['creatorOrg'] === orgID && (this.dev || this.orgLevel === "ADMINISTRATOR")){
-      const dialogRef = this.dialog.open(EditCampaignDialog, {width: "50%", data: campaign, disableClose: true});
+      const dialogRef = this.dialog.open(EditCampaignDialog, {width: "50%", data: campaign});
       dialogRef.afterClosed().subscribe(result => {
         if(result){
           this.getOrgCampaigns()

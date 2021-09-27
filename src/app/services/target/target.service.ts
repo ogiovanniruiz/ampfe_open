@@ -12,13 +12,9 @@ export class TargetService {
 
   constructor(private http: HttpClient) {}
 
-  createCampaignTarget(target: Object){
-    return this.http.post(this.API_URL + '/api/createCampaignTarget', target)
+  createTarget(target: Object){
+    return this.http.post(this.API_URL + '/api/createTarget', target)
   }
-
-  /*createTarget(target: Object){
-    return this.http.post(this.API_URL + '/api/createTarget', target);
-  }*/
 
   getEstimate(estimate: Object){
     return this.http.post(this.API_URL + '/api/getEstimate', estimate);

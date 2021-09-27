@@ -50,36 +50,25 @@
       </section>
     
     </mat-tab>-->
-<!--
-    <mat-tab label="By Precinct">
-      <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
-        <mat-form-field>
-          <mat-select #precinct placeholder="Precinct">
-            <mat-option *ngFor="let precinct of precincts" [value]="precinct">{{precinct}}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </section>
+<
 
-      <section *ngIf="precincts.length">
-        <button mat-button  color="primary" (click)="searchPrecinct()">SEARCH</button>
-        <button mat-button color="accent" (click)="cancel()">CANCEL</button>
-      </section>
-    </mat-tab>-->
 
     <mat-tab label="By Census Blockgroup">
       <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
         <mat-form-field>
           <input matInput #blockgroup type="text" placeholder="Blockgroup Geoid">
         </mat-form-field>
-        <button mat-stroked-button (click)='searchBlockgroup()'>Search</button>
+        <button mat-icon-button (click)='searchBlockgroup()'><mat-icon>search</mat-icon></button>
       </section>
-
-      <!--
-      <section *ngIf="blockgroups.length">
-        <button mat-button  color="primary" (click)="searchBlockgroup()">SEARCH</button>
-        <button mat-button color="accent" (click)="cancel()">CANCEL</button>
-      </section>-->
     </mat-tab>
+<!--
+    <mat-tab label="By Precinct">
+      <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
+        <mat-form-field>
+          <input matInput #precinct type="text" placeholder="Precinct Number">
+        </mat-form-field>
+      </section>
+    </mat-tab>-->
 
   </mat-tab-group>
 </mat-dialog-content>

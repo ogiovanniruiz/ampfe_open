@@ -15,6 +15,7 @@ import { StorageModule } from '@ngx-pwa/local-storage';
 import { FlexLayoutModule } from "@angular/flex-layout";
 import { DatePipe } from '@angular/common';
 
+
 @NgModule({
   declarations: [AppComponent, ContactFormDialog, UserProfileDialog],
   entryComponents: [ContactFormDialog, UserProfileDialog],
@@ -24,6 +25,7 @@ import { DatePipe } from '@angular/common';
     BrowserAnimationsModule,
     MaterialModule,
     FlexLayoutModule,
+
 
     OAuthModule.forRoot({   
       resourceServer: {

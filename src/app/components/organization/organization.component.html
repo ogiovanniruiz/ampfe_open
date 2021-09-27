@@ -67,7 +67,7 @@
         <button  mat-fab *ngIf="dev || orgLevel === 'ADMINISTRATOR'" color="primary" matTooltip="Membership List Manager" (click)="openMembership()"><mat-icon>account_box</mat-icon></button>
         <button  mat-fab *ngIf="dev || orgLevel === 'ADMINISTRATOR'" color="warn" matTooltip="Twilio Account" (click)="openTwilioAccountDialog()" ><mat-icon>call</mat-icon></button>
         <button  mat-fab *ngIf="dev || orgLevel === 'ADMINISTRATOR'" color="warn" matTooltip="Organization's Settings" (click)="openOrgSettingsDialog()" ><mat-icon>settings</mat-icon></button>
-        <button  mat-fab *ngIf="dev || orgLevel === 'ADMINISTRATOR'" color="primary" matTooltip="Subscription" (click)="openOrgBillingDialog()"><mat-icon>monetization_on</mat-icon></button>
+        <button  mat-fab *ngIf="dev" color="primary" matTooltip="Subscription" (click)="openOrgBillingDialog()"><mat-icon>monetization_on</mat-icon></button>
     </section>
 </section>
 <mat-error fxLayoutAlign="center" *ngIf="displayErrorMsg">{{errorMessage}}</mat-error>

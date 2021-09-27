@@ -21,7 +21,7 @@ export class EditCampaignDialog implements OnInit{
   @ViewChild('editElectionType', {static: false}) editElectionType: ElementRef;
 
   stateList = ['California'];
-  districtBoundariesType = ['County', 'Citywide', 'Cityward', 'Assembly', 'Congressional', 'Board Of Equalization', 'Senate', 'Recreational', 'School', 'Water', 'None'];
+  districtBoundariesType = ['County', 'Citywide', 'Cityward', 'Assembly', 'Congressional', 'Board Of Equalization', 'Senate', 'Recreational', 'School', 'Water', 'Statewide'];
   districtBoundaries = [];
   districtBoundariesResults = [];
   electionTypes = ['General', 'Primary', 'Presidential General', 'Presidential Primary', 'Special', 'Local', 'None'];
@@ -98,20 +98,21 @@ export class EditCampaignDialog implements OnInit{
       }
 
       var boundaryID: string = this.editDistrictBoundary['value'];
-      if ((!boundaryID || Object.keys(this.districtBoundaries).length === 0) && (editDistrictBoundaryType !== 'Statewide' && (editDistrictBoundaryType !== 'None'))) {
+      if ((!boundaryID || Object.keys(this.districtBoundaries).length === 0) //&& (editDistrictBoundaryType !== 'Statewide' && (editDistrictBoundaryType !== 'None'))
+      ) {
         this.displayMessage = true;
         this.userMessage = 'Please choose a district.';
         return;
       }
 
       let boundaryType: string;
-      if (editDistrictBoundaryType === 'Statewide') {
-        boundaryType = 'STATEWIDE';
-      } else if (editDistrictBoundaryType === 'None') {
-        boundaryType = 'NONE';
-      } else {
+      //if (editDistrictBoundaryType === 'Statewide') {
+      //  boundaryType = 'STATEWIDE';
+      //} else if (editDistrictBoundaryType === 'None') {
+      //  boundaryType = 'NONE';
+      //} else {
         boundaryType = 'DISTRICT';
-      }
+      //}
 
       editData = {
         boundaryType,
@@ -146,6 +147,7 @@ export class EditCampaignDialog implements OnInit{
       this.districtBoundaries = [];
       this.districtBoundariesResults = [];
       this.loadingIDS = true;
+      /*
       if(this.editDistrictBoundaryType['value'] === 'Statewide') {
         this.campaignService.getStatewide(this.stateList[0]).subscribe(
             (results: any) => {
@@ -158,14 +160,14 @@ export class EditCampaignDialog implements OnInit{
               this.errorMessage = 'There was a problem with the server.';
             }
         );
-      } else {
+      } else {*/
         this.campaignService.getDistricts(this.stateList[0], this.editDistrictBoundaryType['value']).subscribe(
             (results: any) => {
-              if (this.editDistrictBoundaryType['value'] !== 'Statewide') {
+              //if (this.editDistrictBoundaryType['value'] !== 'Statewide') {
                 this.loadingIDS = false;
                 this.districtBoundaries = results;
                 this.districtBoundariesResults = results;
-              }
+              //}
             },
             error => {
               this.loadingIDS = false;
@@ -173,7 +175,7 @@ export class EditCampaignDialog implements OnInit{
               this.errorMessage = 'There was a problem with the server.';
             }
         );
-      }
+      //}
     }
   }
 
@@ -216,7 +218,7 @@ export class EditCampaignDialog implements OnInit{
 
         if (this.targetsNum === 0) {
           this.editDistrictBoundaryType['value'] = this.data.boundary[0].properties.districtType.charAt(0).toUpperCase() + this.data.boundary[0].properties.districtType.slice(1).toLowerCase();
-          await this.getDistricts();
+          this.getDistricts();
           var bound = [];
           for(var i = 0; i < this.data.boundary.length; i++){
             bound[i] = await this.data.boundary[i]._id;

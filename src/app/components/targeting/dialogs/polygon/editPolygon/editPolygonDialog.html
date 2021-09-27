@@ -1,0 +1,20 @@
+
+<h2 mat-dialog-title fxLayoutAlign="center">Edit this Polygon</h2>
+<mat-dialog-content fxLayout="column" fxLayoutGap="1%">
+  <mat-form-field><input matInput #polygonName placeholder="Polygon Name"></mat-form-field> 
+  <mat-form-field><textarea matInput #description placeholder="Description"></textarea></mat-form-field> 
+  <!--
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>Demographics</mat-panel-title>
+    </mat-expansion-panel-header>
+    Some Demographics right here...
+  </mat-expansion-panel>-->
+  <br>
+  <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-stroked-button color="primary" (click)="editPolygon();">Save Changes</button>
+    <button mat-stroked-button color="warn" (click)="delete();">Delete</button>
+</mat-dialog-actions>

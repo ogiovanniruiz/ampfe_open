@@ -1,5 +1,29 @@
 <h2 mat-dialog-title fxLayoutAlign="center">Organization Billing</h2>
-<mat-dialog-content fxLayout="column" style="padding-top:10px;padding-bottom:10px">
+<mat-dialog-content fxLayoutGap="5%" fxLayout="column" style="padding-top:10px;padding-bottom:10px">
+<!--
+    <form novalidate (ngSubmit)="createToken()" [formGroup]="stripeTest">
+        <input type="text" formControlName="name" placeholder="Jane Doe">
+        <ngx-stripe-card [options]="cardOptions"></ngx-stripe-card>
+        <button mat-stroked-button type="submit" color="accent">CREATE TOKEN</button>
+    </form>
+    <button (click)="pay(20)">Pay 20</button>-->
+
+    <!-- stripe-payment.component.html -->
+    <form (ngSubmit)="createStripeToken()" class="checkout">
+        <label for="card-info">Card Info</label>
+    <div id="form-field">
+            <div id="card-info" #cardInfo></div>
+            <button id="submit-button" type="submit">
+                Pay ${{_totalAmount}}
+            </button>
+            <mat-error id="card-errors" role="alert" *ngIf="cardError">
+                <mat-icon style="color: #f44336">cancel</mat-icon>
+                &nbsp;{{ cardError }}
+            </mat-error>
+        </div>
+    </form>
+
+      
     <h2>Currently Funded: {{funded}}</h2>
     <mat-slide-toggle checked="{{funded}}" *ngIf='dev' (click)="toggleFundedStatus(!fundedToggle.checked);" #fundedToggle> Change Funded Status</mat-slide-toggle>
     

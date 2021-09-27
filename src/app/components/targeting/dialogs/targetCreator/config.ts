@@ -33,8 +33,8 @@ export const hhConfigTemplate = {
       primaryPropensity: {name: 'Primary Propensity', type: 'number', operators: ['=', '<=', '<', '>=', '>']},
       scripts: {name: 'Scripts', type: 'category', operators: ['in', 'not in'], options: []},
       nonResponseSets: {name: 'NonResponse Sets', type: 'category', operators: ['in', 'not in'], options: []},
-      blockgroups: {name: 'Blockgroups', type: 'category', operators: ['in'], options:[]},
-      precincts: {name: 'Precincts', type: 'category', operators: ['in'], options:[]},
+      //blockgroups: {name: 'Blockgroups', type: 'category', operators: ['in'], options:[]},
+      //precincts: {name: 'Precincts', type: 'category', operators: ['in'], options:[]},
       polygons: {name: 'Polygons', type: 'category', operators: ['in'], options:[]},
       cities: {name: 'Cities', type: 'category', operators: ['in'], options:[]}
     }
@@ -75,8 +75,8 @@ export const hhConfigTemplate = {
       primaryPropensity: {name: 'Primary Propensity', type: 'number', operators: ['=', '<=', '<', '>=', '>']},
       scripts: {name: 'Scripts', type: 'category', operators: ['in', 'not in'], options: []},
       nonResponseSets: {name: 'NonResponse Sets', type: 'category', operators: ['in', 'not in'], options: []},
-      blockgroups: {name: 'Blockgroups', type: 'category', operators: ['in'], options:[]},
-      precincts: {name: 'Precincts', type: 'category', operators: ['in'], options:[]},
+      //blockgroups: {name: 'Blockgroups', type: 'category', operators: ['in'], options:[]},
+      //precincts: {name: 'Precincts', type: 'category', operators: ['in'], options:[]},
       polygons: {name: 'Polygons', type: 'category', operators: ['in'], options:[]},
       cities: {name: 'Cities', type: 'category', operators: ['in'], options:[]}
     }
@@ -101,8 +101,8 @@ export const hhConfigTemplate = {
       voter: {name: 'Voter', type: 'boolean'},
       scripts: {name: 'Scripts', type: 'category', operators: ['in', 'not in'], options: []},
       nonResponseSets: {name: 'NonResponse Sets', type: 'category', operators: ['in', 'not in'], options: []},
-      blockgroups: {name: 'Blockgroups', type: 'category', operators: ['in'], options:[]},
-      precincts: {name: 'Precincts', type: 'category', operators: ['in'], options:[]},
+      //blockgroups: {name: 'Blockgroups', type: 'category', operators: ['in'], options:[]},
+      //precincts: {name: 'Precincts', type: 'category', operators: ['in'], options:[]},
       polygons: {name: 'Polygons', type: 'category', operators: ['in'], options:[]},
       cities: {name: 'Cities', type: 'category', operators: ['in'], options:[]},
       tags: {name: 'Tags', type: 'category', operators: ['in'], options: []},

@@ -51,38 +51,16 @@ import {MembershipService} from '../../../../services/membership/membership.serv
         public orgService: OrganizationService,
         public ampService: AmplifyService,
         public memberService: MembershipService,
-        ) {
-          var geographical: boolean = (sessionStorage.getItem('geographical') == 'true')
-          
+        ) {          
           this.campaignBoundary = data.campaignBoundary;
           var orgID: string = sessionStorage.getItem('orgID')
           var campaignID: number = parseInt(sessionStorage.getItem('campaignID'))
-
-          this.indivConfig.fields.blockgroups.options = []
-          this.hhConfig.fields.blockgroups.options = []
-          this.memberConfig.fields.blockgroups.options = []
-
-          this.indivConfig.fields.precincts.options = []
-          this.hhConfig.fields.precincts.options = []
-          this.memberConfig.fields.precincts.options = []
 
           this.indivConfig.fields.polygons.options = []
           this.hhConfig.fields.polygons.options = []
           this.memberConfig.fields.polygons.options = []
 
           this.memberConfig.fields.uploads.options = []
-
-          for(var i = 0; i < data.blockgroups.length; i++){
-            this.indivConfig.fields.blockgroups.options.push({name: data.blockgroups[i], value: data.blockgroups[i]});
-            this.hhConfig.fields.blockgroups.options.push({name: data.blockgroups[i], value: data.blockgroups[i]});
-            this.memberConfig.fields.blockgroups.options.push({name: data.blockgroups[i], value: data.blockgroups[i]});
-          }
-        
-          for(var i = 0; i < data.precincts.length; i++){
-            this.memberConfig.fields.precincts.options.push({name: data.precincts[i], value: data.precincts[i]});
-            this.indivConfig.fields.precincts.options.push({name: data.precincts[i], value: data.precincts[i]});
-            this.hhConfig.fields.precincts.options.push({name: data.precincts[i], value: data.precincts[i]});
-          }
 
           for(var i = 0; i < data.polys.length; i++){
             if(data.polys[i].properties.orgID === orgID && data.polys[i].properties.campaignID === campaignID){
@@ -93,10 +71,6 @@ import {MembershipService} from '../../../../services/membership/membership.serv
             }
           }
         }
-
-
-
-    onNoClick(): void {this.dialogRef.close();}
 
     getCities(){
       this.ampService.getCities(this.campaignBoundary).subscribe(
@@ -151,9 +125,7 @@ import {MembershipService} from '../../../../services/membership/membership.serv
       }
 
       for(var i = 0; i < this.queries.rules.length; i++){
-        if(this.queries.rules[i].field === 'blockgroups' || this.queries.rules[i].field === 'precincts'){
-          this.queries.rules[i].geometry = {type: 'MultiPolygon', coordinates: []};
-        }
+
         if(this.queries.rules[i].field === 'polygons'){
           var coordinates = []
 
@@ -180,6 +152,9 @@ import {MembershipService} from '../../../../services/membership/membership.serv
         },
         error =>{
           console.log(error)
+          this.gettingEstimate = false;
+          this.userMessage = "There was an error from the server. The query is too large or improperly formed."
+          this.displayMessage = true
         }
       )
     }
@@ -213,11 +188,6 @@ import {MembershipService} from '../../../../services/membership/membership.serv
       var geometric = false;
 
       for(var i = 0; i < this.queries.rules.length; i++){
-        if(this.queries.rules[i].field === 'blockgroups' || this.queries.rules[i].field === 'precincts'){
-          geometric = true;
-
-          this.queries.rules[i].geometry = {type: "MultiPolygon", coordinates: []};
-        }
         if(this.queries.rules[i].field === 'polygons'){
           geometric = true;
 
@@ -244,7 +214,7 @@ import {MembershipService} from '../../../../services/membership/membership.serv
                             geometric: geometric
                           }
 
-      this.targetService.createCampaignTarget(targetProperties).subscribe(
+      this.targetService.createTarget(targetProperties).subscribe(
         (result: unknown)=>{
           if(result['success']){
             this.dialogRef.close();
@@ -347,14 +317,10 @@ import {MembershipService} from '../../../../services/membership/membership.serv
                 this.indivConfig.fields.nonResponseSets.options.push({name: name, value: value})
 
               }
-
-              
             }
-
           }
         }
       )
-
     }
 
     targetBy(event){
