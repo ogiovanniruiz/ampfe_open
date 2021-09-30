@@ -44,7 +44,6 @@
     "leaflet-snap": "0.0.4",
     "leaflet.snogylop": "^0.4.0",
 
-    "ngx-indexed-db": "^5.0.5",
     "ngx-stripe": "^12.5.0",
     "npm": "^7.20.5",
     "p5": "^1.2.0",
