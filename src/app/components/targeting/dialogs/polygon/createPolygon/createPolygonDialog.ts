@@ -16,11 +16,17 @@ import {GeometryService} from '../../../../../services/geometry/geometry.service
     userMessage: string = ''
     displayMessage: boolean = false;
 
+    demographics: {totalPop: 0}
+
     constructor(
         public dialogRef: MatDialogRef<CreatePolygonDialog>, 
         @Inject(MAT_DIALOG_DATA) public data: any, 
         public geoService: GeometryService,
-        public targetService: TargetService) {}
+        public targetService: TargetService) {
+
+          console.log(data)
+          //this.demographics = data.properties.demographics
+        }
   
     createPolygon(){
       var polygonName: string = this.polygonName.nativeElement.value;

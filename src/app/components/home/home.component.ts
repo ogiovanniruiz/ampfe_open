@@ -127,8 +127,12 @@ export class HomeComponent implements OnInit {
     )
   }
 
-  checkOrgPermissions(permissions){
-    return permissions.level === 'ADMINISTRATOR'
+  checkOrgPermissions(permissions: any[], orgID: string){
+    for(var i = 0; i < permissions.length; i++){
+      if(permissions[i].orgID === orgID){
+        return permissions[i].level === 'ADMINISTRATOR'
+      }
+    }
   }
 
   enterOrganization(org: Organization){

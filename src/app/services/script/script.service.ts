@@ -14,15 +14,15 @@ export class ScriptService {
     return this.http.post(this.API_URL + '/api/createScript', script);
   }
 
-  getAllScripts(orgID: string, campaignID: Number){
+  getAllScripts(orgID: string, campaignID: number){
     return this.http.post(this.API_URL + '/api/getAllScripts', {orgID: orgID, campaignID: campaignID});
   }
 
-  getCampaignScripts(orgID: string, campaignID: Number){
+  getCampaignScripts(orgID: string, campaignID: number){
     return this.http.post(this.API_URL + '/api/getCampaignScripts', {orgID: orgID, campaignID: campaignID});
   }
 
-  editScript(script: Object, scriptID: string, campaignID){
+  editScript(script: Object, scriptID: string, campaignID: number){
     return this.http.post(this.API_URL + '/api/editScript', {script, scriptID, campaignID});
   }
 
@@ -65,18 +65,14 @@ export class ScriptService {
 
   ///////////////////////////////////////////////////////////////////////////
 
-
-
+  //NOT IN USE: CHECKED: 9/26/21
   getActivityScripts(scriptIDs: any[]){
     return this.http.post(this.API_URL + '/scripts/getActivityScripts', scriptIDs);
   }
 
+  //NOT IN USE: CHECKED: 9/26/21
   getEveryScript(){
     return this.http.post(this.API_URL + '/scripts/getEveryScript', {});
   }
 
-  getAssetScript(){
-
-    return []
-  }
 }

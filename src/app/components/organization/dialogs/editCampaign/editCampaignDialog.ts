@@ -41,14 +41,14 @@ export class EditCampaignDialog implements OnInit{
 
   targetsNum: number;
 
+  campaignBoundary;
+
   constructor(public dialogRef: MatDialogRef<EditCampaignDialog>, 
             @Inject(MAT_DIALOG_DATA) public data: any, 
             public userService: UserService, 
             public campaignService: CampaignService,
             public targetService: TargetService,
             public orgService: OrganizationService) {}
-
-  onNoClick(): void {this.dialogRef.close("CLOSED")}
 
   editCampaign(command: string){
     var editData = {};
@@ -106,13 +106,7 @@ export class EditCampaignDialog implements OnInit{
       }
 
       let boundaryType: string;
-      //if (editDistrictBoundaryType === 'Statewide') {
-      //  boundaryType = 'STATEWIDE';
-      //} else if (editDistrictBoundaryType === 'None') {
-      //  boundaryType = 'NONE';
-      //} else {
-        boundaryType = 'DISTRICT';
-      //}
+      boundaryType = 'DISTRICT';
 
       editData = {
         boundaryType,
@@ -147,36 +141,28 @@ export class EditCampaignDialog implements OnInit{
       this.districtBoundaries = [];
       this.districtBoundariesResults = [];
       this.loadingIDS = true;
-      /*
-      if(this.editDistrictBoundaryType['value'] === 'Statewide') {
-        this.campaignService.getStatewide(this.stateList[0]).subscribe(
-            (results: any) => {
+
+      this.campaignService.getDistricts(this.stateList[0], this.editDistrictBoundaryType['value']).subscribe(
+          (results: any) => {
               this.loadingIDS = false;
-              this.editDistrictBoundary['value'] = results[0]._id;
-            },
-            error => {
-              this.loadingIDS = false;
-              this.displayErrorMsg = true;
-              this.errorMessage = 'There was a problem with the server.';
-            }
-        );
-      } else {*/
-        this.campaignService.getDistricts(this.stateList[0], this.editDistrictBoundaryType['value']).subscribe(
-            (results: any) => {
-              //if (this.editDistrictBoundaryType['value'] !== 'Statewide') {
-                this.loadingIDS = false;
-                this.districtBoundaries = results;
-                this.districtBoundariesResults = results;
-              //}
-            },
-            error => {
-              this.loadingIDS = false;
-              this.displayErrorMsg = true;
-              this.errorMessage = 'There was a problem with the server.';
-            }
-        );
-      //}
+              this.districtBoundaries = results;
+              this.districtBoundariesResults = results;
+          },
+          error => {
+            this.loadingIDS = false;
+            this.displayErrorMsg = true;
+            this.errorMessage = 'There was a problem with the server.';
+          }
+      );
+      
     }
+  }
+
+  getCampaignBoundary(){
+    this.campaignService.getCampaignBoundary(this.data.campaignID).subscribe(
+      (boundary: any) =>{
+        this.campaignBoundary = boundary;
+    })
   }
 
   deleteCampaign() {
@@ -217,11 +203,11 @@ export class EditCampaignDialog implements OnInit{
         this.targetsNum = targets.length;
 
         if (this.targetsNum === 0) {
-          this.editDistrictBoundaryType['value'] = this.data.boundary[0].properties.districtType.charAt(0).toUpperCase() + this.data.boundary[0].properties.districtType.slice(1).toLowerCase();
+          this.editDistrictBoundaryType['value'] = this.campaignBoundary[0].properties.districtType.charAt(0).toUpperCase() + this.campaignBoundary[0].properties.districtType.slice(1).toLowerCase();
           this.getDistricts();
           var bound = [];
-          for(var i = 0; i < this.data.boundary.length; i++){
-            bound[i] = await this.data.boundary[i]._id;
+          for(var i = 0; i < this.campaignBoundary.length; i++){
+            bound[i] = await this.campaignBoundary[i].properties.identifier;
           }
           this.editDistrictBoundary['value'] = bound;
           this.editElectionType['value'] = this.data.electionType;
@@ -242,5 +228,6 @@ export class EditCampaignDialog implements OnInit{
   return(){this.dialogRef.close()}
   
   ngOnInit(){
+    this.getCampaignBoundary()
   }
 } 

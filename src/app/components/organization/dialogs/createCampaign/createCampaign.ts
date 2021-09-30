@@ -29,7 +29,6 @@ export class CreateCampaignDialog implements OnInit{
 
   @ViewChild('campaignName', {static: true}) campaignName: ElementRef;
   @ViewChild('description', {static: true}) description: ElementRef;
-  //@ViewChild('state', {static: true}) state: ElementRef;
   @ViewChild('districtBoundaryType', {static: true}) districtBoundaryType: ElementRef;
   @ViewChild('districtBoundary', {static: true}) districtBoundary: ElementRef;
   @ViewChild('electionType', {static: true}) electionType: ElementRef;
@@ -49,12 +48,7 @@ export class CreateCampaignDialog implements OnInit{
 
     var description: string = this.description.nativeElement.value;
 
-    //var state: string = this.stateList[0];
-    //if (!state) {
-        //this.displayMessage = true;
-        //this.userMessage = 'Please choose a state.';
-        //return;
-    //}
+
 
     var districtBoundaryType: string = this.districtBoundaryType['value'];
     if (!districtBoundaryType) {
@@ -85,7 +79,7 @@ export class CreateCampaignDialog implements OnInit{
     }
 
     var boundaryID: object = this.districtBoundary['value'];
-    if ((!boundaryID || Object.keys(this.districtBoundaries).length === 0) //&& (districtBoundaryType !== 'Statewide') && (districtBoundaryType !== 'None')
+    if ((!boundaryID || Object.keys(this.districtBoundaries).length === 0)
     ) {
       this.displayMessage = true;
       this.userMessage = 'Please choose a district.';
@@ -93,13 +87,9 @@ export class CreateCampaignDialog implements OnInit{
     }
 
     let boundaryType: string;
-    //if (districtBoundaryType === 'Statewide') {
-     // boundaryType = 'STATEWIDE';
-   // } else if (districtBoundaryType === 'None') {
-    //  boundaryType = 'NONE';
-    //} else {
-      boundaryType = 'DISTRICT';
-    //}
+
+    boundaryType = 'DISTRICT';
+
 
     var orgID: string = sessionStorage.getItem('orgID');
     var userID: string = JSON.parse(sessionStorage.getItem('user'))['_id'];

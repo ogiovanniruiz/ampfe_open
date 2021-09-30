@@ -129,6 +129,10 @@ export class TargetingComponent implements OnInit {
 
       this.jsonPolygonCreated = unify(polygonList).toGeoJSON()['features'][0];
 
+      //console.log()
+
+      //this.jsonPolygonCreated.properties.demographics = this.calculateDemographics(polygonList)
+
       this.drawsCreated = unify(polygonList).on('click', this.openNewPolygonDialog, this).setStyle({color: 'red', opacity: 0.5, fillOpacity: 0.1}).bindTooltip(toolTip);
       this.drawnItems.addLayer(this.drawsCreated);
       this.layersControl.overlays[this.orgName].addLayer(this.drawsCreated);
@@ -227,7 +231,7 @@ export class TargetingComponent implements OnInit {
         function onEachFeature(feature: any, layer: any){
           if(feature.properties.districtType) {
             var layerName: string = feature.properties.districtType + ' ' + feature.properties.name;
-            layer.bindTooltip(layerName).setStyle({fillColor: 'purple', color: 'purple', opacity: 0.5, fillOpacity: 0.0});
+            layer.bindTooltip(layerName).setStyle({fillColor: 'purple', color: 'black', opacity: 1, fillOpacity: 0.0});
           }
         }
         var center = layer.getBounds().getCenter();
@@ -497,6 +501,26 @@ export class TargetingComponent implements OnInit {
       downloadLink.click();
       this.downloading = false;
     });
+  }
+
+  calculateDemographics(data: any[]){
+    const newTotalPop = data.reduce((partial_sum, a) => partial_sum + a.feature.properties.demographics.totalPop,0); 
+    const percentAsian = data.reduce((partial_sum, a) => partial_sum + a.feature.properties.demographics.percentAsian,0); 
+
+    const percentHispanic = data.reduce((partial_sum, a) => partial_sum + a.feature.properties.demographics.percentHispanic,0);
+    const percentWhite = data.reduce((partial_sum, a) => partial_sum + a.feature.properties.demographics.percentWhite,0);
+    const percentBlack = data.reduce((partial_sum, a) => partial_sum + a.feature.properties.demographics.percentBlack,0);
+    const percentIndig = data.reduce((partial_sum, a) => partial_sum + a.feature.properties.demographics.percentIndig,0);
+    const percentPI = data.reduce((partial_sum, a) => partial_sum + a.feature.properties.demographics.percentPI,0);
+
+    var AsianEthnicity = Number((percentAsian/data.length).toFixed(2))
+    var WhiteEthnicity = Number((percentWhite/data.length).toFixed(2))
+    var BlackEthnicity = Number((percentBlack/data.length).toFixed(2))
+    var PIEthnicity = Number((percentPI/data.length).toFixed(2))
+    var HispanicEthnicity = Number((percentHispanic/data.length).toFixed(2))
+
+    return {totalPop: newTotalPop, percentAsian: AsianEthnicity, percentBlack: BlackEthnicity, percentHispanic: HispanicEthnicity, percentWhite: WhiteEthnicity }
+    //console.log(newTotalPop)
   }
 }
 

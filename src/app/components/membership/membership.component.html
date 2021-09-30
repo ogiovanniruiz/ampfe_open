@@ -3,14 +3,38 @@
     <mat-card-header>
       <mat-card-title>Organization's Membership List</mat-card-title>
     </mat-card-header>
+
+    <mat-card-actions fxLayout="row" >
+      <div fxLayout="column" *ngIf="!loadingData">
+        <input style="width:93%;margin-top:1.2%;padding:12px;font-size:14px;" (keyup)="applyFilter($event.target.value)" placeholder="Filter Here" >
+      </div>
+      <div fxLayout="row" style="margin-bottom:14px;margin-top: 10px">
+        <span style="margin-right: 20px; margin-left:20px">Filter by:</span>
+        <mat-radio-group fxLayout="row" fxLayoutGap="5%" [(ngModel)]="filterByValue" (change)="changefilterBy($event);">
+          <mat-radio-button value="firstName">First Name</mat-radio-button>
+          <mat-radio-button value="lastName">Last Name</mat-radio-button>
+          <!--
+          <mat-radio-button value="number">Phone</mat-radio-button>-->
+        </mat-radio-group>
+      </div>
+      <span class="spacer"></span>
+
+      <button mat-stroked-button color="accent" (click)="openUploadMembershipDialog()">UPLOAD LIST</button>
+      <button mat-stroked-button color="primary" (click)="openUploadManagerDialog()">MANAGE UPLOADS</button>
+      <button mat-stroked-button color="primary" (click)="openCreateMemberDialog()">CREATE</button>
+      <button mat-stroked-button color="primary" (click)="openTagManagementDialog()">TAGS</button>
+      <!--
+      <button mat-stroked-button color="primary" (click)="openMemberGraphDialog()">GRAPH</button>-->
+    </mat-card-actions>
+    <mat-progress-bar *ngIf='loadingData' mode="indeterminate"></mat-progress-bar>
     <mat-card-content>
-      <mat-paginator #paginator [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 15]" [length]="totalSize" [pageIndex]="currentPage" (page)="pageEvent = handlePage($event)" ></mat-paginator>
+      <mat-paginator #paginator [pageSize]="pageSize" [pageSizeOptions]="[10, 15, 50, 100, totalSize]" [length]="totalSize" [pageIndex]="currentPage" (page)="pageEvent = handlePage($event)" ></mat-paginator>
       <table matSort (matSortChange)="sortData($event)">
         <tr>
           <th mat-sort-header="firstName">First Name</th>
           <th mat-sort-header="middleName">Middle Name</th>
           <th mat-sort-header="lastName">Last Name</th>
-          <th mat-sort-header="phone">Phone Number</th>
+          <th mat-sort-header="phoneNumber">Phone Number</th>
           <th mat-sort-header="email">Email</th>
           <th mat-sort-header="voter">Voter</th>
           <th mat-sort-header="city">City</th>
@@ -25,7 +49,7 @@
             <td>{{person.resident.name.middleName}}</td>
             <td>{{person.resident.name.lastName}}</td>
             <td>{{person.resident.phones[0] ? person.resident.phones[0].number : ''}}</td>
-            <td>{{person.resident.email}}</td>
+            <td>{{person.resident.email ? person.resident.email: ''}}</td>
             <td>{{person.resident.voter}}</td>
 
             <td>{{person.address.city}}</td>
@@ -39,13 +63,7 @@
         </tr>
       </table>
     </mat-card-content>
-    <mat-card-actions align="end">
-      <button mat-raised-button color="primary" (click)="openUploadManagerDialog()">MANAGE UPLOADS</button>
-      <button mat-raised-button color="primary" (click)="openCreateMemberDialog()">CREATE</button>
-      <button mat-raised-button color="accent" (click)="openUploadMembershipDialog()">UPLOAD LIST</button>
-      <button mat-raised-button color="primary" (click)="openTagManagementDialog()">TAGS</button>
-      <button mat-raised-button color="primary" (click)="openMemberGraphDialog()">GRAPH</button>
-    </mat-card-actions>
+
 
     <section *ngIf="uploadDuplicates[0]">
       <mat-error>List of Duplicates: <button mat-raised-button color="warn" (click)="downloadDuplicateList()">DOWNLOAD LIST</button></mat-error>

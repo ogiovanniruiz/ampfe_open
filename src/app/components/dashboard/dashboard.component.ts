@@ -69,7 +69,7 @@ export class DashboardComponent implements OnInit {
       (campaign: any)=>{
         this.campaignName = campaign['name']
         this.campaignActive = campaign['active']
-        this.getFundedStatus()
+        
         sessionStorage.setItem('geographical', campaign.geographical)
         this.dataLoaded = true;
       
@@ -125,13 +125,11 @@ export class DashboardComponent implements OnInit {
 
   getDataManagerStatus(user: any){
     var campaignID: number = parseInt(sessionStorage.getItem('campaignID'));
-
     for (var i = 0; i< user.dataManager.length; i++){
       if(user.dataManager[i] === campaignID ){
         this.dataManager = true;
       }
     }
-    this.getCampaign();
   }
 
   enterTargetingModule(){
@@ -167,6 +165,8 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     this.grid.cols = 1;
     this.refreshUserProfile();
+    this.getFundedStatus()
+    this.getCampaign();
     
   }
 

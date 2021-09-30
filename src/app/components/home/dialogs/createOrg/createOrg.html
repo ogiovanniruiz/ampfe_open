@@ -8,6 +8,18 @@
         <input matInput #orgDescription placeholder="Description">
     </mat-form-field>
     <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
+    <section fxLayout="row">
+        <input type="number" id="cost" name="cost" required minlength="3" maxlength="5" size="10">
+
+        <button mat-button [matMenuTriggerFor]="menu">Length of Service</button>
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item>1 Month</button>
+            <button mat-menu-item>3 Months</button>
+            <button mat-menu-item>6 Month</button>
+            <button mat-menu-item>12 Months</button>
+        </mat-menu>
+
+    </section>
 </mat-dialog-content>
 <mat-dialog-actions align="end" >
     <button mat-raised-button color="primary" (click)="createOrganization()">SUBMIT</button>

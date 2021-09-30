@@ -29,11 +29,15 @@ export class MembershipComponent implements OnInit {
   pageEvent: PageEvent;
 
   currentPage: number = 0
-  public pageSize: number = 5;
+  public pageSize: number = 10;
   public totalSize: number = 0;
 
   uploadDuplicatesList = [];
   uploadDuplicates = [];
+
+  loadingData: boolean = false
+
+  filterByValue = 'firstName'
 
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
 
@@ -45,20 +49,35 @@ export class MembershipComponent implements OnInit {
 
   getMembers(){
     var orgID: string = sessionStorage.getItem('orgID');
+    this.loadingData = true
 
     this.memberService.getMembers(orgID).subscribe(
       (members: Object[]) => {
         this.members = members;
-        this.sortedMembers = this.members.slice();
         this.totalSize = this.members.length;
         this.iterator();
+        
       },
       error =>{
         console.log(error)
         this.displayErrorMsg = true;
-        this.errorMessage = 'There was a problem with the server.';
+        this.errorMessage = 'There was a problem with the server. Please refresh.';
       }
     );
+  }
+
+
+  applyFilter(value: string) {
+    const end = (this.currentPage + 1) * this.pageSize;
+    const start = this.currentPage * this.pageSize;
+    if (value) {
+      this.sortedMembers  = this.members.filter(member => 
+        member.resident.name[this.filterByValue].toLowerCase().startsWith(value.toLowerCase())
+      ).slice(start, end);
+
+    } else {
+      this.sortedMembers = this.members.slice(start, end);
+    }
   }
 
   openUploadMembershipDialog(){
@@ -107,34 +126,64 @@ export class MembershipComponent implements OnInit {
     const start = this.currentPage * this.pageSize;
     const part = this.members.slice(start, end);
     this.sortedMembers = part;
+    this.loadingData = false;
   }
 
   sortData(sort: Sort) {
-    const data = this.members.slice();
+
+    const data = this.members;
     if (!sort.active || sort.direction === '') {
-      this.sortedMembers = data;
       return;
     }
 
-    this.sortedMembers= data.sort((a, b) => {
+    const end = (this.currentPage + 1) * this.pageSize;
+    const start = this.currentPage * this.pageSize;
+
+    this.sortedMembers = data.sort((a, b) => {
       const isAsc = sort.direction === 'asc';
+      a.number = ""
+      b.number = ""
+
+      if(a.resident.phones[0]){
+        a.number = a.resident.phones[0].number
+      }
+
+      if(b.resident.phones[0]){
+        b.number = b.resident.phones[0].number
+      }
+
+      if(!b.resident.email){
+        b.resident.email = ""
+      }
+
+      if(!a.resident.email){
+        a.resident.email = ""
+      }
+
       switch (sort.active) {
-        case 'firstName': return compare(a.firstName, b.firstName, isAsc);
-        case 'middleName': return compare(a.middleName, b.middleName, isAsc);
-        case 'lastName': return compare(a.lastName, b.lastName, isAsc);
-        case 'phoneNumber': return compare(a.phoneNumber, b.phoneNumber, isAsc);
-        case 'voter': return compare(a.voter, b.voter, isAsc);
-        case 'email': return compare(a.email, b.email, isAsc);
-        case 'city': return compare(a.city, b.city, isAsc);
-        case 'zip': return compare(a.zip, b.zip, isAsc);
+        case 'firstName': return compare(a.resident.name.firstName, b.resident.name.firstName, isAsc);
+        case 'middleName': return compare(a.resident.name.middleName, b.resident.name.middleName, isAsc);
+        case 'lastName': return compare(a.resident.name.lastName, b.resident.name.lastName, isAsc);
+        case 'phoneNumber': return compare(a.number, b.number, isAsc);
+        case 'voter': return compare(a.resident.voter, b.resident.voter, isAsc);
+        case 'email': return compare(a.resident.email, b.resident.email, isAsc);
+        case 'city': return compare(a.address.city, b.address.city, isAsc);
+        case 'zip': return compare(a.address.zip, b.address.zip, isAsc);
         case 'lat': return compare(a.location.coordinates[1], b.location.coordinates[1], isAsc);
         case 'lng': return compare(a.location.coordinates[0], b.location.coordinates[0], isAsc);
         case 'date': return compare(a.date, b.date, isAsc);
         default: return 0;
       }
-    });
+     
+    }).slice(start, end);
+
 
     this.sortedMembers.paginator = this.paginator;
+    
+  }
+
+  changefilterBy(event: any){
+    this.filterByValue = event.value 
   }
 
   ngOnInit() {

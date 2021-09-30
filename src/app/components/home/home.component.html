@@ -27,7 +27,7 @@
           <mat-card-content><p>{{org.description}}</p></mat-card-content>
             <mat-card-actions>
               <button mat-stroked-button color="primary" (click)="enterOrganization(org)">ENTER</button>
-              <button mat-stroked-button matBadge={{org.requests.length}}  [matBadgeHidden]="org.requests.length === 0" *ngIf='user.orgPermissions.some(checkOrgPermissions) || dev' matBadgeColor="warn" color="accent" (click)="openUserList(org)">TEAM</button>
+              <button mat-stroked-button matBadge={{org.requests.length}}  [matBadgeHidden]="org.requests.length === 0" *ngIf='checkOrgPermissions(user.orgPermissions, org._id) || dev' matBadgeColor="warn" color="accent" (click)="openUserList(org)">TEAM</button>
             </mat-card-actions>
         </mat-card>
         <br>

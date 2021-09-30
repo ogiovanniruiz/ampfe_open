@@ -28,7 +28,7 @@
         <mat-label>District</mat-label>
         <mat-select #districtBoundary multiple>
             <input (keyup)="applyFilter($event.target.value)" placeholder="Search for district" style="width:calc(100% - 38px);height:3em;margin:5px 0px 5px 5px;padding:0px 12px;font-size:14px;">
-            <mat-option *ngFor="let district of districtBoundaries" [value]="district._id">{{district?.properties.districtType}} {{district.properties.name | uppercase}}</mat-option>
+            <mat-option *ngFor="let district of districtBoundaries" [value]="district.properties.identifier">{{district?.properties.districtType}} {{district.properties.name | uppercase}}</mat-option>
         </mat-select>
     </mat-form-field>
 
