@@ -8,16 +8,18 @@
         <input matInput #orgDescription placeholder="Description">
     </mat-form-field>
     <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
-    <section fxLayout="row">
-        <input type="number" id="cost" name="cost" required minlength="3" maxlength="5" size="10">
+    <section fxLayout="row" fxLayoutGap="10%" >
+        <mat-form-field class="example-full-width">
+            <mat-label>Charge Amount</mat-label>
+            <input matInput id='cost' currencyMask placeholder="Ex. $6000.00" value="">
+        </mat-form-field>
 
-        <button mat-button [matMenuTriggerFor]="menu">Length of Service</button>
-        <mat-menu #menu="matMenu">
-            <button mat-menu-item>1 Month</button>
-            <button mat-menu-item>3 Months</button>
-            <button mat-menu-item>6 Month</button>
-            <button mat-menu-item>12 Months</button>
-        </mat-menu>
+        <mat-form-field appearance="fill">
+            <mat-label>Subscription End Date</mat-label>
+            <input id='date' matInput [matDatepicker]="picker">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
 
     </section>
 </mat-dialog-content>

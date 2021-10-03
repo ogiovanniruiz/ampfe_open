@@ -10,6 +10,7 @@ import { OrgUserListDialog } from './dialogs/userList/orgUserList';
 import { EditOrgDialog } from './dialogs/editOrg/editOrgDialog';
 import { UserAgreementDialog } from './dialogs/userAgreement/userAgreement';
 import {DevStatusDialog} from './dialogs/devStatus/devStatus'
+import { CurrencyMaskModule } from "ng2-currency-mask";
 
 const routes: Routes = [
   { path: '', component: HomeComponent}
@@ -22,6 +23,7 @@ const routes: Routes = [
     CommonModule,
     MaterialModule,
     RouterModule.forChild(routes),
+    CurrencyMaskModule
   ]
 })
 

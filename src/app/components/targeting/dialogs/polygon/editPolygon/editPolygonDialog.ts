@@ -26,6 +26,8 @@ export class EditPolygonDialog implements OnInit{
     var polygonName: string = this.polygonName.nativeElement.value;
     var description: string = this.description.nativeElement.value;
 
+    var campaignID: number = parseInt(sessionStorage.getItem('campaignID'))
+
     if(polygonName === ''){
       this.userMessage = 'Polygon needs a name.';
       this.displayMessage = true;
@@ -37,12 +39,20 @@ export class EditPolygonDialog implements OnInit{
       properties: {
         name: polygonName,
         description: description,
+        campaignID: campaignID
       },
     }
       
     this.geoService.editPolygon(polygonDetail).subscribe(
       (polygon: any) => {
-          this.dialogRef.close({polygon: polygon});
+        if(polygon.polygon){
+          this.dialogRef.close({polygon: polygon.polygon});
+          return
+        }
+
+        this.userMessage = polygon.msg
+        this.displayMessage = true
+
       }, 
       error =>{
         console.log(error)
@@ -53,6 +63,7 @@ export class EditPolygonDialog implements OnInit{
   prefillPolygonData(){
     this.polygonName.nativeElement.value = this.data.properties.name
     if(this.data.properties.description) this.description.nativeElement.value = this.data.properties.description
+    
   }
 
   ngOnInit(){

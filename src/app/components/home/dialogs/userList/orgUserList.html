@@ -69,51 +69,6 @@
 
     </mat-tab-group>
 
-    <!--
-    <div fxLayout="row" fxLayoutAlign="space-around center" *ngIf="sortedUsers">
-        <mat-form-field>
-            <input matInput type="text" (keyup)="applyFilter($event.target.value)" (focus)="setFilter($event.target.value)" placeholder="Search">
-        </mat-form-field>
-        <mat-paginator #paginator [pageSize]="pageSize" [length]="totalSize" [pageIndex]="currentPage" (page)="pageEvent = handlePage($event)"></mat-paginator>
-    </div>
-    <table matSort (matSortChange)="sortData($event)" *ngIf="sortedUsers">
-        <tr>
-          <th mat-sort-header="firstName">First Name</th>
-          <th mat-sort-header="lastName">Last Name</th>
-          <th mat-sort-header="permission">Status</th>
-        </tr>
-        <tr *ngFor="let user of sortedUsers">
-            <td>{{user.name.firstName}}</td>
-            <td>{{user.name.lastName}}</td>
-            <td>
-                <div *ngFor="let orgPermission of user.orgPermissions">
-                    <button *ngIf="orgPermission.orgID === org._id" mat-button color="primary" [matMenuTriggerFor]="menu" [disabled]="orgPermission.level === 'ADMINISTRATOR' && !dev">{{orgPermission.level}}</button>
-                </div>
-                <div *ngFor="let request of org.requests">
-                    <button *ngIf="request === user._id" mat-button color="accent" [matMenuTriggerFor]="menu">WAITING APPROVAL</button>
-                </div>
-                <mat-menu #menu="matMenu">
-                    <button mat-menu-item (click)="updateUserOrgLevel(user, org, 'ADMINISTRATOR')" *ngIf="orgLevel === 'ADMINISTRATOR' || dev">
-                        <mat-icon>account_circle</mat-icon>
-                        <span>Admin</span>
-                    </button>
-                    <button mat-menu-item (click)="updateUserOrgLevel(user, org, 'LEAD')">
-                        <mat-icon>how_to_reg</mat-icon>
-                        <span>Lead</span>
-                    </button>
-                    <button mat-menu-item (click)="updateUserOrgLevel(user, org, 'VOLUNTEER')">
-                        <mat-icon>person_add</mat-icon>
-                        <span>Volunteer</span>
-                    </button>
-                    <button mat-menu-item (click)="updateUserOrgLevel(user, org, 'REMOVE')">
-                        <mat-icon>remove</mat-icon>
-                        <span>Remove</span>
-                    </button>
-                </mat-menu>
-            </td>
-            <mat-divider></mat-divider>
-        </tr>
-    </table>-->
 </mat-dialog-content> 
 <mat-dialog-actions align="end">
         <button mat-raised-button color="accent" (click)="return();" >CLOSE</button>

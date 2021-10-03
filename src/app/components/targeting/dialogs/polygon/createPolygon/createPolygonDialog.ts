@@ -25,7 +25,7 @@ import {GeometryService} from '../../../../../services/geometry/geometry.service
         public targetService: TargetService) {
 
           console.log(data)
-          //this.demographics = data.properties.demographics
+          this.demographics = data.properties.demographics
         }
   
     createPolygon(){
@@ -49,14 +49,23 @@ import {GeometryService} from '../../../../../services/geometry/geometry.service
           orgID: orgID,
           description: description,
           campaignID: campaignID,
-          userID: userID
+          userID: userID,
+          demographics: this.data.properties.demographics
         },
         geometry: this.data.geometry
       }
       
       this.geoService.createPolygon(polygonDetail).subscribe(
         (polygon: any) => {
-            this.dialogRef.close({polygon: polygon});
+
+          if(polygon.polygon){
+            this.dialogRef.close({polygon: polygon.polygon});
+            return
+          }
+
+          this.userMessage = polygon.msg
+          this.displayMessage = true
+ 
         }, 
         error =>{
           console.log(error)

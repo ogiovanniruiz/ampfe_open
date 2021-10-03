@@ -3,13 +3,22 @@
 <mat-dialog-content fxLayout="column" fxLayoutGap="1%">
   <mat-form-field><input matInput #polygonName placeholder="Polygon Name"></mat-form-field> 
   <mat-form-field><textarea matInput #description placeholder="Description"></textarea></mat-form-field> 
-  <!--
-  <mat-expansion-panel>
+  
+  <mat-expansion-panel *ngIf='data.properties.demographics'>
     <mat-expansion-panel-header>
       <mat-panel-title>Demographics</mat-panel-title>
     </mat-expansion-panel-header>
-    TotalPop: {{demographics.totalPop}}
-  </mat-expansion-panel>-->
+    <section >
+      <p>TotalPop: {{data.properties.demographics.totalPop}}</p>
+      <p>% Hispanic: {{data.properties.demographics.percentHispanic}}</p>
+      <p>% White: {{data.properties.demographics.percentWhite}}</p>
+      <p>% Black: {{data.properties.demographics.percentBlack}}</p>
+      <p>% Indigenous: {{data.properties.demographics.percentIndig}}</p>
+      <p>% PI: {{data.properties.demographics.percentPI}}</p>
+      <p>% Asian: {{data.properties.demographics.percentAsian}}</p>
+    </section>
+
+  </mat-expansion-panel>
   <br>
   <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
 </mat-dialog-content>

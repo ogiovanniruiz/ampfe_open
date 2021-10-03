@@ -129,9 +129,9 @@ export class TargetingComponent implements OnInit {
 
       this.jsonPolygonCreated = unify(polygonList).toGeoJSON()['features'][0];
 
-      //console.log()
-
-      //this.jsonPolygonCreated.properties.demographics = this.calculateDemographics(polygonList)
+      if(polygonList[0].feature.properties.type === "BLOCKGROUP"){
+        this.jsonPolygonCreated.properties.demographics = this.calculateDemographics(polygonList)
+      }
 
       this.drawsCreated = unify(polygonList).on('click', this.openNewPolygonDialog, this).setStyle({color: 'red', opacity: 0.5, fillOpacity: 0.1}).bindTooltip(toolTip);
       this.drawnItems.addLayer(this.drawsCreated);
@@ -485,7 +485,22 @@ export class TargetingComponent implements OnInit {
     }
 
     for( var i = 0; i < this.polys.length; i++){
+
+      if(this.polys[i].properties.demographics){
+        
+        var old_properties = this.polys[i].properties
+        var demographics = this.polys[i].properties.demographics
+
+        this.polys[i].porperties = {}
+
+        var flat_properties = Object.assign(old_properties, demographics);
+
+        this.polys[i].properties = flat_properties
+  
+      }
       features.push(this.polys[i])
+
+      
     }
 
     var folder = zip.folder('mergedPolygons');
@@ -504,6 +519,10 @@ export class TargetingComponent implements OnInit {
   }
 
   calculateDemographics(data: any[]){
+
+    console.log(data)
+    if(data.length === 0) return {}
+
     const newTotalPop = data.reduce((partial_sum, a) => partial_sum + a.feature.properties.demographics.totalPop,0); 
     const percentAsian = data.reduce((partial_sum, a) => partial_sum + a.feature.properties.demographics.percentAsian,0); 
 
@@ -518,9 +537,10 @@ export class TargetingComponent implements OnInit {
     var BlackEthnicity = Number((percentBlack/data.length).toFixed(2))
     var PIEthnicity = Number((percentPI/data.length).toFixed(2))
     var HispanicEthnicity = Number((percentHispanic/data.length).toFixed(2))
+    var IndigEthnicity = Number((percentIndig/data.length).toFixed(2))
 
-    return {totalPop: newTotalPop, percentAsian: AsianEthnicity, percentBlack: BlackEthnicity, percentHispanic: HispanicEthnicity, percentWhite: WhiteEthnicity }
-    //console.log(newTotalPop)
+    return {totalPop: newTotalPop, percentAsian: AsianEthnicity, percentBlack: BlackEthnicity, percentHispanic: HispanicEthnicity, percentPI: PIEthnicity, percentWhite: WhiteEthnicity,percentIndig: IndigEthnicity }
+
   }
 }
 

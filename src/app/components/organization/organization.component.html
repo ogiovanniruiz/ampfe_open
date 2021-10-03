@@ -61,8 +61,8 @@
 
 <mat-error fxLayoutAlign="center" *ngIf="displayErrorMsg">{{errorMessage}}</mat-error>
 <mat-card fxLayout="row" fxLayoutGap="1%" fxLayoutGap.xs="1%" *ngIf="dataLoaded && (dev || orgLevel === 'ADMINISTRATOR') " id="footer" fxLayoutAlign="center">
-    <button class="extended-fab-button" mat-fab *ngIf="subscribed" matTooltip="Create a campaign." (click)="openCreateCampaignDialog()"><mat-icon>create</mat-icon><span id='fadeshow' class="extended-fab-button__text">Create Campaign</span></button> 
-    <button class="extended-fab-button" mat-fab matTooltip="Request to join a campaign." (click)="openRequestCampaignDialog()"><mat-icon>add</mat-icon><span id='fadeshow' class="extended-fab-button__text">Join Campaign</span></button> 
+    <button mat-fab *ngIf="subscribed" matTooltip="Create a campaign." (click)="openCreateCampaignDialog()"><mat-icon>create</mat-icon></button> 
+    <button mat-fab matTooltip="Request to join a campaign." (click)="openRequestCampaignDialog()"><mat-icon>add</mat-icon></button> 
     <button class="extended-fab-button" mat-fab color="primary" matTooltip="Membership List Manager" (click)="openMembership()"><mat-icon>account_box</mat-icon><span id='fadeshow' class="extended-fab-button__text">Membership</span></button>
     <button class="extended-fab-button" mat-fab color="primary" matTooltip="Twilio Account" (click)="openTwilioAccountDialog()" ><mat-icon>call</mat-icon><span id='fadeshow' class="extended-fab-button__text">Twillio Account</span></button>
     <button class="extended-fab-button" mat-fab color="primary" matTooltip="Organization's Settings" (click)="openOrgSettingsDialog()" ><mat-icon>settings</mat-icon><span id='fadeshow' class="extended-fab-button__text">Org Settings</span></button>
