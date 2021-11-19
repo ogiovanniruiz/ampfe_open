@@ -2,13 +2,15 @@
     <div style="height:calc(100vh - 65px)" leaflet
     [leafletOptions]="options" 
     (leafletMapReady)="onMapReady($event)"
-    [leafletLayersControl]="layersControl" 
+    [leafletLayersControl]="layersControl"
+    [leafletCenter]="center" 
+    [(leafletZoom)]="zoom" 
     >
     <div fxFlex="20%" fxLayoutAlign="center center" fxLayout="column" fxLayoutGap="2%" style="z-index: 1000">
         <mat-card fxLayoutAlign="center center" fxLayout="column"  fxLayoutGap="10%" > 
-            <button mat-fab  *ngIf="!tracking" color="primary" matTooltip="Track User"><mat-icon>gps_off</mat-icon></button>
-            <button mat-fab  *ngIf="tracking"  color="accent" matTooltip="Track User"><mat-icon>gps_fixed</mat-icon></button>
-            <button mat-fab  color="primary" matTooltip="Reload Map"><mat-icon>cached</mat-icon></button>
+            <button mat-fab *ngIf="!tracking" color="primary" matTooltip="Track User" (click)='centerUserPosition()'><mat-icon>gps_off</mat-icon></button>
+            <button mat-fab *ngIf="tracking"  color="warn" matTooltip="Track User" (click)='centerUserPosition()'><mat-icon>gps_fixed</mat-icon></button>
+            <button mat-fab  color="primary" matTooltip="Reload Map" (click)='reloadMap()'><mat-icon>cached</mat-icon></button>
           </mat-card>
     </div>
 </div>

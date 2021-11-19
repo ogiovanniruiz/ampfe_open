@@ -1,9 +1,5 @@
-<h2 mat-dialog-title fxLayoutAlign="center">Create a {{activityType}} Activity</h2>
-<section fxLayout="column" fxLayoutGap="1%" *ngIf="loading">
-    <mat-progress-bar mode="indeterminate" fxFlex="2px" *ngIf="!errors"></mat-progress-bar>
-    <p fxLayoutAlign="center center" style="padding-top:7px;" *ngIf="!errors"s>Please wait while completing...</p>
-    <p fxLayoutAlign="center center" style="padding-top:7px;" *ngIf="errors">There was an error. Please try again or contact support.</p>
-</section>
+<section *ngIf="targetsAvailable && scriptsAvailable && nonResponseSetsAvailable">
+    <h2 mat-dialog-title fxLayoutAlign="center">Create a {{activityType}} Activity</h2>
 <mat-dialog-content fxLayout="row" fxLayout.xs="column"  fxLayout.sm="column" fxLayoutGap="5%" [style.display]="!loading ? 'flex' : 'none'">
     <!--Left Hand Section-->
     <section fxLayout="column" fxLayoutGap="1%" fxFlex="50%">
@@ -67,3 +63,16 @@
     <button mat-raised-button color="accent" (click)="close()" fxFlexAlign="center">CLOSE</button>
     <button mat-raised-button color="primary"  (click)="createActivity()" fxFlexAlign="center">SAVE</button>
 </mat-dialog-actions>
+
+</section>
+<section *ngIf="!targetsAvailable" fxLayout="column">
+    <h2 mat-dialog-title fxLayoutAlign="center">Canvassing requires Geographical targets. Would you like to navigate to the targeting module?</h2>
+    <button mat-raised-button color="accent"  (click)="goToTargeting()" fxFlexAlign="center">Target Module</button>
+    <br>
+</section>
+<section *ngIf="!scriptsAvailable || !nonResponseSetsAvailable" fxLayout="column">
+    <h2 mat-dialog-title fxLayoutAlign="center" *ngIf="!scriptsAvailable && nonResponseSetsAvailable">Scripts are unavailable. Would you like to navigate to the scripts module?</h2>
+    <h2 mat-dialog-title fxLayoutAlign="center" *ngIf="!nonResponseSetsAvailable && scriptsAvailable">Non-Response Sets are unavailable. Would you like to navigate to the scripts module?</h2>
+    <h2 mat-dialog-title fxLayoutAlign="center" *ngIf="!nonResponseSetsAvailable && !scriptsAvailable">Scripts & Non-Response Sets are unavailable. Would you like to navigate to the scripts module?</h2>
+    <button mat-raised-button color="accent"  (click)="goToScripts()" fxFlexAlign="center">Scripts Module</button>
+</section>

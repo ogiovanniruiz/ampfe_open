@@ -12,8 +12,15 @@ export class Organization {
     funded: boolean;
     callPool: [];
     subscribed: boolean;
+    subscription: Subscription;
 }
 
+export class Subscription
+{
+    cost: number;
+    startDate: Date;
+    expDate: Date;
+}
 export class UpdatedOrg {
     success:  boolean;
     org: Organization;

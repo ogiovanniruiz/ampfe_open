@@ -1,5 +1,3 @@
-import {Target} from '../targets/target.model';
-
 export class Campaign {
     campaignID: number;
     name: string;
@@ -8,7 +6,6 @@ export class Campaign {
     active: boolean;
     requests: string[];
     dataManagers: string[];
-    targets: Target;
 }
 
 export class UpdatedCampaign {

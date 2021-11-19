@@ -38,7 +38,7 @@ export class ScriptsComponent implements OnInit {
   scripts: Script[] = [];
   orgScripts: Script[] = [];
   campaignScripts: Script[] = [];
-  participatingOrgScripts: Script[] = [];
+  //participatingOrgScripts: Script[] = [];
   archivedScripts: Script[] = []
 
   nonResponseSets: NonResponseSet[] = []
@@ -234,10 +234,10 @@ export class ScriptsComponent implements OnInit {
           return (script.orgStatus.orgID === orgID) && (script.orgStatus.active)
         })
         
-        this.participatingOrgScripts = scripts.filter(script => {
-          var orgIDs = script.participatingOrgs.map(x => {return x.orgID})
-          return orgIDs.includes(orgID)
-        })
+        //this.participatingOrgScripts = scripts.filter(script => {
+        //  var orgIDs = script.participatingOrgs.map(x => {return x.orgID})
+        //  return orgIDs.includes(orgID)
+        //})
 
         this.archivedScripts = scripts.filter(script =>{
           return (script.orgStatus.orgID === orgID) && (!script.orgStatus.active)

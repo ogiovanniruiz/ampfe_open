@@ -13,12 +13,12 @@ export class OrganizationService {
     return this.http.post(this.API_URL + '/api/requestOrg', {user, org});
   }
 
-  editOrganization(name: String, description: String, orgID: Object, command: String){ 
-    return this.http.post(this.API_URL + '/api/editOrg', {name, description, orgID, command});
+  editOrganization(name: string, description: string, cost: number, expDate: Date, orgID: Object, command: string){ 
+    return this.http.post(this.API_URL + '/api/editOrg', {name, description, cost, expDate, orgID, command});
   }
 
-  createOrganization(name: string, description: string){ 
-    return this.http.post(this.API_URL + '/api/createOrg', {name, description});
+  createOrganization(name: string, description: string, cost: number, expDate: Date){ 
+    return this.http.post(this.API_URL + '/api/createOrg', {name, description, cost, expDate});
   }
 
   getAllOrgs(){
@@ -82,7 +82,7 @@ export class OrganizationService {
     return this.http.post(this.API_URL + '/api/updateSubscribedStatus', {orgID, status})
   }
 
-  getFundedStatus(campaignID, orgID){
+  getFundedStatus(campaignID: number, orgID: string){
     return this.http.post(this.API_URL + '/api/getFundedStatus', {campaignID, orgID})
   }
 
@@ -128,5 +128,10 @@ export class OrganizationService {
 
   downloadOrgContactHistory(orgID: string){
     return this.http.post(this.API_URL + '/api/downloadOrgContactHistory', {orgID})
+  }
+
+  getTwilioUsageSummary(orgID: string){
+    return this.http.post(this.API_URL + '/api/getTwilioUsageSummary', {orgID})
+
   }
 }

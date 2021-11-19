@@ -19,6 +19,8 @@ export class CreateOrgDialog implements OnInit{
 
     @ViewChild('orgName', {static: true}) orgName: ElementRef
     @ViewChild('orgDescription', {static: true}) orgDescription: ElementRef
+    @ViewChild('cost', {static: true}) cost: ElementRef
+    @ViewChild('date', {static: true}) date: ElementRef
 
     constructor( public dialogRef: MatDialogRef<CreateOrgDialog>, 
                  public orgService: OrganizationService) {}
@@ -35,9 +37,12 @@ export class CreateOrgDialog implements OnInit{
         return
       }
 
+      var expDate: Date = this.date.nativeElement.value
+      var cost: number = this.cost.nativeElement.value
+
       var orgDescription: string = this.orgDescription.nativeElement.value;
 
-      this.orgService.createOrganization(orgName, orgDescription).subscribe(
+      this.orgService.createOrganization(orgName, orgDescription, cost, expDate).subscribe(
         (results: UpdatedOrg) => {
           if(results.success) {
             this.dialogRef.close(results);

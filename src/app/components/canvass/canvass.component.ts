@@ -7,6 +7,9 @@ import {MatDialog} from '@angular/material/dialog';
 import {HouseHoldDialog} from './dialogs/houseHoldDialog'
 import {ComplexDialog} from './dialogs/complexDialog/complexDilaog'
 import {Activity} from '../../models/activities/activity.model'
+import { TargetService } from 'src/app/services/target/target.service';
+import { ScriptService } from 'src/app/services/script/script.service';
+
 
 declare global {
   interface Window { GlobalSelected: any; }
@@ -28,24 +31,31 @@ export class CanvassComponent implements OnInit {
   @ViewChild('notes', {static: false}) notes: ElementRef
   
   activity: Activity
-  status = "Loading Hotline..."
   errorMessage: string = '';
   displayErrorMsg: boolean = false;
   loading = true;
-  showForm: boolean = false;
-  activityName: string = ''
   tracking: boolean = false
+  userPosition: Number[] = []
 
   map: any
 
   houseHolds: L.FeatureGroup = L.featureGroup()
 
+  center;
+
+  zoom: number = 10;
+
+  script;
+  nonResponseSet;
+
   constructor(
               private activityService: ActivityService,
               private router: Router,
+              private targetService: TargetService,
               public zone: NgZone,
               public dialog: MatDialog,
-              private canvassService: CanvassService
+              private canvassService: CanvassService,
+              private scriptService: ScriptService
               ) { }
 
               options = {
@@ -61,17 +71,35 @@ export class CanvassComponent implements OnInit {
 
   getCanvassHouseHolds(){
 
+    //this.layersControl.overlays["HouseHolds"] = undefined
+    //this.layersControl.overlays['HouseHolds'].removeLayer(this.layersControl.overlays['HouseHolds'].getLayers()[0]);
+    //this.map.removeLayer(this.layersControl.overlays['HouseHolds'].getLayers()[0])
+
     var activityID = sessionStorage.getItem('activityID')
 
     this.canvassService.getCanvassHouseHolds(activityID).subscribe((hhRecords: any[])=> {
 
+
+
       for (var i = 0; i < hhRecords.length; i++) {
-        var toolTip = hhRecords[i].houseHold.fullAddress1 + '<br>' +
-                      hhRecords[i].houseHold.fullAddress2
+        var numResidents = 0
+
+        for(var j = 0; j < hhRecords[i].records.length; j++){
+          numResidents = numResidents + hhRecords[i].records[j].houseHold.residents.length
+        }
+
+        
+        var toolTip = hhRecords[i].records[0].houseHold.fullAddress1 + '<br>' +
+                      hhRecords[i].records[0].houseHold.fullAddress2 + '<br>' + 
+                      "# Residents: " + numResidents
 
         var color = 'blue'
         var clickable = true;
+        var toolTip = hhRecords[i].records[0].houseHold.fullAddress1 + '<br>' +
+                      hhRecords[i].records[0].houseHold.fullAddress2 + '<br>' + 
+                      "# Residents: " + numResidents
         if(hhRecords[i].records.length > 1){
+          var toolTip =  toolTip + "<br># Units: " + hhRecords[i].records.length
           color = 'purple'
           
           if(hhRecords[i].complete.length >= hhRecords[i].records.length){
@@ -86,7 +114,7 @@ export class CanvassComponent implements OnInit {
           }
         }
 
-        var marker = L.circle([hhRecords[i].houseHold.location.coordinates[1], hhRecords[i].houseHold.location.coordinates[0]], {color: color})
+        var marker = L.circle([hhRecords[i].records[0].houseHold.location.coordinates[1], hhRecords[i].records[0].houseHold.location.coordinates[0]], {color: color})
         .bindTooltip(toolTip)
         .addTo(this.map)
 
@@ -112,8 +140,12 @@ export class CanvassComponent implements OnInit {
 
   openHouseHoldDialog(){
     this.zone.run(() => {
+
       if(this.selected.records.length === 1){
-        const dialogRef = this.dialog.open(HouseHoldDialog, {data: {selected: this.selected, activity: this.activity}, width: "80%"});
+
+        var dialogData = {selected: this.selected.records[0], activity: this.activity, script: this.script, nonResponseSet: this.nonResponseSet}
+
+        const dialogRef = this.dialog.open(HouseHoldDialog, {data: dialogData, width: "100%"});
         dialogRef.afterClosed().subscribe(result => {
           if(result){
             var layers = this.layersControl.overlays['HouseHolds']
@@ -129,28 +161,46 @@ export class CanvassComponent implements OnInit {
         return
       }
 
-      const dialogRef = this.dialog.open(ComplexDialog, {data: {selected: this.selected, activity: this.activity}, width: "80%"});
+      var dialogData = {selected: this.selected, activity: this.activity, script: this.script, nonResponseSet: this.nonResponseSet}
+
+      const dialogRef = this.dialog.open(ComplexDialog, {data: dialogData, width: "50%"});
+      
       dialogRef.afterClosed().subscribe(result => {
 
         if(result === undefined){
           return
         }
+
         this.selected.houseHold = result
-        const dialogRef2 = this.dialog.open(HouseHoldDialog, {data: {selected: this.selected, activity: this.activity}, width: "80%"});
+
+        var dialogData = {selected: this.selected, activity: this.activity, script: this.script, nonResponseSet: this.nonResponseSet}
+        const dialogRef2 = this.dialog.open(HouseHoldDialog, {data: dialogData, width: "100%"});
 
         dialogRef2.afterClosed().subscribe(result =>{
           if(result){
-            var layers = this.layersControl.overlays['HouseHolds']
-            layers.eachLayer(function(layer) {
-              /*
-              if(layer._latlng.lat === result.houseHold.location.coordinates[1] && 
-                 layer._latlng.lng === result.houseHold.location.coordinates[0]){
-                layer.setStyle({fillColor: 'green', color: 'green'});
-              }*/
-
-            })
+            this.getCanvassHouseHoldRecord(result.houseHold._id)
           }
         })
+      })
+    })
+  }
+
+  getCanvassHouseHoldRecord(houseHoldID){
+    var activityID = sessionStorage.getItem('activityID')
+    this.canvassService.getCanvassHouseHoldRecord(activityID, houseHoldID).subscribe(
+      (result:any)=>{
+      var layers = this.layersControl.overlays['HouseHolds']
+      layers.eachLayer((layer) => {
+
+        if(layer._latlng.lat === result[0]._id.location.coordinates[1] && 
+           layer._latlng.lng === result[0]._id.location.coordinates[0]){
+
+          layer.on('mouseup',this.openHouseHoldDialog, this).on('mousedown', this.getSelected, result[0]);
+
+          if(result[0].complete.length >= result[0].records.length){
+            layer.setStyle({fillColor: 'green', color: 'green'});
+          }
+        }
       })
     })
   }
@@ -160,6 +210,9 @@ export class CanvassComponent implements OnInit {
     this.activityService.getActivity(activityID).subscribe(
       (activity: Activity) =>{
           this.activity = activity
+          this.getTarget(this.activity.targetID)
+          this.getScript(this.activity.scriptID)
+          this.getNonResponseSet(this.activity.nonResponseSetID)
     }, error=>{
       this.errorMessage = "Sorry, could not get activity. Please refresh to try again.";
       this.loading = false;
@@ -168,9 +221,108 @@ export class CanvassComponent implements OnInit {
     })
   }
 
-  ngOnInit(): void {
+  getScript(scriptID: string){
+    this.scriptService.getScript(scriptID).subscribe(
+        (script: unknown) =>{
+          this.script = script
+        },
+        error=>{
+          console.log(error)
+          this.displayErrorMsg = true;
+          this.loading = false;
+          this.errorMessage = 'There was a problem loading the script. Please refresh the page.';
+        }
+      )
+    }
+  
+  getNonResponseSet(nonResponseSetID: string){
+      this.scriptService.getNonResponseSet(nonResponseSetID).subscribe(
+        (nonResponseSet: unknown) =>{
+          this.nonResponseSet = nonResponseSet
+        },
+        error=>{
+          console.log(error)
+          this.displayErrorMsg = true;
+          this.loading = false;
+          this.errorMessage = 'There was a problem loading the script. Please refresh the page.';
+        }
+      )
+    }
+
+  getTarget(targetID: string){
+    this.targetService.getTarget(targetID).subscribe(
+      (target: any) =>{
+
+        var bounderies: any = []
+
+        for (var i = 0; i < target.properties.queries.rules.length; i++){
+          if(target.properties.queries.rules[i].field === 'polygons'){
+            bounderies.push(target.properties.queries.rules[i].geometry)
+          }
+        }
+
+        let layer = L.geoJSON(bounderies, {onEachFeature: onEachFeature.bind(this)}).addTo(this.map)
+
+        function onEachFeature(feature: any, layer: any){
+          layer.setStyle({fillColor: 'purple', color: 'black', opacity: 1, fillOpacity: 0.0});
+        }
+        var center = layer.getBounds().getCenter();
+        setTimeout(() => {
+            this.center = [center.lat, center.lng];
+            this.map.fitBounds(layer.getBounds());
+            this.getCanvassHouseHolds()
+        });
+        this.layersControl.overlays['Campaign Boundary'] = layer;
+      }
+    )
+  }
+
+  reloadMap(){
+    this.map.eachLayer((layer) => {
+      //console.log(layer)
+      if(!layer._url) this.map.removeLayer(layer);
+    });
+
+    delete this.layersControl.overlays['HouseHolds']
     this.getCanvassHouseHolds()
+
+  }
+
+  watchLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.watchPosition(this.showPosition.bind(this));
+    } else {
+      console.log("Geolocation is not supported by this browser.")
+    }
+  }
+
+  showPosition(position){
+    this.userPosition = [position.coords.latitude, position.coords.longitude]
+
+    L.circle([position.coords.latitude, position.coords.longitude], {color: 'black'})
+    .bindTooltip("You are here.")
+    .addTo(this.map)
+
+    if(this.tracking){
+      this.center = this.userPosition
+
+    }
+  }
+
+  centerUserPosition(){
+    if(this.tracking){
+      this.tracking = false;
+      return
+    }
+    
+    this.tracking = true
+    this.center = this.userPosition
+    
+  }
+
+  ngOnInit(): void {
     this.getActivity()
+    this.watchLocation()
   }
 
 }

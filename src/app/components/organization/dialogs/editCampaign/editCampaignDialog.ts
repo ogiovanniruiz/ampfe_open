@@ -41,7 +41,7 @@ export class EditCampaignDialog implements OnInit{
 
   targetsNum: number;
 
-  campaignBoundary;
+  campaignBoundary: any[]= [];
 
   constructor(public dialogRef: MatDialogRef<EditCampaignDialog>, 
             @Inject(MAT_DIALOG_DATA) public data: any, 
@@ -144,6 +144,7 @@ export class EditCampaignDialog implements OnInit{
 
       this.campaignService.getDistricts(this.stateList[0], this.editDistrictBoundaryType['value']).subscribe(
           (results: any) => {
+            
               this.loadingIDS = false;
               this.districtBoundaries = results;
               this.districtBoundariesResults = results;
@@ -162,6 +163,7 @@ export class EditCampaignDialog implements OnInit{
     this.campaignService.getCampaignBoundary(this.data.campaignID).subscribe(
       (boundary: any) =>{
         this.campaignBoundary = boundary;
+        this.prefillCampaignDetails()
     })
   }
 
@@ -194,37 +196,39 @@ export class EditCampaignDialog implements OnInit{
     }
   }
 
-  async ngAfterViewInit() {
-    setTimeout( async () => {
-      this.editCampaignName.nativeElement.value = this.data.name;
-      this.editCampaignDescription.nativeElement.value = this.data.description;
+  prefillCampaignDetails(){
+    this.editCampaignName.nativeElement.value = this.data.name;
+    this.editCampaignDescription.nativeElement.value = this.data.description;
 
-      this.targetService.getAllCampaignTargets(this.data.campaignID).subscribe(async (targets: []) =>{
-        this.targetsNum = targets.length;
+    this.targetService.getAllCampaignTargets(this.data.campaignID).subscribe(async (targets: []) =>{
 
-        if (this.targetsNum === 0) {
-          this.editDistrictBoundaryType['value'] = this.campaignBoundary[0].properties.districtType.charAt(0).toUpperCase() + this.campaignBoundary[0].properties.districtType.slice(1).toLowerCase();
-          this.getDistricts();
-          var bound = [];
-          for(var i = 0; i < this.campaignBoundary.length; i++){
-            bound[i] = await this.campaignBoundary[i].properties.identifier;
-          }
-          this.editDistrictBoundary['value'] = bound;
-          this.editElectionType['value'] = this.data.electionType;
-          this.geographical = this.data.geographical.toString();
-          this.fundedByCreatorOrg = this.data.fundedByCreatorOrg.toString();
+      this.targetsNum = targets.length;
+
+      if (this.targetsNum === 0) {
+
+        this.editDistrictBoundaryType['value'] = this.campaignBoundary[0].properties.districtType.charAt(0).toUpperCase() + this.campaignBoundary[0].properties.districtType.slice(1).toLowerCase();
+
+        this.getDistricts();
+        var bound = [];
+        for(var i = 0; i < this.campaignBoundary.length; i++){
+          bound[i] = await this.campaignBoundary[i].properties.identifier;
         }
+        this.editDistrictBoundary['value'] = bound;
+        this.editElectionType['value'] = this.data.electionType;
+        this.geographical = this.data.geographical.toString();
+        this.fundedByCreatorOrg = this.data.fundedByCreatorOrg.toString();
+      }
 
-        this.orgService.getOrganization(this.data.creatorOrg).subscribe(
-            (org: Organization) =>{
-              this.creatorOrgName = org.name;
-            }
-        );
+      this.orgService.getOrganization(this.data.creatorOrg).subscribe(
+          (org: Organization) =>{
+            this.creatorOrgName = org.name;
+          }
+      );
 
-      });
     });
+
   }
-  
+
   return(){this.dialogRef.close()}
   
   ngOnInit(){

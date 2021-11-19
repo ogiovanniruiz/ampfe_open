@@ -14,6 +14,8 @@ export class EditOrgDialog implements OnInit{
 
   @ViewChild('editOrgName', {static: true}) editOrgName: ElementRef
   @ViewChild('editOrgDescription', {static: true}) editOrgDescription: ElementRef
+  @ViewChild('cost', {static: true}) cost: ElementRef
+  @ViewChild('date', {static: true}) date: ElementRef
 
   userMessage: string = ""
   displayMessage: boolean = false;
@@ -29,7 +31,7 @@ export class EditOrgDialog implements OnInit{
 
   onNoClick(): void {this.dialogRef.close("CLOSED")}
 
-  editOrganization(command: String){
+  editOrganization(command: string){
     var orgName: string = this.editOrgName.nativeElement.value
     if(orgName === ""){
       this.displayMessage = true;
@@ -39,8 +41,15 @@ export class EditOrgDialog implements OnInit{
 
     var orgDescription: string = this.editOrgDescription.nativeElement.value
     var orgID: string = this.data._id
+    var expDate: Date = this.date.nativeElement.value
+    var cost: number = this.cost.nativeElement.value
 
-    this.orgService.editOrganization(orgName, orgDescription, orgID, command).subscribe(
+    var org = {name: orgName, 
+               description: orgDescription,
+              subscription: {expDate: expDate, cost: cost}
+              }
+
+    this.orgService.editOrganization(orgName, orgDescription, cost, expDate, orgID, command).subscribe(
       (result: UpdatedOrg)=>{
         if(result.success){
           this.dialogRef.close(result)
@@ -56,8 +65,11 @@ export class EditOrgDialog implements OnInit{
   }
 
   prefillOrgData(){
+    console.log(this.data)
     this.editOrgName.nativeElement.value = this.data.name
     this.editOrgDescription.nativeElement.value = this.data.description
+    this.cost.nativeElement.value = this.data.subscription.cost
+    this.date.nativeElement.value =this.data.subscription.expDate
   }
   
   return(){this.dialogRef.close()}

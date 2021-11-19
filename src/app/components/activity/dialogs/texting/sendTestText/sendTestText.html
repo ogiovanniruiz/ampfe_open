@@ -1,0 +1,16 @@
+<h2 mat-dialog-title fxLayoutAlign="center">Send a Test Text to your Phonenumber </h2> 
+<mat-dialog-content fxLayout="column" fxLayoutGap="1%" >
+    <mat-form-field>
+        <input matInput #targetPhonenumber id="phone" placeholder="Your Target Phonenumber">
+    </mat-form-field>
+    <mat-select (selectionChange)="numberSelected($event)" placeholder="Select a User Phonenumber" >
+        <mat-option value="{{number.phoneNumber}}" *ngFor="let number of orgPhonenumbers">{{number.phoneNumber}}</mat-option>
+    </mat-select>
+    <br>
+    <mat-error>*Don't respond to this test. Response will not be recorded.</mat-error>
+    <mat-error *ngIf='displayUserMessage'>{{userMessage}}</mat-error>
+</mat-dialog-content>
+<!--<mat-progress-bar mode='indeterminate'></mat-progress-bar>-->
+<mat-dialog-actions align="end">
+<button mat-stroked-button color='primary' (click)='sendTestText()'>Send Test Text</button>
+</mat-dialog-actions>

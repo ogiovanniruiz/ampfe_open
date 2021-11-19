@@ -9,6 +9,7 @@ import {User} from '../../../../../models/users/user.model';
 import {FormControl} from '@angular/forms';
 import {HotlineService} from '../../../../../services/hotline/hotline.service'
 import {TargetService} from '../../../../../services/target/target.service';
+import { Router } from '@angular/router';
 
 @Component({
   templateUrl: './createCanvassActivityDialog.html',
@@ -19,9 +20,6 @@ export class CreateCanvassActivityDialog implements OnInit{
   campaignOrgs: Organization[] = [];
   campaignOrgsSelected = new FormControl();
   campaignOrgsUpdate = [];
-
-  phoneNumbers: unknown[] = []
-  selectedNumber: unknown;
 
   users: User[] = [];
   usersSelected = new FormControl();
@@ -37,7 +35,6 @@ export class CreateCanvassActivityDialog implements OnInit{
   nonResponseSets: unknown[] = [];
 
   creatingActivity: boolean = false;
-
   activityType: string;
 
   dev: boolean = false;
@@ -51,11 +48,10 @@ export class CreateCanvassActivityDialog implements OnInit{
   targetsAvailable: boolean = false;
   targets: unknown[] = [];
 
+  scriptsAvailable: boolean = false;
 
-  @ViewChild('activityName', {static: true}) activityName: ElementRef;
-  @ViewChild('description' , {static: true}) description: ElementRef;
-  @ViewChild('activityEmail', {static: true}) activityEmail: ElementRef;
-  @ViewChild('voiceMailNumber', {static: true}) voiceMailNumber: ElementRef;
+  @ViewChild('activityName', {static: false}) activityName: ElementRef;
+  @ViewChild('description' , {static: false}) description: ElementRef;
 
   @ViewChild('selectedScript', {static: false}) selectedScript: ElementRef;
   @ViewChild('selectedTarget', {static: false}) selectedTarget: ElementRef;
@@ -68,8 +64,8 @@ export class CreateCanvassActivityDialog implements OnInit{
       public scriptService: ScriptService,
       public hotlineService: HotlineService,
       public targetService: TargetService,
-      ) {
-  }
+      public router: Router, 
+      ) {}
 
   onNoClick(): void {this.dialogRef.close()}
 
@@ -133,7 +129,13 @@ export class CreateCanvassActivityDialog implements OnInit{
     var campaignID: number = parseInt(sessionStorage.getItem('campaignID'))
     this.scriptService.getAllScripts(orgID, campaignID).subscribe(
         (scripts: unknown[]) =>{
-          this.scripts = scripts
+          this.scripts = scripts.filter(scripts => {
+            return scripts['campaignIDs'].includes(campaignID) && scripts['orgStatus'].active;
+          });
+
+          if(this.scripts.length){
+            this.scriptsAvailable = true;
+          }
         },
         error =>{
           console.log(error)
@@ -194,30 +196,13 @@ export class CreateCanvassActivityDialog implements OnInit{
 
     this.targetService.getOrgTargets(campaignID, orgID).subscribe(
       (targets: unknown[])=>{
-        if(this.geographical){
-          for(var i = 0; i < targets.length; i++){
+        for(var i = 0; i < targets.length; i++){
             if(targets[i]['properties'].geometric || targets[i]['properties'].idByHousehold === 'MEMBERSHIP'){
               this.targets.push(targets[i])
-            }
-          }
-        }else{
-          this.targets = targets
-        }
-
-        if(this.geographical){
-            for(var i = 0; i < this.targets.length; i++){
-                if(this.targets[i]['properties'].geometric || this.targets[i]['properties'].idByHousehold === 'MEMBERSHIP'){
-                    this.targetsAvailable = true;
-                }
-            }
-        } else {
-            if(this.targets.length > 0){
-                this.targetsAvailable = true;
+              this.targetsAvailable = true;
             }
         }
-        
-      },
-      error =>{
+      },error =>{
         console.log(error)
         this.displayErrorMsg = true;
         this.errorMessage = 'There was a problem with the server.';
@@ -246,6 +231,15 @@ export class CreateCanvassActivityDialog implements OnInit{
   }
 
 
+  goToTargeting(){
+    this.router.navigate(['/targeting']);
+    this.dialogRef.close()
+  }
+
+  goToScripts(){
+      this.router.navigate(['/scripts']);
+      this.dialogRef.close()
+  }
 
   ngOnInit(){
     this.getCampaignOrgs();

@@ -7,7 +7,6 @@ import {UserReportDialog} from './dialogs/userReportDialog/userReportDialog';
 import {OrgReportDialog} from './dialogs/orgReportDialog/orgReportDialog';
 import {PrecBlockReportDialog} from './dialogs/precblockReportDialog/precblockReportDialog';
 import {ScriptReportDialog} from './dialogs/scriptReportDialog/scriptReportDialog';
-import {COIReportDialog} from './dialogs/coiReportDialog/coiReportDialog';
 import {ScriptService} from '../../services/script/script.service';
 import { CampaignService } from 'src/app/services/campaign/campaign.service';
 
@@ -206,18 +205,6 @@ export class ReportsComponent implements OnInit {
       })
     }
   }
-
-  openCOIReportDialog(mode: string){
-
-    const dialogRef = this.dialog.open(COIReportDialog, {data: {mode: mode}});
-    dialogRef.afterClosed().subscribe(result => {
-      if(result){
-        console.log('CLOSED...');
-      }
-    });
-
-  }
-
 
   downloadCampaignContactHistory(){
 

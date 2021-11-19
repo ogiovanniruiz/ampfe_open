@@ -13,11 +13,12 @@ import { ActivityService } from '../../services/activity/activity.service';
 import { OrganizationService } from '../../services/organization/organization.service';
 import { ReportService } from '../../services/report/report.service';
 import { TextReportsDialog } from './dialogs/activityReports/textReport/textReportDialog';
+import { SendTestTextDialog } from './dialogs/texting/sendTestText/sendTestText';
 import { PhonebankReportsDialog } from './dialogs/activityReports/phonebankReport/phonebankReportDialog';
 import { PetitionReportsDialog } from './dialogs/activityReports/petitionReport/petitionReportDialog';
 import { CanvassReportsDialog } from './dialogs/activityReports/canvassReport/canvassReportDialog';
 import { environment } from '../../../environments/environment';
-import { CompileShallowModuleMetadata } from '@angular/compiler';
+
 
 import {CreateCanvassActivityDialog} from './dialogs/canvass/createCanvass/createCanvassActivityDialog'
 import {EditCanvassActivityDialog} from './dialogs/canvass/editCanvass/editCanvassActivityDialog'
@@ -40,6 +41,7 @@ export class ActivityComponent implements OnInit {
   activities: unknown[] = [];
   completedActivities: unknown[] = [];
   dataLoaded: boolean = false;
+  orgName: string = ''
 
   gridByBreakpoint = {
     xl: 4,
@@ -195,7 +197,15 @@ export class ActivityComponent implements OnInit {
     }
   }
 
+  openTestTextDialog(activity){
+    if(this.activityType === 'Texting'){
+      const dialogRef = this.dialog.open(SendTestTextDialog,  {width: '50%', data: {activity}});
+      //dialogRef.afterClosed().subscribe(result => {this.getActivities()});
+    }
+  }
+
   ngOnInit() {
+    this.orgName = sessionStorage.getItem('orgName')
     this.grid.cols = 1;
     this.refreshUserProfile();
     this.activityType = sessionStorage.getItem('activityType')

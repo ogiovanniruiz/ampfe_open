@@ -61,4 +61,8 @@ export class TextingService {
     return this.http.post(this.API_URL + '/api/downloadTextContactHistory', {activityID})
     
   }
+
+  sendTestText(testData: any){
+    return this.http.post(this.API_URL + '/api/sendTestText', testData)
+  }
 }

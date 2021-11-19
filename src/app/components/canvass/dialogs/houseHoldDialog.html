@@ -10,8 +10,24 @@
             <mat-panel-description *ngIf='resident.party'> <section >Party: {{resident.party}} - Age: {{resident.dob}}</section></mat-panel-description>
           </mat-expansion-panel-header>
           <section fxLayout="column" fxLayoutGap="2%">
+            <!--
+            <mat-list >
+              <mat-list-item *ngFor="let question of script.questions; let k = index" [ngSwitch]="question.questionType">
 
-
+                <p>{{k + 1}} {{question.question}}</p>
+                <section *ngSwitchCase="'SINGLESELECT'" >
+                  <mat-radio-group fxLayout="column" fxLayoutGap="5%" [ngModel] #radioAnswers="ngModel" name="{{question.question}}">
+                    <mat-radio-button *ngFor="let responses of question.responses" value="{{responses.response}},{{responses.idType}}">{{responses.response}} </mat-radio-button>
+                  </mat-radio-group>
+                </section>
+                <section *ngSwitchCase="'TEXT'" >
+                  <mat-form-field fxFlex="100%"> 
+                    <input matInput #textAnswers placeholder="Type your answer here" name="{{question.question}}">
+                  </mat-form-field>
+                </section>
+              </mat-list-item>
+            </mat-list>-->
+            
             <mat-accordion *ngIf='script'>
               <mat-expansion-panel *ngFor="let question of script.questions; let k = index" [ngSwitch]="question.questionType" >
                 <mat-expansion-panel-header  class="right-aligned-header">
@@ -34,10 +50,10 @@
             <mat-error *ngIf="needsResponses">This persons needs some responses to submit.</mat-error> 
             <mat-grid-list [cols]="gridColumns || 1" rowHeight="4:1" gutterSize="5" *ngIf='nonResponseSet'>
               <mat-grid-tile>
-                <button mat-raised-button color="primary" [disabled]="submittingResponse" fxFlex="100%" (click)="submitScriptResponse(resident, radioAnswers, textAnswers, houseHold._id, houseHold.residents.length);">Submit</button>
+                <button mat-raised-button color="primary" [disabled]="loading" fxFlex="100%" (click)="submitScriptResponse(resident, radioAnswers, textAnswers, houseHold._id, houseHold.residents.length);">Submit</button>
               </mat-grid-tile>
               <mat-grid-tile *ngFor="let nonResponse of nonResponseSet.nonResponses;">
-                <button mat-raised-button fxFlex="100%" color="accent" [disabled]="submittingResponse"(click)="submitNonResponse(resident, nonResponse.nonResponse, nonResponse.nonResponseType, houseHold._id, houseHold.residents.length); accordion1.closeAll()">{{nonResponse.nonResponse}}</button>
+                <button mat-raised-button fxFlex="100%" color="accent" [disabled]="loading"(click)="submitNonResponse(resident, nonResponse.nonResponse, nonResponse.nonResponseType, houseHold._id, houseHold.residents.length);">{{nonResponse.nonResponse}}</button>
               </mat-grid-tile>
             </mat-grid-list>     
           </section>
@@ -46,6 +62,6 @@
 
 </mat-dialog-content>
 <mat-dialog-actions align="end" >
-  <mat-progress-bar *ngIf='loading'></mat-progress-bar>
+  <mat-progress-bar mode='indeterminate' *ngIf='loading'></mat-progress-bar>
   <mat-error *ngIf='displayErrorMsg'>{{errorMessage}}</mat-error>
 </mat-dialog-actions>

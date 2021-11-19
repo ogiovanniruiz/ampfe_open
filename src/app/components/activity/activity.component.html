@@ -1,13 +1,16 @@
 <br>
 <h1 fxLayoutAlign="center" >{{activityType}} Activities</h1>
+<mat-error fxLayoutAlign="center" *ngIf="dataLoaded">{{orgName}}</mat-error>
 <section class="full-height">
 <mat-tab-group mat-stretch-tabs>
     <mat-tab label="Activities">
         <mat-grid-list #grid cols="3" rowHeight="2:1">
             <mat-grid-tile *ngFor="let activity of activities; let i = index">
               <mat-card fxFlex=80%>
-                    <button mat-icon-button width="40" height="40" style="float: right;">
-                        <img width="40" height="40" alt="campaign" src="../assets/house.png">
+                    <button mat-mini-fab color='primary' width="40" height="40" style="float: right;" (click)='openTestTextDialog(activity)'>
+                        <mat-icon *ngIf="activityType === 'Texting'">sms</mat-icon>
+                        <mat-icon *ngIf="activityType === 'Phonebank'">call</mat-icon>
+                        <mat-icon *ngIf="activityType === 'Canvass'">map</mat-icon>
                     </button>
                     <div>
                         <h1>{{activity.name}}</h1>
@@ -30,7 +33,8 @@
             <mat-grid-tile *ngFor="let completedActivity of completedActivities; let i = index">
                 <mat-card fxFlex=80%>
                     <button mat-icon-button width="40" height="40" style="float: right;">
-                        <img width="40" height="40" alt="campaign" src="../assets/house.png">
+                        <mat-icon *ngIf="activityType === 'Texting'">sms</mat-icon>
+                        <mat-icon *ngIf="activityType === 'Phonebank'">call</mat-icon>
                     </button>
                     <div>
                         <h1>{{completedActivity.name}}</h1>

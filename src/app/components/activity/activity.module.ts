@@ -15,6 +15,7 @@ import { PetitionReportsDialog } from './dialogs/activityReports/petitionReport/
 import { CreateCanvassActivityDialog} from './dialogs/canvass/createCanvass/createCanvassActivityDialog'
 import {EditCanvassActivityDialog} from './dialogs/canvass/editCanvass/editCanvassActivityDialog'
 import {CanvassReportsDialog} from './dialogs/activityReports/canvassReport/canvassReportDialog'
+import { SendTestTextDialog } from './dialogs/texting/sendTestText/sendTestText';
 
 
 
@@ -23,8 +24,8 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [CanvassReportsDialog, CreateCanvassActivityDialog, EditCanvassActivityDialog,PetitionReportsDialog, PhonebankReportsDialog, TextReportsDialog, ActivityComponent, CreateTextActivityDialog, EditTextActivityDialog, CreatePhoneActivityDialog, EditPhoneActivityDialog, CreatePetitionActivityDialog, EditPetitionActivityDialog],
-  entryComponents: [CanvassReportsDialog,CreateCanvassActivityDialog, EditCanvassActivityDialog, PetitionReportsDialog, PhonebankReportsDialog, TextReportsDialog, CreateTextActivityDialog, EditTextActivityDialog, CreatePhoneActivityDialog, EditPhoneActivityDialog, CreatePetitionActivityDialog, EditPetitionActivityDialog],
+  declarations: [CanvassReportsDialog, CreateCanvassActivityDialog, EditCanvassActivityDialog,PetitionReportsDialog, PhonebankReportsDialog, TextReportsDialog, ActivityComponent, CreateTextActivityDialog, EditTextActivityDialog, CreatePhoneActivityDialog, EditPhoneActivityDialog, CreatePetitionActivityDialog, EditPetitionActivityDialog, SendTestTextDialog],
+  entryComponents: [CanvassReportsDialog,CreateCanvassActivityDialog, EditCanvassActivityDialog, PetitionReportsDialog, PhonebankReportsDialog, TextReportsDialog, CreateTextActivityDialog, EditTextActivityDialog, CreatePhoneActivityDialog, EditPhoneActivityDialog, CreatePetitionActivityDialog, EditPetitionActivityDialog, SendTestTextDialog],
   imports: [
     CommonModule,
     MaterialModule,

@@ -7,7 +7,7 @@ import { UserReportDialog } from './dialogs/userReportDialog/userReportDialog';
 import { OrgReportDialog } from './dialogs/orgReportDialog/orgReportDialog';
 import { PrecBlockReportDialog } from './dialogs/precblockReportDialog/precblockReportDialog';
 import { ScriptReportDialog } from './dialogs/scriptReportDialog/scriptReportDialog';
-import { COIReportDialog } from './dialogs/coiReportDialog/coiReportDialog';
+
 
 
 const routes: Routes = [
@@ -15,8 +15,8 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [ReportsComponent, UserReportDialog, OrgReportDialog, PrecBlockReportDialog, ScriptReportDialog, COIReportDialog],
-  entryComponents: [UserReportDialog, OrgReportDialog, PrecBlockReportDialog, ScriptReportDialog, COIReportDialog],
+  declarations: [ReportsComponent, UserReportDialog, OrgReportDialog, PrecBlockReportDialog, ScriptReportDialog],
+  entryComponents: [UserReportDialog, OrgReportDialog, PrecBlockReportDialog, ScriptReportDialog],
   imports: [
     CommonModule,
     MaterialModule,

@@ -26,6 +26,16 @@ export class TwilioAccountDialog implements OnInit{
 
   user: User;
 
+  //smsCount: number = 0
+  //mmsCount: number = 0
+  msgCount: number = 0
+  callCount: number = 0
+  msgCost: number = 0
+  callCost: number = 0
+  totalCost: number = 0
+
+  funded: boolean = false;
+
   @ViewChild("areaCode", {static: false}) areaCode: ElementRef;
 
   constructor(public dialogRef: MatDialogRef<TwilioAccountDialog>, 
@@ -122,21 +132,25 @@ export class TwilioAccountDialog implements OnInit{
   }
 
   releasePhoneNumber(number: TwilioNumber){
-    this.loading = true
+    if(confirm("Are you sure you want to release this number?")){
+      this.loading = true
 
-    var orgID: string = sessionStorage.getItem('orgID')
-    this.orgService.releasePhoneNumber(number, orgID).subscribe(
-      (result: UpdatedOrg) =>{
-        if(result.success){
-          this.getOrgPhoneNumbers();
+      var orgID: string = sessionStorage.getItem('orgID')
+      this.orgService.releasePhoneNumber(number, orgID).subscribe(
+        (result: UpdatedOrg) =>{
+          if(result.success){
+            this.getOrgPhoneNumbers();
+          }
+        },
+        error =>{
+          console.log(error)
+          this.errorMessage = "There was an unknown error with the server."
+          this.displayErrorMsg = true;
         }
-      },
-      error =>{
-        console.log(error)
-        this.errorMessage = "There was an unknown error with the server."
-        this.displayErrorMsg = true;
-      }
-    )
+      )
+
+    }
+
   }
 
   updateTwilioAccount(){
@@ -153,7 +167,48 @@ export class TwilioAccountDialog implements OnInit{
 
   ngOnInit(){
     this.checkTwilioAccount()
+    this.getTwilioUsageSummary()
+    this.getFundedStatus()
     this.user = JSON.parse(sessionStorage.getItem('user'));
 
+  }
+
+  getTwilioUsageSummary(){
+    var orgID: string = sessionStorage.getItem('orgID')
+    this.orgService.getTwilioUsageSummary(orgID).subscribe((result:number) =>{
+
+      this.callCount = Number(result['callCount'])
+      this.callCost = Math.round(this.callCount*4)/100
+      
+      this.msgCount = Number(result['smsCount']) + Number(result['mmsCount'])
+      this.msgCost = Math.round(this.msgCount*4)/100
+      this.totalCost = this.msgCost + this.callCost
+      
+
+    })
+  }
+
+  getFundedStatus(){
+    var orgID: string = sessionStorage.getItem('orgID')
+    this.orgService.getFundedStatus(null, orgID).subscribe((result:boolean) =>{
+      this.funded = result
+    })
+  }
+
+
+  toggleFundedStatus(toggle: boolean){
+    var orgID: string = sessionStorage.getItem('orgID')
+    this.orgService.updateFundedStatus(orgID, toggle).subscribe(
+      (result: UpdatedOrg) =>{
+        if(result.success){
+          this.funded = toggle
+        }
+      },
+      error =>{
+        console.log(error)
+        this.errorMessage = "There was a problem with the server."
+        this.displayErrorMsg = true;
+      }
+    )
   }
 } 

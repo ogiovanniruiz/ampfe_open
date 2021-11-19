@@ -25,8 +25,12 @@ export class CanvassService {
     return this.http.post(this.API_URL + '/api/submitCanvassNonResponse', {activity, nonResponse, nonResponseType, personID, user, orgID, houseHoldID, hhSize, nonResponseSetID})
   }
 
-  getCanvassHouseHold(activityID: string, houseHoldID: unknown){
-    return this.http.post(this.API_URL + '/api/getCanvassHouseHold', {activityID, houseHoldID})
+  getCanvassHouseHoldRecord(activityID: string, houseHoldID: unknown){
+    return this.http.post(this.API_URL + '/api/getCanvassHouseHoldRecord', {activityID, houseHoldID})
+  }
+
+  getCanvassContactHistory(activityID, houseHoldID){
+    return this.http.post(this.API_URL + '/api/getCanvassContactHistory', {activityID, houseHoldID})
   }
 
   getCanvassReport(activityID, reportPickerStart, reportPickerEnd){

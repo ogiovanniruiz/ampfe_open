@@ -1,21 +1,16 @@
 
 <h4 mat-dialog-title fxLayoutAlign="center">{{fullAddress1}}</h4>
 <h3 mat-dialog-title fxLayoutAlign="center">{{fullAddress2}}</h3>
-<mat-dialog-content fxLayout="column" [@.disabled]="disableAnimation">
-
-  <mat-accordion #accordion1="matAccordion">
-
-    <mat-expansion-panel *ngFor="let record of records; let i = index" [disabled]='record.complete'>
-      <mat-expansion-panel-header>
-        <mat-panel-title>{{record.houseHold.fullAddress1}}</mat-panel-title>
-        
-        <mat-panel-description> <p *ngIf='!record.complete'> #Residents: {{record.houseHold.residents.length}}</p>  <p *ngIf='record.complete'> Complete</p></mat-panel-description>
-      </mat-expansion-panel-header>
-      
-      <button mat-stroked-button (click)='openHouseHold(record.houseHold)'>Open Household</button>
-    </mat-expansion-panel>
-    
-  </mat-accordion>
+<mat-dialog-content fxLayout="column">
+  <mat-action-list>
+    <mat-list-item *ngFor="let record of records; let i = index" [disabled]='record.complete' (click)='openHouseHold(record.houseHold)'>
+      <mat-icon matListIcon>group</mat-icon>
+      <h3 matLine> {{record.houseHold.fullAddress1}}</h3>
+      <p matLine *ngIf='!record.complete'><span>#Residents: {{record.houseHold.residents.length}}</span></p>
+      <p matLine *ngIf='record.complete'><mat-error>Complete</mat-error></p>
+      <button mat-stroked-button color="primary" [disabled]='record.complete' (click)='openHouseHold(record.houseHold)' >Open</button>
+    </mat-list-item>
+  </mat-action-list>
 </mat-dialog-content>
 <mat-dialog-actions align="end" >
 

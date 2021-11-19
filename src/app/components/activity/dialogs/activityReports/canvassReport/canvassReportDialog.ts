@@ -52,7 +52,6 @@ import {Activity} from '../../../../../models/activities/activity.model'
     getActivitySize(){
       this.activityService.getActivitySize(this.activityID).subscribe(
         (size: Object)=>{
-          console.log(size)
           this.totalHouseHolds = size['totalHouseHolds']
           this.getOrgUsers(); 
         }
@@ -68,7 +67,6 @@ import {Activity} from '../../../../../models/activities/activity.model'
       this.completed = true;
       this.canvassService.getCanvassReport(this.activityID, reportPickerStart, reportPickerEnd).subscribe(
           async (report: unknown[]) =>{
-            console.log(report)
             this.members = [];
             this.sortedMembers = [];
             for(var i = 0; i < report['activities'].length; i++){
@@ -91,29 +89,19 @@ import {Activity} from '../../../../../models/activities/activity.model'
                 }
 
                 report['activities'][i]['scripts']['IMP'] = report['activities'][i]['IMP'];
-                report['activities'][i]['scripts']['Invalid Phone'] = report['activities'][i]['INVALIDPHONE'];
+                report['activities'][i]['scripts']['Invalid Address'] = report['activities'][i]['INVALIDADDRESS'];
                 report['activities'][i]['scripts']['DNC'] = report['activities'][i]['DNC'];
                 report['activities'][i]['scripts']['NonResponse'] = report['activities'][i]['NONRESPONSE'];
 
-                //var avgLengthOfCall = 0
-                //if(report['activities'][i]['avgCallLength']){
-                //  avgLengthOfCall = report['activities'][i]['avgCallLength']
-                //}
-
                 if(this.userList[report['activities'][i]['_id']]){
-                  console.log("This")
                   await this.members.push({
                     'User Name': this.userList[report['activities'][i]['_id']],
-                    //'Number Calls Attempted': report['activities'][i]['called'],
-                    //'Number Calls Connected': report['activities'][i]['successful'],
-                    //'Average Call Length(sec)': avgLengthOfCall,
                     ...report['activities'][i]['scripts'],
                   });
 
                 }
 
                 this.sortedMembers = this.members.slice();
-                console.log(this.sortedMembers)
                 this.totalSize = this.members.length;
                 this.iterator();
             }
@@ -130,7 +118,6 @@ import {Activity} from '../../../../../models/activities/activity.model'
 
       this.orgService.getOrgUsers(orgID).subscribe(
         (users: User[]) =>{
-          console.log(users)
             for(var i = 0; i < users.length; i++){
               this.userList[users[i]._id] = users[i].name.firstName + " " + users[i].name.lastName
             }

@@ -7,14 +7,6 @@
     <mat-form-field>
         <input matInput #description placeholder="Description">
     </mat-form-field>
-
-    <!--<mat-form-field>
-        <mat-label>State</mat-label>
-        <mat-select #state>
-            <mat-option *ngFor="let states of stateList" [value]="states" (click)="getDistricts()">{{states}}</mat-option>
-        </mat-select>
-    </mat-form-field>-->
-
     <mat-form-field>
         <mat-label>District Type</mat-label>
         <mat-select #districtBoundaryType (selectionChange)="getDistricts()">
@@ -56,7 +48,7 @@
     <mat-error *ngIf="displayMessage" style="margin-top: 14px">{{userMessage}}</mat-error>
 </mat-dialog-content>
 <mat-dialog-actions align="end" [style.visibility]="!loader ? 'visible' : 'hidden'">
-    <button mat-raised-button color="primary" (click)="createCampaign()">SUBMIT</button>
-    <button mat-raised-button color="accent" (click)="closeDialog();">CANCEL</button>
+    <button mat-stroked-button color="primary" (click)="createCampaign()">SUBMIT</button>
+    <button mat-stroked-button color="accent" (click)="closeDialog();">CANCEL</button>
 </mat-dialog-actions>
 <mat-error *ngIf="displayErrorMsg" [style.visibility]="!loader ? 'visible' : 'hidden'">{{errorMessage}}</mat-error>

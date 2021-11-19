@@ -52,42 +52,17 @@ export class HouseHoldDialog implements OnInit{
         public canvassService: CanvassService
 
         ) {
-          this.fullAddress1 = data.selected.houseHold.fullAddress1
-          this.fullAddress2 = data.selected.houseHold.fullAddress2
+
           this.houseHold = data.selected.houseHold
-          this.getScript(data.activity.scriptID)
+          
+          this.fullAddress1 = this.houseHold.fullAddress1
+          this.fullAddress2 = this.houseHold.fullAddress2
+          
           this.activity = data.activity
-          this.getNonResponseSet(data.activity.nonResponseSetID)
-
+          this.script = data.script
+          this.nonResponseSet = data.nonResponseSet
         }
 
-  getScript(scriptID: string){
-          this.scriptService.getScript(scriptID).subscribe(
-            (script: Script) =>{
-              this.script = script
-            },
-            error=>{
-              console.log(error)
-              this.displayErrorMsg = true;
-              this.loading = false;
-              this.errorMessage = 'There was a problem loading the script. Please refresh the page.';
-            }
-          )
-        }
-      
-  getNonResponseSet(nonResponseSetID: string){
-          this.scriptService.getNonResponseSet(nonResponseSetID).subscribe(
-            (nonResponseSet: unknown) =>{
-              this.nonResponseSet = nonResponseSet
-            },
-            error=>{
-              console.log(error)
-              this.displayErrorMsg = true;
-              this.loading = false;
-              this.errorMessage = 'There was a problem loading the script. Please refresh the page.';
-            }
-          )
-        }
 
   generateIdResponses(script: Script, radioAnswers, textAnswers): any[]{
     var idResponses = [];
@@ -121,6 +96,8 @@ export class HouseHoldDialog implements OnInit{
   }
 
   submitScriptResponse(resident: unknown, radioAnswers, textAnswers, houseHoldID: unknown, hhSize: number){
+
+
     var idResponses = this.generateIdResponses(this.script, radioAnswers, textAnswers);
       
     if(idResponses.length === 0){
@@ -128,13 +105,24 @@ export class HouseHoldDialog implements OnInit{
       return;
     }
 
+    this.loading = true
+
     var personID: string = resident['personID']
     var user: object = JSON.parse(sessionStorage.getItem('user'))
     var orgID: string = sessionStorage.getItem('orgID')
            
     this.canvassService.submitScriptResponse(this.activity, idResponses, personID, user, orgID, houseHoldID, hhSize).subscribe(
-      (houseHold: unknown)=>{   
-        this.dialogRef.close(houseHold)
+      (houseHold: unknown)=>{ 
+
+        if(houseHold['complete']) this.dialogRef.close(houseHold)
+        if(houseHold['residentStatus'].length >= this.houseHold.residents.length ){
+          this.dialogRef.close(houseHold)
+        } 
+        this.houseHold = houseHold['houseHold']
+        this.getHouseholdContactHistory();
+        this.loading = false;
+
+
       },
       error =>{
         console.log(error)
@@ -149,12 +137,16 @@ export class HouseHoldDialog implements OnInit{
     var user: object = JSON.parse(sessionStorage.getItem('user'))
     var orgID: string = sessionStorage.getItem('orgID')
 
-    //this.submittingResponse = true;
+    this.loading = true
 
     this.canvassService.submitNonResponse(this.activity, nonResponse, nonResponseType, personID, user, orgID, houseHoldID, hhSize, this.nonResponseSet['_id']).subscribe(
-      (result: unknown)=>{
+      (houseHold: unknown)=>{
+        if(houseHold['residentStatus'].length >= this.houseHold.residents.length ){
+          this.dialogRef.close(houseHold)
+        }
+        this.houseHold = houseHold['houseHold']
         this.getHouseholdContactHistory();
-
+        this.loading = false;
       },
       error =>{
         console.log(error)
@@ -167,12 +159,11 @@ export class HouseHoldDialog implements OnInit{
 
   getHouseholdContactHistory(){
     var activityID = sessionStorage.getItem('activityID')
-    this.canvassService.getCanvassHouseHold(activityID, this.houseHold._id).subscribe(
+    this.canvassService.getCanvassContactHistory(activityID, this.houseHold._id).subscribe(
       (result: any[]) =>{
-        this.residentsContacted = result['ccHistory'].map(x =>{ return x.personID})
+        this.residentsContacted = result.map(x =>{ return x.personID})
       }
     )
-    
   }
 
   ngOnInit(): void{

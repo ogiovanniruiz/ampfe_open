@@ -27,11 +27,9 @@ export class ReportService {
   }
 
   getScriptReport(campaignID: Number, orgID: string, data){
-    return this.http.post(this.API_URL + '/api/getCOIReport', {campaignID, orgID, data})
+    return this.http.post(this.API_URL + '/api/getScriptReport', {campaignID, orgID, data})
   }
 
-  getCOIReport(campaignID: Number, mode: string, orgID: string, dateStart, dateEnd){
-    return this.http.post(this.API_URL + '/api/getCOIReport', {campaignID, mode, orgID, dateStart, dateEnd})
-  }
+
 
 }

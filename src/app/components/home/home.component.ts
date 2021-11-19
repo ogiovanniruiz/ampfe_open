@@ -38,15 +38,6 @@ export class HomeComponent implements OnInit {
 
   activeOrgResults: Organization[];
 
-  //leadOrgs: Organization[] = [];
-  //volOrgs: Organization[] = [];
-  //adminOrgs: Organization[] = [];
-
-  //leadOrgsResults: Organization[] = [];
-  //volOrgsResults: Organization[] = [];
-  //adminOrgsResults: Organization[] = [];
-
-  //gridColumns: Number;
   dev: boolean = false;
   dataLoaded:boolean = false;
   userAgreementVersion: string = "1.0";
@@ -136,6 +127,7 @@ export class HomeComponent implements OnInit {
   }
 
   enterOrganization(org: Organization){
+    sessionStorage.setItem('orgName', org.name)
     sessionStorage.setItem('orgID', org._id)
     this.router.navigate(['/organization']);
   }

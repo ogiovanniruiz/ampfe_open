@@ -20,43 +20,39 @@ export class OrgBillingDialog implements OnInit{
 
   displayErrorMsg: boolean = false
   errorMessage: string = '';
-  funded: boolean = false;
+
   subscribed: boolean = false;
   dev: boolean = false;
 
   @ViewChild('cardInfo') cardInfo: ElementRef;
-  _totalAmount: number;
-      card: any;
-      cardHandler = this.onChange.bind(this);
-      cardError: string;
+
+  totalAmount: number;
+  card: any;
+  cardHandler = this.onChange.bind(this);
+  cardError: string;
   
   constructor(public dialogRef: MatDialogRef<OrgBillingDialog>,
               @Inject(MAT_DIALOG_DATA) public data: Organization, 
               public orgService: OrganizationService,
               public stripeService: StripeService,
-              private fb: FormBuilder, //private stripeService: StripeService
               private cd: ChangeDetectorRef,
-
               ) {
-                this.funded = this.data.funded
                 this.subscribed = this.data.subscribed
-
-                this._totalAmount = 20//data['totalAmount'];
-                
+                console.log(this.data)
+                this.totalAmount = this.data.subscription.cost //6000//data['totalAmount'];
               }
               
   closeDialog(): void{this.dialogRef.close()}
 
   ngOnDestroy() {
     if (this.card) {
-        // We remove event listener here to keep memory clean
         this.card.removeEventListener('change', this.cardHandler);
         this.card.destroy();
     }
-}
-ngAfterViewInit() {
+  }
+  ngAfterViewInit() {
     this.initiateCardElement();
-}
+  }
 
   onChange({error}) {
     if (error) {
@@ -65,42 +61,24 @@ ngAfterViewInit() {
         this.cardError = null;
     }
     this.cd.detectChanges();
-}
+  }
 
-onSuccess(token) {
-  this.createOrder(token.id);
-}
-onError(error) {
-  if (error.message) {
+  onSuccess(token) {
+    this.createOrder(token.id);
+  }
+
+  onError(error) {
+    if (error.message) {
       this.cardError = error.message;
-  }
-}
-
-createOrder(id: any){
-  this.stripeService.createOrder(id).subscribe(result =>{
-    console.log(result)
-  })
-
-}
-
-
-
-  toggleFundedStatus(toggle: boolean){
-    var orgID: string = this.data._id
-    this.orgService.updateFundedStatus(orgID, toggle).subscribe(
-      (result: UpdatedOrg) =>{
-        if(result.success){
-          this.funded = toggle
-        }
-      },
-      error =>{
-        console.log(error)
-        this.errorMessage = "There was a problem with the server."
-        this.displayErrorMsg = true;
-      }
-    )
+    }
   }
 
+  createOrder(id: any){
+    this.stripeService.createOrder(id).subscribe(result =>{
+      console.log(result)
+    })
+
+  }
   toggleSubscribedStatus(toggle: boolean){
     var orgID: string = this.data._id
 
@@ -122,7 +100,7 @@ createOrder(id: any){
     // Giving a base style here, but most of the style is in scss file
     const cardStyle = {
         base: {
-            color: '#32325d',
+            color: '#193155',
             fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
             fontSmoothing: 'antialiased',
             fontSize: '16px',
@@ -135,10 +113,36 @@ createOrder(id: any){
             iconColor: '#fa755a',
         },
     };
-    this.card = elements.create('card', {cardStyle});
+
+    this.card = elements.create('card', {
+      iconStyle: 'solid',
+      style: {
+        base: {
+          iconColor: '#193155',
+          color: '#193155',
+          fontWeight: 500,
+          fontFamily: 'Roboto, Open Sans, Segoe UI, sans-serif',
+          fontSize: '16px',
+          fontSmoothing: 'antialiased',
+  
+          ':-webkit-autofill': {
+            color: '#193155',
+          },
+          '::placeholder': {
+            color: 'grey',
+          },
+        },
+        invalid: {
+          iconColor: '#ad1d2e',
+          color: '#ad1d2e',
+        },
+      },
+    });
+
     this.card.mount(this.cardInfo.nativeElement);
-this.card.addEventListener('change', this.cardHandler);
-}
+    this.card.addEventListener('change', this.cardHandler);
+
+  }
 
 async createStripeToken() {
   const {token, error} = await stripe.createToken(this.card);
@@ -152,6 +156,5 @@ async createStripeToken() {
   ngOnInit(){
     var user: User = JSON.parse(sessionStorage.getItem('user'));
     this.dev = user.dev
-
   }
 } 

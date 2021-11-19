@@ -7,6 +7,7 @@ import {ScriptService} from '../../../../../services/script/script.service'
 import {DatePipe} from '@angular/common';
 import {Organization} from '../../../../../models/organizations/organization.model';
 import {User} from '../../../../../models/users/user.model';
+import {TargetService} from '../../../../../services/target/target.service'
 
 @Component({
   templateUrl: './editCanvassActivityDialog.html',
@@ -28,7 +29,7 @@ export class EditCanvassActivityDialog implements OnInit{
     activity: unknown;
     script: unknown;
 
-    scriptName: string;
+    target: any;
 
     activityType: string;
     userFirstName: string;
@@ -36,10 +37,10 @@ export class EditCanvassActivityDialog implements OnInit{
     dev = false;
 
     loading = false;
+    targetName: string;
+    nonResponseSetName: string;
+    scriptName: string;
 
-    //mainPhonenum: string = ''
-    //email: string = ''
-    //voiceMailNumber: string = ''
 
     @ViewChild('activityName', {static: true}) activityName: ElementRef;
     @ViewChild('description' , {static: true}) description: ElementRef;
@@ -51,7 +52,9 @@ export class EditCanvassActivityDialog implements OnInit{
               @Inject(MAT_DIALOG_DATA) public data: any,
               public activityService: ActivityService,
               public orgService: OrganizationService,
-              public scriptService: ScriptService) {
+              public scriptService: ScriptService,
+              public targetService: TargetService,
+              ) {
                 this.activity = data.activity;
               }
 
@@ -186,10 +189,46 @@ export class EditCanvassActivityDialog implements OnInit{
       }
   }
 
+  getTarget(){
+    var targetID = this.activity['targetID']
+    this.targetService.getTarget(targetID).subscribe(
+      (target: unknown)=>{
+        this.target = target;
+        this.targetName = target['properties']['name'];
+      },
+      error =>{
+        console.log(error)
+        //this.displayErrorMsg = true;
+        //this.errorMessage = 'There was a problem with the server.';
+      }
+    ) 
+  }
+
+  getNonResponseSet(){
+    var nonResponseSetID: string = this.activity['nonResponseSetID']
+
+    this.scriptService.getNonResponseSet(nonResponseSetID).subscribe(
+      (nonResponseSet: unknown) =>{
+        //this.nonResponseSet = nonResponseSet
+        this.nonResponseSetName = nonResponseSet['title']
+      },
+      error=>{
+        console.log(error)
+        //this.displayErrorMsg = true;
+        //this.errorMessage = 'There was a problem with the server.';
+      }
+    )
+  }
+
+
+
   ngOnInit(){
       this.getCampaignOrgs();
       this.getCampaignUsers();
       this.prefillActivtyData();
+      this.getTarget()
+      this.getScript()
+      this.getNonResponseSet()
       this.activityType = sessionStorage.getItem('activityType');
       this.userFirstName = JSON.parse(sessionStorage.getItem('user')).name.firstName;
       this.dev = JSON.parse(sessionStorage.getItem('user')).dev;

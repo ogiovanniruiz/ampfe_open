@@ -11,67 +11,54 @@
   </mat-card>
 </div>
 <h1 fxLayoutAlign="center" *ngIf="dataLoaded">{{campaignName}} Dashboard</h1>
+<mat-error fxLayoutAlign="center" *ngIf="dataLoaded">{{orgName}}</mat-error>
 <br>
 <mat-grid-list #grid rowHeight="3:1">
   <mat-grid-tile *ngIf="dataLoaded && campaignActive" >
     <mat-card fxFlex=80%>
-      <button fxFlex color="primary" mat-button [disabled]='!funded' (click)="enterActivityDashboard('Phonebank')">PHONEBANKS</button>
+      <button fxFlex color="primary" mat-button [disabled]='!funded' (click)="enterActivityDashboard('Phonebank')"><mat-icon>call</mat-icon>PHONEBANKS</button>
     </mat-card>
   </mat-grid-tile>
-  <!--
-  <mat-grid-tile *ngIf="dataLoaded && dev" >
-    <mat-card fxFlex=80%>
-      <button fxFlex color="primary" mat-button [disabled]='!dev' (click)="enterActivityDashboard('Canvass')">CANVASS</button>
-    </mat-card>
-  </mat-grid-tile>-->
-
   <mat-grid-tile *ngIf="dataLoaded && campaignActive" >
     <mat-card fxFlex=80%>
-      <button fxFlex color="primary" mat-button  [disabled]='!funded' (click)="enterActivityDashboard('Texting')">TEXTBANKS</button>
+      <button fxFlex color="primary" mat-button  [disabled]='!funded' (click)="enterActivityDashboard('Texting')"><mat-icon>sms</mat-icon>TEXTBANKS</button>
     </mat-card>
-  </mat-grid-tile>
-  <!--
-  <mat-grid-tile *ngIf="dataLoaded" >
+  </mat-grid-tile>  
+  <mat-grid-tile *ngIf="dataLoaded && dev" >
     <mat-card fxFlex=80%>
-      <button fxFlex color="primary" mat-button  (click)="enterActivityDashboard('Hotline')">HOTLINE</button>
+      <button fxFlex color="primary" mat-button [disabled]='!dev' (click)="enterActivityDashboard('Canvass')"><mat-icon>map</mat-icon>CANVASS</button>
     </mat-card>
   </mat-grid-tile>
-  
+  <mat-grid-tile *ngIf="(dataManager || dev) && dataLoaded && campaignActive">
+    <mat-card fxFlex=80%>
+      <button fxFlex color="primary" mat-button (click)="enterTargetingModule()"><mat-icon>travel_explore</mat-icon>MAPS & TARGETS</button>
+    </mat-card>
+  </mat-grid-tile>
+  <mat-grid-tile *ngIf="(orgLevel === 'ADMINISTRATOR' || dev || dataManager) && dataLoaded">
+    <mat-card fxFlex=80%>
+      <button fxFlex color="primary" mat-button (click)="enterReportsModule()"><mat-icon>insert_chart</mat-icon>REPORTS</button>
+    </mat-card>
+  </mat-grid-tile>
+  <mat-grid-tile *ngIf="(dataManager || dev) && dataLoaded && campaignActive">
+    <mat-card fxFlex=80%>
+      <button fxFlex color="primary" mat-button (click)="enterScriptsModule()"><mat-icon>assignment</mat-icon>SCRIPTS</button>
+    </mat-card>
+  </mat-grid-tile>
+
+
+      <!--
   <mat-grid-tile *ngIf="(orgLevel === 'ADMINISTRATOR' || dev) && dataLoaded">
     <mat-card fxFlex=80%>
       <button fxFlex color="primary" mat-button (click)="enterEventsModule()">EVENTS</button>
     </mat-card>
-  </mat-grid-tile>-->
-  <mat-grid-tile *ngIf="(dataManager || dev) && dataLoaded && campaignActive">
-    <mat-card fxFlex=80%>
-      <button fxFlex color="primary" mat-button (click)="enterTargetingModule()">MAPS & TARGETS</button>
-    </mat-card>
-  </mat-grid-tile>
-
-  <!--
-  <mat-grid-tile *ngIf="(dataManager || dev) && dataLoaded">
-    <mat-card fxFlex=80%>
-      <button fxFlex color="primary" mat-button (click)="openSettingsDialog()">CAMPAIGN SETTINGS</button>
-    </mat-card>
   </mat-grid-tile>
   -->
-  <mat-grid-tile *ngIf="(orgLevel === 'ADMINISTRATOR' || dev || dataManager) && dataLoaded">
-    <mat-card fxFlex=80%>
-      <button fxFlex color="primary" mat-button (click)="enterReportsModule()">REPORTS</button>
-    </mat-card>
-  </mat-grid-tile>
   <!--
   <mat-grid-tile *ngIf="dataLoaded && dev">
     <mat-card fxFlex=80%>
       <button fxFlex color="primary" mat-button (click)="enterActivityDashboard('Petition')">PETITIONS</button>
     </mat-card>
   </mat-grid-tile>-->
-
-  <mat-grid-tile *ngIf="(dataManager || dev) && dataLoaded && campaignActive">
-    <mat-card fxFlex=80%>
-      <button fxFlex color="primary" mat-button (click)="enterScriptsModule()">SCRIPTS</button>
-    </mat-card>
-  </mat-grid-tile>
   <!--
   <mat-grid-tile *ngIf="(dev) && dataLoaded">
     <mat-card fxFlex=80%>
@@ -79,7 +66,6 @@
     </mat-card>
   </mat-grid-tile>
   -->
-
   <!--
   <mat-grid-tile *ngIf="dataLoaded && campaignActive">
     <mat-card fxFlex=80%>

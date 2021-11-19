@@ -1,37 +1,31 @@
 <h2 mat-dialog-title fxLayoutAlign="center">Organization Billing</h2>
-<mat-dialog-content fxLayoutGap="5%" fxLayout="column" style="padding-top:10px;padding-bottom:10px">
-<!--
-    <form novalidate (ngSubmit)="createToken()" [formGroup]="stripeTest">
-        <input type="text" formControlName="name" placeholder="Jane Doe">
-        <ngx-stripe-card [options]="cardOptions"></ngx-stripe-card>
-        <button mat-stroked-button type="submit" color="accent">CREATE TOKEN</button>
-    </form>
-    <button (click)="pay(20)">Pay 20</button>-->
+<mat-dialog-content fxLayoutGap="5%" fxLayout="column">
 
-    <!-- stripe-payment.component.html -->
-    <form (ngSubmit)="createStripeToken()" class="checkout">
-        <label for="card-info">Card Info</label>
-        <div id="form-field">
-            <div id="card-info" #cardInfo></div>
-            <button id="submit-button" type="submit">
-                Pay ${{_totalAmount}}
-            </button>
-            <mat-error id="card-errors" role="alert" *ngIf="cardError">
-                <mat-icon style="color: #f44336">cancel</mat-icon>
-                &nbsp;{{ cardError }}
-            </mat-error>
-        </div>
-    </form>
-
-      
-    <h2>Currently Funded: {{funded}}</h2>
-    <mat-slide-toggle checked="{{funded}}" *ngIf='dev' (click)="toggleFundedStatus(!fundedToggle.checked);" #fundedToggle> Change Funded Status</mat-slide-toggle>
+    <mat-card>
+        <form (ngSubmit)="createStripeToken()" class="checkout" fxLayout="column" fxLayoutGap="5%">
+            <section fxLayout="row">
+                <input matInput id='first-name' placeholder="First Name">
+                <input matInput id='last-name' placeholder="Last Name">
+            </section>
     
-    <h2>Currently Subscribed: {{subscribed}}</h2>
+            <input matInput id='email' placeholder="Email">
+            <input matInput id='phone' placeholder="Phone Number">
+            <div id='card-info' name='cardnumber' fxFlex='100%' #cardInfo></div>
+            <mat-error role="alert" *ngIf="cardError"><mat-icon color='warn'>cancel</mat-icon>&nbsp;{{ cardError }}</mat-error>
+            <button fxFlex='100%' mat-stroked-button color='primary' type="submit">Pay ${{totalAmount}}</button> 
+
+        </form>
+
+    </mat-card>
+
+
+    <h2 *ngIf='subscribed' color='primary'>You account is Paid Full</h2>
+    <mat-error *ngIf='!subscribed'>Not Paid Yet</mat-error>
+    
     <mat-slide-toggle checked="{{subscribed}}" *ngIf='dev' (click)="toggleSubscribedStatus(!subscribedToggle.checked);" #subscribedToggle> Change Subscribed Status</mat-slide-toggle>
 
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-    <button mat-raised-button color="accent" (click)="closeDialog();">CLOSE</button>
+    <button mat-stroked-button color="accent" (click)="closeDialog();">CLOSE</button>
 </mat-dialog-actions>
 <mat-error fxLayoutAlign="center" *ngIf="displayErrorMsg">{{errorMessage}}</mat-error> 

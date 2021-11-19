@@ -33,6 +33,7 @@ export class DashboardComponent implements OnInit {
   logo_dir: string = environment.LOGO_DIR;
 
   funded: boolean = false;
+  orgName: string = ''
 
   @ViewChild('grid', {static: true}) grid: MatGridList;
 
@@ -163,6 +164,7 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.orgName = sessionStorage.getItem('orgName')
     this.grid.cols = 1;
     this.refreshUserProfile();
     this.getFundedStatus()

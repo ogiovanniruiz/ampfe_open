@@ -5,7 +5,7 @@ export class Script {
     questions: Question[];
     campaignIDs?: number[];
     orgStatus?: {orgID: string, active?: boolean};
-    participatingOrgs?: any[]
+    //participatingOrgs?: any[]
 }
 
 export class Question {

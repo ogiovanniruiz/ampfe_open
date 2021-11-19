@@ -35,9 +35,9 @@
         
         <mat-card fxLayout="column" fxLayoutGap="2%">
 
-            <h2 fxFlexAlign="center">Main Phonenumber: </h2>
-            <h2 fxFlexAlign="center">Email: </h2>
-            <h2 fxFlexAlign="center">VoiceMail Number:</h2>
+            <h2 fxFlexAlign="center">Target Name: {{targetName}}</h2>
+            <h2 fxFlexAlign="center">NonResponseSet Name: {{nonResponseSetName}}</h2>
+            <h2 fxFlexAlign="center">Script Name: {{scriptName}}</h2>
         </mat-card>
         <br>
     </section>
@@ -46,5 +46,5 @@
     <button mat-raised-button color="accent" (click)="close()" fxFlexAlign="center">CLOSE</button>
     <button mat-raised-button color="primary" (click)="saveActivityEdits()" fxFlexAlign="center">SAVE</button>
     <button mat-raised-button color="warn" *ngIf="dev" (click)="deleteActivity()" fxFlexAlign="center">DELETE</button>
-    <button mat-raised-button color="primary" *ngIf="dev" (click)="deactivate()" fxFlexAlign="center">COMPLETE</button>
+    <button mat-raised-button color="primary" (click)="deactivate()" fxFlexAlign="center">COMPLETE</button>
 </mat-dialog-actions>

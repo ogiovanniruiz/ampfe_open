@@ -14,9 +14,9 @@
             <mat-option *ngFor="let districtType of districtBoundariesType" [value]="districtType" (click)="getDistricts()">{{districtType}}</mat-option>
         </mat-select>
     </mat-form-field>
-    <div *ngIf="targetsNum">
+    <div *ngIf="targetsNum && campaignBoundary[0]">
         <mat-label>District Type:</mat-label>
-        <div>{{data.boundary[0].properties.districtType | titlecase}}</div>
+        <div>{{campaignBoundary[0].properties.districtType | titlecase}}</div>
     </div>
 
     <mat-progress-bar mode="indeterminate" *ngIf="loadingIDS && !districtBoundariesResults?.length"></mat-progress-bar>
@@ -30,7 +30,7 @@
     </mat-form-field>
     <div *ngIf="targetsNum" style="margin-top:20px">
         <mat-label>District:</mat-label>
-        <div *ngFor="let bound of data.boundary">{{bound.properties.name | uppercase}}</div>
+        <div *ngFor="let bound of campaignBoundary">{{bound.properties.name | uppercase}}</div>
     </div>
 
     <mat-form-field *ngIf="!targetsNum">
@@ -76,11 +76,11 @@
     <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
 </mat-dialog-content>
 <mat-dialog-actions align="end" [style.visibility]="!loader ? 'visible' : 'hidden'">
-    <button mat-raised-button color="primary" *ngIf="!loadingIDS" (click)="editCampaign('edit')">SUBMIT</button>
-    <button mat-raised-button color="accent" (click)="return();">CANCEL</button>
+    <button mat-stroked-button color="primary" *ngIf="!loadingIDS" (click)="editCampaign('edit')">SUBMIT</button>
+    <button mat-stroked-button color="accent" (click)="return();">CANCEL</button>
   
-    <button mat-raised-button color="primary" (click)="editCampaign('activate')" *ngIf="!data.active">ACTIVATE</button>
-    <button mat-raised-button color="warn" (click)="editCampaign('deactivate')" *ngIf="data.active">DEACTIVATE</button>
-    <button mat-raised-button color="warn" (click)="deleteCampaign()" *ngIf="!targetsNum">DELETE</button>
+    <button mat-stroked-button color="primary" (click)="editCampaign('activate')" *ngIf="!data.active">ACTIVATE</button>
+    <button mat-stroked-button color="warn" (click)="editCampaign('deactivate')" *ngIf="data.active">DEACTIVATE</button>
+    <button mat-stroked-button color="warn" (click)="deleteCampaign()" *ngIf="!targetsNum">DELETE</button>
 </mat-dialog-actions>
 <mat-error *ngIf="displayErrorMsg" [style.visibility]="!loader ? 'visible' : 'hidden'">{{errorMessage}}</mat-error>

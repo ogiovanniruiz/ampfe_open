@@ -3,34 +3,34 @@
 <mat-dialog-content fxLayout="column">
   <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
     <mat-form-field fxFlex="33%" > 
-      <input matInput #firstName type="name" placeholder="First Name" required>
+      <input matInput #firstName type="name" id='name' placeholder="First Name" required>
     </mat-form-field>
     <mat-form-field fxFlex="33%"> 
-        <input matInput #middleName type="name" placeholder="Middle Name">
+        <input matInput #middleName type="name" id='name'  placeholder="Middle Name">
     </mat-form-field>
     <mat-form-field fxFlex="33%"> 
-      <input matInput #lastName type="name" placeholder="Last Name">
+      <input matInput #lastName type="name" id='name' placeholder="Last Name">
     </mat-form-field>          
   </section>
 
   <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
     <mat-form-field fxFlex="50%"> 
-      <input matInput #phone type="tel" placeholder="Phone Number" maxlength="10" (input)="numericOnly($event)">
+      <input matInput #phone type="tel" id='phone' placeholder="Phone Number" maxlength="10" (input)="numericOnly($event)">
     </mat-form-field>
     <mat-form-field fxFlex="50%"> 
-      <input matInput #email type="email" placeholder="Email">
+      <input matInput #email type="email" id='email'  placeholder="Email">
     </mat-form-field>
   </section>
 
   <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
     <mat-form-field fxFlex="100%"> 
-      <input matInput #address type="text" placeholder="Address">
+      <input matInput #address type="text" id='address' placeholder="Address">
     </mat-form-field>
   </section>
 
   <section fxLayout="row" fxLayout.xs="column" fxLayoutGap="2%">
     <mat-form-field fxFlex="50%">
-      <input matInput #city type="text" placeholder="City">
+      <input matInput #city type="text" id='city' placeholder="City">
     </mat-form-field>
     <mat-form-field fxFlex="20%">
       <mat-select #state placeholder="State">
@@ -38,14 +38,14 @@
       </mat-select>
     </mat-form-field>
     <mat-form-field fxFlex="30%"> 
-      <input matInput #zip type="text" placeholder="Zip" maxlength="5" (input)="numericOnly($event)">
+      <input matInput #zip type="text" id='zipcode' placeholder="Zip" maxlength="5" (input)="numericOnly($event)">
     </mat-form-field>
   </section>
 
   <section fxLayout="row" fxLayoutGap="2%">
     <mat-form-field fxFlex="50%" appearance="fill">
       <mat-label>Choose a date of birth</mat-label>
-      <input matInput [matDatepicker]="dob">
+      <input matInput id='date' [matDatepicker]="dob">
       <mat-datepicker-toggle matSuffix [for]="dob"></mat-datepicker-toggle>
       <mat-datepicker #dob></mat-datepicker>
     </mat-form-field>
