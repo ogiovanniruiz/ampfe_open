@@ -71,10 +71,12 @@ export class EditPolygonDialog implements OnInit{
   }
 
   delete(){
-    this.geoService.removePolygon(this.data._id).subscribe(
-      () => {
-        this.dialogRef.close({delete: true});
-      }
-    )
+    if (confirm('Are you sure you want delete this Polygon?')) {
+      this.geoService.removePolygon(this.data._id).subscribe(
+        () => {
+          this.dialogRef.close({delete: true});
+        }
+      )
+    }
   }
 }

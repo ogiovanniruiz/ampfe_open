@@ -3,30 +3,17 @@
 <h3 mat-dialog-title fxLayoutAlign="center">{{fullAddress2}}</h3>
 <mat-dialog-content fxLayout="column" [@.disabled]="disableAnimation">
     <mat-accordion #accordion1="matAccordion">
-        <mat-expansion-panel *ngFor="let resident of houseHold.residents; let i = index" [disabled]='residentsContacted.includes(resident.personID)'>
+        <mat-expansion-panel *ngFor="let resident of houseHold.residents; let i = index" [disabled]='residentsComplete.includes(resident.personID)'>
           <mat-expansion-panel-header>
             <mat-panel-title>{{resident.name.firstName}} {{resident.name.middleName}} {{resident.name.lastName}} </mat-panel-title>
             
-            <mat-panel-description *ngIf='resident.party'> <section >Party: {{resident.party}} - Age: {{resident.dob}}</section></mat-panel-description>
+            <mat-panel-description fxLayoutGap="2%" >
+              <mat-error *ngIf='residentsContacted.includes(resident.personID) && residentsComplete.includes(resident.personID)'>Attempted Contact and Complete</mat-error>
+              <mat-error *ngIf='residentsContacted.includes(resident.personID) && !residentsComplete.includes(resident.personID)'>Attempted Contact and Incomplete</mat-error>  
+            </mat-panel-description>
           </mat-expansion-panel-header>
           <section fxLayout="column" fxLayoutGap="2%">
-            <!--
-            <mat-list >
-              <mat-list-item *ngFor="let question of script.questions; let k = index" [ngSwitch]="question.questionType">
 
-                <p>{{k + 1}} {{question.question}}</p>
-                <section *ngSwitchCase="'SINGLESELECT'" >
-                  <mat-radio-group fxLayout="column" fxLayoutGap="5%" [ngModel] #radioAnswers="ngModel" name="{{question.question}}">
-                    <mat-radio-button *ngFor="let responses of question.responses" value="{{responses.response}},{{responses.idType}}">{{responses.response}} </mat-radio-button>
-                  </mat-radio-group>
-                </section>
-                <section *ngSwitchCase="'TEXT'" >
-                  <mat-form-field fxFlex="100%"> 
-                    <input matInput #textAnswers placeholder="Type your answer here" name="{{question.question}}">
-                  </mat-form-field>
-                </section>
-              </mat-list-item>
-            </mat-list>-->
             
             <mat-accordion *ngIf='script'>
               <mat-expansion-panel *ngFor="let question of script.questions; let k = index" [ngSwitch]="question.questionType" >

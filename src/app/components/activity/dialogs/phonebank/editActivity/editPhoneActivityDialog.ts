@@ -67,8 +67,6 @@ export class EditPhoneActivityDialog implements OnInit{
                 this.activity = data.activity;
               }
 
-  onNoClick(): void {this.dialogRef.close()}
-
   resetActivity(){
     var activityID = this.data.activity._id
     this.resetting = true

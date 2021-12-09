@@ -8,6 +8,7 @@ import {DatePipe} from '@angular/common';
 import {Organization} from '../../../../../models/organizations/organization.model';
 import {User} from '../../../../../models/users/user.model';
 import {TargetService} from '../../../../../services/target/target.service'
+import {Activity} from '../../../../../models/activities/activity.model'
 
 @Component({
   templateUrl: './editCanvassActivityDialog.html',
@@ -41,6 +42,8 @@ export class EditCanvassActivityDialog implements OnInit{
     nonResponseSetName: string;
     scriptName: string;
 
+    resetting: boolean = false
+
 
     @ViewChild('activityName', {static: true}) activityName: ElementRef;
     @ViewChild('description' , {static: true}) description: ElementRef;
@@ -58,7 +61,7 @@ export class EditCanvassActivityDialog implements OnInit{
                 this.activity = data.activity;
               }
 
-  onNoClick(): void {this.dialogRef.close()}
+
 
   saveActivityEdits(){
       var activityID: string = this.activity['_id'];
@@ -218,6 +221,20 @@ export class EditCanvassActivityDialog implements OnInit{
         //this.errorMessage = 'There was a problem with the server.';
       }
     )
+  }
+
+  resetActivity(){
+    var activityID = this.data.activity._id
+    this.resetting = true
+
+    if (confirm('Are you sure you want reset this Activity?')) {
+      this.activityService.resetActivity(activityID).subscribe(
+        (activity: Activity) =>{
+          this.activity = activity
+          this.resetting = false;
+        }
+      )
+    }
   }
 
 

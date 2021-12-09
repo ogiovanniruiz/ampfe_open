@@ -95,9 +95,7 @@ export class CanvassComponent implements OnInit {
 
         var color = 'blue'
         var clickable = true;
-        var toolTip = hhRecords[i].records[0].houseHold.fullAddress1 + '<br>' +
-                      hhRecords[i].records[0].houseHold.fullAddress2 + '<br>' + 
-                      "# Residents: " + numResidents
+
         if(hhRecords[i].records.length > 1){
           var toolTip =  toolTip + "<br># Units: " + hhRecords[i].records.length
           color = 'purple'
@@ -108,7 +106,7 @@ export class CanvassComponent implements OnInit {
           }
         }else{
 
-          if(hhRecords[i].complete[0] === true){
+          if(hhRecords[i].complete[0] || hhRecords[i].passed[0]){
             color = 'green'
             clickable = false
           }
@@ -148,6 +146,7 @@ export class CanvassComponent implements OnInit {
         const dialogRef = this.dialog.open(HouseHoldDialog, {data: dialogData, width: "100%"});
         dialogRef.afterClosed().subscribe(result => {
           if(result){
+            console.log("HERE")
             var layers = this.layersControl.overlays['HouseHolds']
             layers.eachLayer(function(layer) {
               if(layer._latlng.lat === result.houseHold.location.coordinates[1] && 
