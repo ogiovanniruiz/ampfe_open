@@ -72,6 +72,9 @@ export class TargetingComponent implements OnInit {
   loadingBlockgroups: boolean = false;
   loadBlockgroups: boolean = false;
 
+  loadingBlocks: boolean = false;
+  loadBlocks: boolean = false;
+
   loadingPrecincts: boolean = false;
   loadPrecincts: boolean = false;
 
@@ -103,7 +106,8 @@ export class TargetingComponent implements OnInit {
   onMapReady(map: L.Map){
     this.leafletMap = map;
     this.bounds = this.leafletMap.getBounds();
-
+    
+    this.leafletMap.createPane('b').style.zIndex = '603';
     this.leafletMap.createPane('bg').style.zIndex = '602';
     this.leafletMap.createPane('prec').style.zIndex = '601';
 
@@ -111,6 +115,7 @@ export class TargetingComponent implements OnInit {
     map.on('overlayremove', this.onOverlayRemove);
 
     this.layersControl.overlays['Blockgroups'] = L.featureGroup();
+    this.layersControl.overlays['Blocks'] = L.featureGroup();
     this.layersControl.overlays['Precincts'] = L.featureGroup();
 
     this.lasso = L.control.lasso({ intersect: true }).addTo(map).setPosition('topright')
@@ -157,6 +162,14 @@ export class TargetingComponent implements OnInit {
       }
     }
 
+    if(e.name === 'Blocks'){
+      this.loadBlocks = true;
+      if(this.zoom >= this.loadingZoomLevel) {
+        this.bounds = this.leafletMap.getBounds();
+        this.getBlocks(this.bounds);
+      }
+    }
+
     if(e.name === this.orgName){
       this.loadPolys = true;
     }
@@ -180,9 +193,10 @@ export class TargetingComponent implements OnInit {
   async mapMoved(e: any){
     this.dragging = false;
     this.zoom = e.target._zoom;
-    if (e.target._zoom >= this.loadingZoomLevel && !this.loadingBlockgroups && !this.loadingPrecincts){
+    if (e.target._zoom >= this.loadingZoomLevel && !this.loadingBlockgroups && !this.loadingPrecincts && !this.loadingBlocks){
       this.bounds = this.leafletMap.getBounds();
       this.getBlockgroups(this.bounds);
+      this.getBlocks(this.bounds);
       this.getPrecincts(this.bounds);
     }
   }
@@ -251,7 +265,6 @@ export class TargetingComponent implements OnInit {
 
     this.geoService.getPolygons(campaignID, orgID).subscribe(
       (polys: any) =>{
-
         this.polys = polys[0].polys;
 
         for(var i = 0; i < polys.length; i++){
@@ -265,7 +278,14 @@ export class TargetingComponent implements OnInit {
 
         function onEachFeature(feature, layerP){
           if(orgID === feature.properties.orgID){
-            layerP.bindTooltip(feature.properties.name).setStyle({color: 'green'}).on('mouseup', this.openEditPolygonDialog, this).on('mousedown', this.getSelected, feature);
+
+            var tool_tip = feature.properties.name
+
+            //if(feature.properties.demographics){
+              //tool_tip = tool_tip + '<br>' + "Total Households: "  + feature.properties.demographics.total_hh
+           // }
+
+            layerP.bindTooltip(tool_tip).setStyle({color: 'green'}).on('mouseup', this.openEditPolygonDialog, this).on('mousedown', this.getSelected, feature);
           }else{
             layerP.bindTooltip(feature.properties.name).setStyle({color: 'orange'});
           }
@@ -275,6 +295,7 @@ export class TargetingComponent implements OnInit {
 
   async getBlockgroups(bounds: any){
     this.loadingBlockgroups = true;
+ 
 
     if(this.loadBlockgroups) {
       this.geoService.getBlockgroupsByBounds(bounds).subscribe(async (targets: any) => {
@@ -293,6 +314,34 @@ export class TargetingComponent implements OnInit {
       });
     } else {
       this.loadingBlockgroups = false;
+    }
+  }
+
+  async getBlocks(bounds: any){
+    this.loadingBlocks = true;
+
+    if(this.loadBlocks) {
+
+      this.geoService.getBlocksByBounds(bounds).subscribe(async (targets: any) => {
+
+        let layerBlock = L.geoJSON(targets, {pane: 'b', onEachFeature: onEachFeature.bind(this)});
+
+        function onEachFeature(feature, layerB) {
+          var tractData = 'GeoID: ' + feature.properties.geoid
+          
+          if(feature.properties.demographics.cvap/feature.properties.demographics.lcvap < 2){
+            layerB.bindTooltip(tractData).setStyle({fillcolor:'blue',color: "Orange"})
+          }else{
+            layerB.bindTooltip(tractData)
+          }
+        }
+
+        this.layersControl.overlays['Blocks'].removeLayer(this.layersControl.overlays['Blocks'].getLayers()[0]);
+        layerBlock.addTo(this.layersControl.overlays['Blocks']);
+        this.loadingBlocks = false;
+      });
+    } else {
+      this.loadingBlocks = false;
     }
   }
 

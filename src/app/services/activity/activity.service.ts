@@ -12,6 +12,10 @@ export class ActivityService {
 
   constructor(private http: HttpClient) { }
 
+  removeNumber(number: Object, activityID: string){
+    return this.http.post(this.API_URL + '/api/removeNumber', {number, activityID});
+  }
+
   createActivity(activityDetail: Object){
     return this.http.post(this.API_URL + '/api/createActivity', activityDetail);
   }

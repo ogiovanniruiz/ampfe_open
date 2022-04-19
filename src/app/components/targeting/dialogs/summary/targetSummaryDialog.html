@@ -7,7 +7,7 @@
         <mat-expansion-panel *ngFor="let orgTarget of orgTargets">
           <mat-expansion-panel-header>
             <mat-panel-title>{{orgTarget.properties.name}}</mat-panel-title>
-            <mat-panel-description>{{orgTarget.properties.targetType}}</mat-panel-description>
+            <mat-panel-description>{{orgTarget.properties.idByHousehold}}</mat-panel-description>
           </mat-expansion-panel-header>
           <mat-list>
             <mat-list-item *ngFor="let rule of orgTarget.properties.queries.rules">{{rule.field}} {{rule.operator}} {{rule.value}}</mat-list-item>
@@ -24,7 +24,7 @@
         <mat-expansion-panel *ngFor="let campaignWideTarget of campaignWideTargets">
           <mat-expansion-panel-header>
             <mat-panel-title>{{campaignWideTarget.properties.name}}</mat-panel-title>
-            <mat-panel-description>{{campaignWideTarget.properties.targetType}}</mat-panel-description>
+            <mat-panel-description>{{campaignWideTarget.properties.idByHousehold}}</mat-panel-description>
           </mat-expansion-panel-header>
           <mat-list>
             <mat-list-item *ngFor="let rule of campaignWideTarget.properties.queries.rules">{{rule.field}} {{rule.operator}} {{rule.value}}</mat-list-item>

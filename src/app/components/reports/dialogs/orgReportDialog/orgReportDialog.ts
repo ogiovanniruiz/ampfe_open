@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, Inject} from '@angular/core';
+import {FormControl} from '@angular/forms';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {ReportService} from '../../../../services/report/report.service'
 import { Sort } from '@angular/material/sort';
@@ -6,6 +7,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import {ScriptService} from '../../../../services/script/script.service';
 import {OrganizationService} from '../../../../services/organization/organization.service';
 import {Organization} from '../../../../models/organizations/organization.model';
+import { HIGH_CONTRAST_MODE_ACTIVE_CSS_CLASS } from '@angular/cdk/a11y/high-contrast-mode/high-contrast-mode-detector';
 
 @Component({
     templateUrl: './orgReportDialog.html',
@@ -29,6 +31,8 @@ export class OrgReportDialog implements OnInit {
     @ViewChild('reportPickerStart', {static: false}) reportPickerStart: ElementRef;
     @ViewChild('reportPickerEnd', {static: false}) reportPickerEnd: ElementRef;
 
+    today = new FormControl(new Date());
+
     constructor(public scriptService: ScriptService,
                 public dialogRef: MatDialogRef<OrgReportDialog>,
                 @Inject(MAT_DIALOG_DATA) public data,
@@ -45,9 +49,15 @@ export class OrgReportDialog implements OnInit {
         var campaignID: number = parseInt(sessionStorage.getItem('campaignID'));
 
         var reportPickerStart = '';
-        if (this.reportPickerStart){var reportPickerStart = this.reportPickerStart['startAt'] ? new Date(this.reportPickerStart['startAt']).toISOString().slice(0, 10) : ''}
+
+        if (this.reportPickerStart){reportPickerStart = this.reportPickerStart['startAt'] ? new Date(this.reportPickerStart['startAt']).toISOString().slice(0, 10) : ''}
+        else{
+            reportPickerStart = new Date().toISOString().slice(0, 10)
+        }
+        
         var reportPickerEnd = '';
         if (this.reportPickerEnd){var reportPickerEnd = this.reportPickerEnd['startAt'] ? new Date(this.reportPickerEnd['startAt']).toISOString().slice(0, 10) : ''}
+
 
         var data = {selectedScript: this.data.selectedScript, selectedActivityType: this.data.selectedActivityType, reportPickerStart, reportPickerEnd};
         this.completed = true;

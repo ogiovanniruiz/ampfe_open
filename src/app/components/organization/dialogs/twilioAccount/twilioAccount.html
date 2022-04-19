@@ -15,8 +15,14 @@
           <h3 matLine> Call Minutes: {{callCount}}</h3>
           <p matLine><span>Charge: ${{callCost}}</span></p>
         </mat-list-item>
+        
+        <mat-list-item *ngIf="user.dev">
+          <mat-icon matListIcon>call</mat-icon>
+          <h3 matLine> Client Minutes: {{clientCount}}</h3>
+          <p matLine><span>Charge: ${{clientCost}}</span></p>
+        </mat-list-item>
         <mat-divider></mat-divider>
-        <mat-list-item>
+        <mat-list-item *ngIf="user.dev">
           <h3 matLine> Total Charge: ${{totalCost}}</h3>
         </mat-list-item>
       </mat-list>
@@ -28,6 +34,7 @@
           <mat-icon matListIcon>call</mat-icon>
           <h3 matLine> {{number.phoneNumber}}</h3>
           <p matLine><span>{{number.smsUrl}}</span></p>
+          <p matLine><span>{{number.voiceUrl}}</span></p>
           <button mat-button (click)="releasePhoneNumber(number)" color='warn' style="float: right;">Release</button>
         </mat-list-item>
         <mat-divider></mat-divider>

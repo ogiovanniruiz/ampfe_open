@@ -4,6 +4,7 @@ import {ReportService} from '../../../../services/report/report.service'
 import { Sort } from '@angular/material/sort';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import {ScriptService} from '../../../../services/script/script.service';
+import {FormControl} from '@angular/forms';
 
 
 @Component({
@@ -28,6 +29,8 @@ export class ScriptReportDialog implements OnInit {
     @ViewChild('reportPickerStart', {static: false}) reportPickerStart: ElementRef;
     @ViewChild('reportPickerEnd', {static: false}) reportPickerEnd: ElementRef;
 
+    today = new FormControl(new Date());
+
     constructor(public scriptService: ScriptService,
                 public dialogRef: MatDialogRef<ScriptReportDialog>,
                 @Inject(MAT_DIALOG_DATA) public data,
@@ -42,6 +45,10 @@ export class ScriptReportDialog implements OnInit {
 
         var reportPickerStart = '';
         if (this.reportPickerStart){var reportPickerStart = this.reportPickerStart['startAt'] ? new Date(this.reportPickerStart['startAt']).toISOString().slice(0, 10) : ''}
+        else{
+            reportPickerStart = new Date().toISOString().slice(0, 10)
+        }
+        
         var reportPickerEnd = '';
         if (this.reportPickerEnd){var reportPickerEnd = this.reportPickerEnd['startAt'] ? new Date(this.reportPickerEnd['startAt']).toISOString().slice(0, 10) : ''}
 

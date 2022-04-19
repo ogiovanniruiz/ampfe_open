@@ -200,7 +200,7 @@ export class AppComponent implements OnInit{
 
   back(){
     
-    if (this.router.url === '/organization'){
+    if (this.router.url === '/organization' || this.router.url === '/districts' ){
       this.router.navigate(['/home']);
     } else if (this.router.url === '/dashboard' || this.router.url === '/membership'){
       this.router.navigate(['/organization']); 

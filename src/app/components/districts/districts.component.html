@@ -1,0 +1,26 @@
+<div fxFlex="100%" >
+    <div #container style="height:calc(100vh - 87px)" leaflet
+    [leafletOptions]="options" 
+    (leafletMapReady)="onMapReady($event)"
+    [leafletLayersControl]="layersControl">
+    <div fxFlex="20%" fxLayoutAlign="center center" fxLayout="column" fxLayoutGap="2%" style="z-index: 1000">
+      <mat-card fxLayoutAlign="center center" fxLayout="column" fxLayoutGap="5%">
+        <button mat-icon-button matTooltip="Search" ><mat-icon>search</mat-icon></button>
+
+        <mat-form-field appearance="fill">
+          <mat-label>District Type</mat-label>
+          <mat-select [(value)]="districtTypeSelection">
+            <mat-option (click)="districtTypeSelected(districtTypeSelection)" [value]="'ASSEMBLY'">Assembly</mat-option>
+            <mat-option (click)="districtTypeSelected(districtTypeSelection)" [value]="'SENATE'">Senate</mat-option>
+            <mat-option (click)="districtTypeSelected(districtTypeSelection)" [value]="'CONGRESSIONAL'">Congressional</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div *ngIf="loadingMap">
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          Loading Map Layers....
+        </div>
+
+      </mat-card>
+    </div>
+    </div>
+  </div>

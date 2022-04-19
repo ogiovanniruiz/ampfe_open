@@ -68,6 +68,7 @@
                     <mat-icon matListIcon>group</mat-icon>
                     <h3 matLine> {{userPhoneNumber.userFullName}}</h3>
                     <p matLine><span>{{userPhoneNumber.number}}</span></p>
+                    <button mat-icon-button *ngIf="dev" (click)='removeNumber(userPhoneNumber)' style="float: right;"><mat-icon>cancel</mat-icon></button>
                 </mat-list-item>
             </mat-list>
         </mat-card>
@@ -92,7 +93,8 @@
             </mat-list>
         </mat-card>
         
-        <mat-slide-toggle style="float: right;" checked="false" #attachImage (click)='toggleAttachImage(attachImage)'>Attach An Image</mat-slide-toggle>
+        <mat-slide-toggle style="float: right;" checked="false" #attachImage (click)='toggleAttachImage(attachImage)'>Attach An Image </mat-slide-toggle>
+        <mat-error>We recommend using https://imgur.com/ to generate urls for images.</mat-error>
         <mat-form-field > 
             <input matInput #imageURL type="text" placeholder="Image URL">
         </mat-form-field >

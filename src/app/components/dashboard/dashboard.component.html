@@ -24,9 +24,9 @@
       <button fxFlex color="primary" mat-button  [disabled]='!funded' (click)="enterActivityDashboard('Texting')"><mat-icon>sms</mat-icon>TEXTBANKS</button>
     </mat-card>
   </mat-grid-tile>  
-  <mat-grid-tile *ngIf="dataLoaded && dev" >
+  <mat-grid-tile *ngIf="dataLoaded && campaignActive" >
     <mat-card fxFlex=80%>
-      <button fxFlex color="primary" mat-button [disabled]='!dev' (click)="enterActivityDashboard('Canvass')"><mat-icon>map</mat-icon>CANVASS (beta:0.0.1)</button>
+      <button fxFlex color="primary" mat-button  (click)="enterActivityDashboard('Canvass')"><mat-icon>map</mat-icon>CANVASS (beta:0.0.1)</button>
     </mat-card>
   </mat-grid-tile>
   <mat-grid-tile *ngIf="(dataManager || dev) && dataLoaded && campaignActive">

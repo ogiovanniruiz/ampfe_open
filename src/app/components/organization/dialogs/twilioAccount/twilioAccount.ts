@@ -32,8 +32,11 @@ export class TwilioAccountDialog implements OnInit{
   callCount: number = 0
   msgCost: number = 0
   callCost: number = 0
-  totalCost: number = 0
+  //totalCost: string = '0'
+  totalCost: number = 0.00
 
+  clientCost: number = 0
+  clientCount: number = 0
   funded: boolean = false;
 
   @ViewChild("areaCode", {static: false}) areaCode: ElementRef;
@@ -177,12 +180,18 @@ export class TwilioAccountDialog implements OnInit{
     var orgID: string = sessionStorage.getItem('orgID')
     this.orgService.getTwilioUsageSummary(orgID).subscribe((result:number) =>{
 
+      console.log(result)
+
       this.callCount = Number(result['callCount'])
       this.callCost = Math.round(this.callCount*4)/100
-      
+
+      this.clientCount = Number(result['clientCount'])
+      this.clientCost = Math.round(this.clientCount*1.5)/100.00
+
+
       this.msgCount = Number(result['smsCount']) + Number(result['mmsCount'])
       this.msgCost = Math.round(this.msgCount*4)/100
-      this.totalCost = this.msgCost + this.callCost
+      this.totalCost = Math.round((this.msgCost + this.clientCost + this.callCost)*100)/100.0000//.toFixed(2)
       
 
     })

@@ -5,6 +5,7 @@ import { AuthGuard } from './authguards/auth-guard.service';
 const routes: Routes = [
   {path: 'scripts', loadChildren: () => import('./components/scripts/scripts.module').then(m => m.ScriptsModule), canActivate: [AuthGuard]},
   {path: 'assets', loadChildren: () => import('./components/assets/assets.module').then(m => m.AssetsModule), canActivate: [AuthGuard]},
+  {path: 'districts', loadChildren: () => import('./components/districts/districts.module').then(m => m.DistrictsModule), canActivate: [AuthGuard]},
   {path: 'home', loadChildren: () => import('./components/home/home.module').then(m => m.HomeModule), canActivate: [AuthGuard]},
   {path: 'organization', loadChildren: () => import('./components/organization/organization.module').then(m => m.OrganizationModule), canActivate: [AuthGuard]},
   {path: 'dashboard', loadChildren: () => import('./components/dashboard/dashboard.module').then(m => m.DashboardModule), canActivate: [AuthGuard]},

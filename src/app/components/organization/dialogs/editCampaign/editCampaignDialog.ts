@@ -21,7 +21,7 @@ export class EditCampaignDialog implements OnInit{
   @ViewChild('editElectionType', {static: false}) editElectionType: ElementRef;
 
   stateList = ['California'];
-  districtBoundariesType = ['County', 'Citywide', 'Cityward', 'Assembly', 'Congressional', 'Board Of Equalization', 'Senate', 'Recreational', 'School', 'Water', 'Statewide'];
+  districtBoundariesType = ['County', 'Bos', 'Citywide', 'Cityward', 'Assembly', 'Congressional', 'Board Of Equalization', 'Senate', 'Recreational', 'School', 'Water', 'Statewide'];
   districtBoundaries = [];
   districtBoundariesResults = [];
   electionTypes = ['General', 'Primary', 'Presidential General', 'Presidential Primary', 'Special', 'Local', 'None'];
@@ -37,11 +37,13 @@ export class EditCampaignDialog implements OnInit{
   errorMessage: string = '';
   displayErrorMsg: boolean = false;
 
-  loader: boolean = false;
+  loader: boolean = true;
 
   targetsNum: number;
 
   campaignBoundary: any[]= [];
+
+  finishLoading: boolean = false
 
   constructor(public dialogRef: MatDialogRef<EditCampaignDialog>, 
             @Inject(MAT_DIALOG_DATA) public data: any, 
@@ -177,6 +179,7 @@ export class EditCampaignDialog implements OnInit{
               this.displayMessage = true;
               this.userMessage = results.msg;
             }
+            this.loader = false;
           },
           error => {
             this.loader = false;
@@ -222,6 +225,8 @@ export class EditCampaignDialog implements OnInit{
       this.orgService.getOrganization(this.data.creatorOrg).subscribe(
           (org: Organization) =>{
             this.creatorOrgName = org.name;
+            this.finishLoading = true
+            this.loader = false;
           }
       );
 

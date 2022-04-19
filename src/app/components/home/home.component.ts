@@ -249,6 +249,10 @@ export class HomeComponent implements OnInit {
     )
   }
 
+  openDistrictsMap(){
+    this.router.navigate(['/districts']);
+  }
+
   ngAfterContentInit() {
     this.observableMedia.media$.subscribe((change: MediaChange) => {
       this.orgGrid.cols = this.gridByBreakpoint[change.mqAlias]

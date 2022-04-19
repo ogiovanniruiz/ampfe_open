@@ -16,13 +16,13 @@
                             <div [leafletLayer]="drawnItems"></div>
                             <div [leafletLayer]="polygons"></div>
     <div fxFlex="20%" fxLayoutAlign="center center" fxLayout="column" fxLayoutGap="2%" style="z-index: 1000">
-      <mat-card fxLayoutAlign="center center" fxLayout="column" fxLayoutGap="5%" *ngIf="!loadingBlockgroups && !loadingPrecincts">
+      <mat-card fxLayoutAlign="center center" fxLayout="column" fxLayoutGap="5%" *ngIf="!loadingBlockgroups && !loadingPrecincts && !loadingBlocks">
         <button mat-icon-button matTooltip="Search" (click)="openSearchDialog()"><mat-icon>search</mat-icon></button>
         <button mat-icon-button matTooltip="Create Target" (click)="openTargetCreatorDialog()"><mat-icon>assignment</mat-icon></button>
         <button mat-icon-button matTooltip="Target Summary" (click)="openTargetSummary()"><mat-icon>insert_chart</mat-icon></button>
         <button mat-icon-button matTooltip="Download Polygons" (click)="downloadPolygons()"><mat-icon>cloud_download</mat-icon></button>
       </mat-card>
-      <mat-card fxLayoutAlign="center center" fxLayout="column" *ngIf="loadingBlockgroups || loadingPrecincts">
+      <mat-card fxLayoutAlign="center center" fxLayout="column" *ngIf="loadingBlockgroups || loadingPrecincts || loadingBlocks">
         <mat-spinner></mat-spinner>
         Loading Map Layers....
       </mat-card>

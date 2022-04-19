@@ -10,12 +10,15 @@
     </mat-expansion-panel-header>
     <section >
       <p>TotalPop: {{data.properties.demographics.totalPop}}</p>
-      <p>% Hispanic: {{data.properties.demographics.percentHispanic}}</p>
-      <p>% White: {{data.properties.demographics.percentWhite}}</p>
-      <p>% Black: {{data.properties.demographics.percentBlack}}</p>
-      <p>% Indigenous: {{data.properties.demographics.percentIndig}}</p>
-      <p>% PI: {{data.properties.demographics.percentPI}}</p>
-      <p>% Asian: {{data.properties.demographics.percentAsian}}</p>
+      <p *ngIf="data.properties.demographics.lcvap">LCVAP: {{data.properties.demographics.lcvap}}</p>
+      <p *ngIf="data.properties.demographics.bcvap">BCVAP: {{data.properties.demographics.bcvap}}</p>
+      <p *ngIf="data.properties.demographics.acvap">ACVAP: {{data.properties.demographics.acvap}}</p>
+      <p *ngIf="data.properties.demographics.cvap">CVAP: {{data.properties.demographics.cvap}}</p>
+      
+      <p *ngIf="data.properties.demographics.percentHispanic">% Hispanic: {{data.properties.demographics.percentHispanic}}</p>
+      <p *ngIf="data.properties.demographics.percentWhite">% White: {{data.properties.demographics.percentWhite}}</p>
+      <p *ngIf="data.properties.demographics.percentBlack">% Black: {{data.properties.demographics.percentBlack}}</p>
+      <p *ngIf="data.properties.demographics.percentAsian">% Asian: {{data.properties.demographics.percentAsian}}</p>
     </section>
 
   </mat-expansion-panel>

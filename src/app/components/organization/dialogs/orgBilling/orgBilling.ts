@@ -38,7 +38,7 @@ export class OrgBillingDialog implements OnInit{
               private cd: ChangeDetectorRef,
               ) {
                 this.subscribed = this.data.subscribed
-                console.log(this.data)
+                //console.log(this.data)
                 this.totalAmount = this.data.subscription.cost //6000//data['totalAmount'];
               }
               
@@ -75,7 +75,7 @@ export class OrgBillingDialog implements OnInit{
 
   createOrder(id: any){
     this.stripeService.createOrder(id).subscribe(result =>{
-      console.log(result)
+      //console.log(result)
     })
 
   }

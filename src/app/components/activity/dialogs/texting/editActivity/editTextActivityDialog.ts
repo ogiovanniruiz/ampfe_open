@@ -388,6 +388,17 @@ export class EditTextActivityDialog implements OnInit{
     inputElement.setSelectionRange(0, 0);
   }
 
+  removeNumber(number){
+    console.log(number)
+    
+    this.activityService.removeNumber(number, this.activityID).subscribe(result=>{
+      console.log(result)
+      this.getActivity();
+
+    })
+    
+  }
+
   ngOnInit(){
     this.getActivity();
     //this.getCampaignOrgs();

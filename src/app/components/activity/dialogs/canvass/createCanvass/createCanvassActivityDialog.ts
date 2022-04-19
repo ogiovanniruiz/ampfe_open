@@ -87,6 +87,19 @@ export class CreateCanvassActivityDialog implements OnInit{
       return;
     }
 
+    if(!this.selectedNonResponseSet['value']){
+      this.displayMessage = true;
+      this.userMessage = 'The activity needs a NonResponse Set.';
+      return;
+    }
+
+    if(!this.selectedTarget['value']){
+      this.displayMessage = true;
+      this.userMessage = 'The activity needs a target.';
+      return;
+    }
+
+
     this.creatingActivity = true;
 
     this.campaignOrgsUpdate = [orgID]

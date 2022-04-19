@@ -68,8 +68,9 @@ import {OrganizationService} from '../../../../services/organization/organizatio
     downloadAsSocialMediaList(targetID: string){
       var campaignID = parseInt(sessionStorage.getItem('campaignID'))
       var activityType = 'Social Media'
+      var orgID = sessionStorage.getItem('orgID')
 
-      var potentialActivity = {targetID: targetID, campaignID: campaignID, activityType: activityType, _id: "string"}
+      var potentialActivity = {targetID: targetID, campaignID: campaignID, activityType: activityType, _id: "string", orgIDs: [orgID]}
       this.targetService.downloadTarget(potentialActivity).subscribe(houseHolds =>{
         let binaryData = ['firstName,lastName,phone,email\n'];
 
@@ -111,10 +112,11 @@ import {OrganizationService} from '../../../../services/organization/organizatio
 
     downloadTarget(targetID: string){
       var campaignID = parseInt(sessionStorage.getItem('campaignID'))
+      var orgID = sessionStorage.getItem('orgID')
       var activityType = 'Mailer'
 
 
-      var potentialActivity = {targetID: targetID, campaignID: campaignID, activityType: activityType, _id: "string"}
+      var potentialActivity = {targetID: targetID, campaignID: campaignID, activityType: activityType, _id: "string", orgIDs: [orgID]}
 
 
       this.targetService.downloadTarget(potentialActivity).subscribe(houseHolds =>{
@@ -123,36 +125,41 @@ import {OrganizationService} from '../../../../services/organization/organizatio
 
         for(var i = 0; i < houseHolds['length']; i++){
 
-          var address = houseHolds[i]['_id']['streetNum'] + " " +
-                        houseHolds[i]['_id']['prefix'] + " " +
-                        houseHolds[i]['_id']['street'] + " " +
-                        houseHolds[i]['_id']['suffix'] + " " +
-                        houseHolds[i]['_id']['unit']
+          if(houseHolds[i]['houseHold']['_id']){
 
-          if(houseHolds[i]['residents'].length > 1){
+          var address = houseHolds[i]['houseHold']['_id']['streetNum'] + " " +
+                        houseHolds[i]['houseHold']['_id']['prefix'] + " " +
+                        houseHolds[i]['houseHold']['_id']['street'] + " " +
+                        houseHolds[i]['houseHold']['_id']['suffix'] + " " +
+                        houseHolds[i]['houseHold']['_id']['unit']
 
-            binaryData.push(houseHolds[i]['residents'][0]['name']['lastName'] + ',')
+          if(houseHolds[i]['houseHold']['residents'].length > 1){
+
+            binaryData.push(houseHolds[i]['houseHold']['residents'][0]['name']['lastName'] + ',')
             binaryData.push('FAMILY,')
 
             binaryData.push(address + ',')
-            binaryData.push(houseHolds[i]['_id']['city'] + ',')
-            binaryData.push(houseHolds[i]['_id']['state']['abbrv'] + ',')
-            binaryData.push(houseHolds[i]['_id']['zip'] + '\n')
+            binaryData.push(houseHolds[i]['houseHold']['_id']['city'] + ',')
+            binaryData.push(houseHolds[i]['houseHold']['_id']['state']['abbrv'] + ',')
+            binaryData.push(houseHolds[i]['houseHold']['_id']['zip'] + '\n')
 
           }else{
 
-            for(var k = 0; k < houseHolds[i]['residents'].length; k++){
+            for(var k = 0; k < houseHolds[i]['houseHold']['residents'].length; k++){
               
-              binaryData.push(houseHolds[i]['residents'][k]['name']['firstName'] + ',')
-              binaryData.push(houseHolds[i]['residents'][k]['name']['lastName'] + ',')
+              binaryData.push(houseHolds[i]['houseHold']['residents'][k]['name']['firstName'] + ',')
+              binaryData.push(houseHolds[i]['houseHold']['residents'][k]['name']['lastName'] + ',')
               binaryData.push(address + ',')
-              binaryData.push(houseHolds[i]['_id']['city'] + ',')
-              binaryData.push(houseHolds[i]['_id']['state']['abbrv'] + ',')
-              binaryData.push(houseHolds[i]['_id']['zip'] + '\n')
+              binaryData.push(houseHolds[i]['houseHold']['_id']['city'] + ',')
+              binaryData.push(houseHolds[i]['houseHold']['_id']['state']['abbrv'] + ',')
+              binaryData.push(houseHolds[i]['houseHold']['_id']['zip'] + '\n')
             
             
             }
           }
+
+        }
+
         }
       
         let downloadLink = document.createElement('a');

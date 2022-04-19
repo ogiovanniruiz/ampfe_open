@@ -1,5 +1,5 @@
 <h2 mat-dialog-title fxLayoutAlign="center">Edit Campaign</h2>
-<mat-spinner *ngIf="loader" style="margin: 0px auto"></mat-spinner>
+<mat-progress-bar *ngIf="loader" mode="indeterminate"></mat-progress-bar>
 <mat-dialog-content fxLayout="column" [style.visibility]="!loader ? 'visible' : 'hidden'" [style.height]="!loader ? 'auto' : '0px'">
     <mat-form-field>
         <input matInput #editCampaignName placeholder="Campaign Name:">
@@ -75,7 +75,7 @@
 
     <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
 </mat-dialog-content>
-<mat-dialog-actions align="end" [style.visibility]="!loader ? 'visible' : 'hidden'">
+<mat-dialog-actions align="end" *ngIf="finishLoading && !loader">
     <button mat-stroked-button color="primary" *ngIf="!loadingIDS" (click)="editCampaign('edit')">SUBMIT</button>
     <button mat-stroked-button color="accent" (click)="return();">CANCEL</button>
   
@@ -83,4 +83,4 @@
     <button mat-stroked-button color="warn" (click)="editCampaign('deactivate')" *ngIf="data.active">DEACTIVATE</button>
     <button mat-stroked-button color="warn" (click)="deleteCampaign()" *ngIf="!targetsNum">DELETE</button>
 </mat-dialog-actions>
-<mat-error *ngIf="displayErrorMsg" [style.visibility]="!loader ? 'visible' : 'hidden'">{{errorMessage}}</mat-error>
+<mat-error *ngIf="displayErrorMsg" >{{errorMessage}}</mat-error>

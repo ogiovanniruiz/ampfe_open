@@ -18,6 +18,10 @@ export class AmplifyService {
     return this.http.post(this.API_URL + '/api/getCities', boundary);
   }
 
+  getDistricts(value){
+    return this.http.post(this.API_URL + '/api/getFullDistricts', {value});
+  }
+
   getSufficies(boundary: unknown){
     return this.http.post(this.API_URL + '/api/getSufficies', boundary);
   }

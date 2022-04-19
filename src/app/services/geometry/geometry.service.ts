@@ -35,6 +35,10 @@ export class GeometryService {
     return this.http.post(this.API_URL + '/api/getBlockgroupsByBounds', {bounds});
   }
 
+  getBlocksByBounds(bounds){
+    return this.http.post(this.API_URL + '/api/getBlocksByBounds', {bounds});
+  }
+
   getPrecinct(precinctID: string){
     return this.http.post(this.API_URL + '/api/getPrecinct', {precinctID});
   }

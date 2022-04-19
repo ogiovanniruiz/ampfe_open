@@ -27,6 +27,8 @@ export class ContactFormDialog implements OnInit{
   onNoClick(): void {this.dialogRef.close()}
 
   sendEmail(){
+    var orgID: string = sessionStorage.getItem('orgID');
+
     var subject: string = this.subject.nativeElement.value
     var message: string = this.message.nativeElement.value
     var user: User = JSON.parse(sessionStorage.getItem('user'))
@@ -45,7 +47,7 @@ export class ContactFormDialog implements OnInit{
 
     this.sending = true;
 
-    this.userService.contactDevs(subject, message, user).subscribe(result =>{
+    this.userService.contactDevs(subject, message, user, orgID).subscribe(result =>{
       if(result){
         this.dialogRef.close(result)
       } 
@@ -60,6 +62,8 @@ export class ContactFormDialog implements OnInit{
     this.dialogRef.close()
   }
 
-  ngOnInit(){}
+
+  ngOnInit(){
+  }
 
 }

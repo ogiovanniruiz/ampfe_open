@@ -199,6 +199,11 @@ import {Activity} from '../../../../../models/activities/activity.model'
               var date = result[i]['callInitTime'].substring(0, 10);
               binaryData.push(date + ',')
               if(result[i]['scriptResponse']){
+                if(result[i]['scriptResponse']['questionResponses'].length > 1){
+                  console.log(result[i]['scriptResponse'])
+
+                }
+                
                 binaryData.push('scriptResponse' + ',')
                 for(var k = 0; k < result[i]['scriptResponse']['questionResponses'].length; k++){
                   if(result[i]['scriptResponse']['questionResponses'][k]['response']){
@@ -214,6 +219,7 @@ import {Activity} from '../../../../../models/activities/activity.model'
                 binaryData.push(result[i]['nonResponse']['nonResponse'])
                 binaryData.push('\n')
               }else{
+                
                 binaryData.push('none' + ',')
                 binaryData.push('none' + '\n')
               }
@@ -236,7 +242,82 @@ import {Activity} from '../../../../../models/activities/activity.model'
       )
     }
 
+    downloadPhonebankCORDReport(){
+      var reportPickerStart = '';
+      if (this.reportPickerStart){var reportPickerStart = this.reportPickerStart['startAt'] ? new Date(this.reportPickerStart['startAt']).toISOString().slice(0, 10) : ''}
+      var reportPickerEnd = '';
+      if (this.reportPickerEnd){var reportPickerEnd = this.reportPickerEnd['startAt'] ? new Date(this.reportPickerEnd['startAt']).toISOString().slice(0, 10) : ''}
 
+      this.completed = true;
+      this.phonebankService.getPhonebankReport(this.activityID, reportPickerStart, reportPickerEnd).subscribe(
+        async (report: unknown[]) =>{
+
+          var totalCallsAttempted = 0
+          var totalCallsSuccessful = 0
+
+          var data = {}
+
+          let binaryData = []
+
+
+          if (report['script']._id) {              
+            for await (let questions of report['script'].questions) {
+              if (questions.responses.length) {
+                  for await (let response of questions.responses) {
+                    data[questions.question + ' - ' + response.response] = 0
+                  }
+              }
+            }
+          }
+
+          for(var i = 0; i < report['activities'].length; i++){
+            totalCallsAttempted = totalCallsAttempted + report['activities'][i]['called']
+            totalCallsSuccessful = totalCallsSuccessful + report['activities'][i]['successful']
+
+            if (report['script']._id) {
+              for await (let questions of report['script'].questions) {
+                  if (questions.responses.length) {
+                      for await (let response of questions.responses) {
+                          for (let IDS of report['activities'][i][response.idType]) {
+                              if(IDS[questions._id] !== undefined){
+                                  data[questions.question + ' - ' + response.response] = data[questions.question + ' - ' + response.response] + IDS[questions._id]
+                              }
+                          }
+                      }
+                  }
+              }
+            }
+          }
+
+          data['startDate'] = reportPickerStart
+          data['endDate'] = reportPickerEnd
+
+          data['totalCallsAttempted'] = totalCallsAttempted
+          data['totalCallsSuccesful'] = totalCallsSuccessful
+
+          for(let key of Object.keys(data)){
+            binaryData.push(key + ',')
+          }
+          binaryData.push('\n')
+          for( let value of Object.values(data)){
+            binaryData.push(value + ',')
+          }
+
+          let downloadLink = document.createElement('a');
+          var filename = "Aggregated_" + reportPickerStart + "_Phonebank_Report.csv"
+  
+          let blob = new Blob(binaryData, {type: 'blob'});
+          downloadLink.href = window.URL.createObjectURL(blob);
+          downloadLink.setAttribute('download', filename );
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+
+        })
+
+    }
+
+
+    /*
     downloadPhonebankCORDReport(){
       this.downloading = true;
       this.activityService.downloadCordReport(this.activityID, 'Phonebank').subscribe(
@@ -289,7 +370,7 @@ import {Activity} from '../../../../../models/activities/activity.model'
         }
       )
     }
-
+  */
 
   
   }

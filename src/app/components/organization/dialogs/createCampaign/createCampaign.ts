@@ -16,7 +16,7 @@ export class CreateCampaignDialog implements OnInit{
   errorMessage: string = '';
 
   stateList = ['California'];
-  districtBoundariesType = ['County', 'Citywide', 'Cityward', 'Assembly', 'Congressional', 'Board Of Equalization', 'Senate', 'Recreational', 'School', 'Water', 'Statewide'];
+  districtBoundariesType = ['County', 'Bos', 'Citywide', 'Cityward', 'Assembly', 'Congressional', 'Board Of Equalization', 'Senate', 'Recreational', 'School', 'Water', 'Statewide'];
   districtBoundaries = [];
   districtBoundariesResults = [];
   electionTypes = ['General', 'Primary', 'Presidential General', 'Presidential Primary', 'Special', 'Local', 'None'];
@@ -115,35 +115,19 @@ export class CreateCampaignDialog implements OnInit{
 
   getDistricts() {
     if(this.stateList[0] && this.districtBoundaryType['value']) {
-    //if(this.districtBoundaryType['value']) {
+
       this.districtBoundary['value'] = undefined;
       this.districtBoundaries = [];
       this.districtBoundariesResults = [];
       this.loadingIDS = true;
-      /*
-      if(this.districtBoundaryType['value'] === 'Statewide') {
-        this.campaignService.getStatewide(this.stateList[0]).subscribe(
-            (results: any) => {
-              this.loadingIDS = false;
-              this.districtBoundary['value'] = results[0]._id;
-            },
-            error => {
-              this.loadingIDS = false;
-              this.displayErrorMsg = true;
-              this.errorMessage = 'There was a problem with the server.';
-            }
-        );
-      } else {*/
-        //this.campaignService.getDistricts(this.stateList[0], this.districtBoundaryType['value']).subscribe(
-          
-          
+
           this.campaignService.getDistricts(this.stateList[0], this.districtBoundaryType['value']).subscribe(
             (results: any) => {
-              //if (this.districtBoundaryType['value'] !== 'Statewide') {
+
                 this.loadingIDS = false;
                 this.districtBoundaries = results;
                 this.districtBoundariesResults = results;
-              //}
+
             },
             error => {
               this.loadingIDS = false;
@@ -151,7 +135,7 @@ export class CreateCampaignDialog implements OnInit{
               this.errorMessage = 'There was a problem with the server.';
             }
         );
-      //}
+      
     }
   }
 

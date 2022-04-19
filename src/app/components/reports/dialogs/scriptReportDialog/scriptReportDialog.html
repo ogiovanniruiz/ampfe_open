@@ -3,7 +3,7 @@
 <mat-dialog-content *ngIf="sortedScripts && completed">
     <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1%">
         <mat-form-field style="width:140px;">
-            <input matInput [matDatepicker]="reportPickerStart" placeholder="Start date" disabled>
+            <input matInput [matDatepicker]="reportPickerStart" placeholder="Start date" [formControl]="today">
             <mat-datepicker-toggle matSuffix [for]="reportPickerStart"></mat-datepicker-toggle>
             <mat-datepicker #reportPickerStart disabled="false"></mat-datepicker>
         </mat-form-field>

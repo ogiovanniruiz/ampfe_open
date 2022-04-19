@@ -68,14 +68,15 @@
       <button mat-fab *ngIf="dev" (click)="openCreateOrgForm()" matTooltip="Create a new organization."><mat-icon>create</mat-icon></button>
       <button mat-fab (click)="openRequestOrgForm()" matTooltip="Request to a join an organization."><mat-icon>add</mat-icon></button>
       <button mat-fab  *ngIf="dev"  [matMenuTriggerFor]="menu" matTooltip="Developer Options" color="warn"><mat-icon>warning</mat-icon></button>
+      <button mat-fab  *ngIf="dev"  matTooltip="Districts Map" color="primary" (click)="openDistrictsMap()"><mat-icon>map</mat-icon></button>
       <mat-menu #menu="matMenu">
         <div>
           <button mat-menu-item (click)="updateDevStatus()">
             <mat-icon>create</mat-icon>
             <span>Update Developer Status</span>
           </button> 
-          <!--
           
+          <!--
           <button mat-menu-item (click)="massGeocode()">
             <mat-icon>create</mat-icon>
             <span>Start Mass Geocode</span>
@@ -83,7 +84,7 @@
           <button mat-menu-item (click)="appendGeoids()">
             <mat-icon>create</mat-icon>
             <span>Append Geoids</span>
-          </button>  -->    
+          </button>   -->  
         </div>
       </mat-menu>
     </section>

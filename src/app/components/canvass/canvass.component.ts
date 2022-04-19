@@ -146,7 +146,6 @@ export class CanvassComponent implements OnInit {
         const dialogRef = this.dialog.open(HouseHoldDialog, {data: dialogData, width: "100%"});
         dialogRef.afterClosed().subscribe(result => {
           if(result){
-            console.log("HERE")
             var layers = this.layersControl.overlays['HouseHolds']
             layers.eachLayer(function(layer) {
               if(layer._latlng.lat === result.houseHold.location.coordinates[1] && 
@@ -162,7 +161,7 @@ export class CanvassComponent implements OnInit {
 
       var dialogData = {selected: this.selected, activity: this.activity, script: this.script, nonResponseSet: this.nonResponseSet}
 
-      const dialogRef = this.dialog.open(ComplexDialog, {data: dialogData, width: "50%"});
+      const dialogRef = this.dialog.open(ComplexDialog, {data: dialogData, width: "100%"});
       
       dialogRef.afterClosed().subscribe(result => {
 

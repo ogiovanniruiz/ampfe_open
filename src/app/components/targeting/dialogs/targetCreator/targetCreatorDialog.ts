@@ -27,7 +27,10 @@ import {MembershipService} from '../../../../services/membership/membership.serv
 
     polygonKeys = {};
     cities: string[];
+    zips: string[];
     uploads: []
+
+    loadingZips: boolean = false 
 
     @ViewChild('targetName', {static: false}) targetName:ElementRef;
     @ViewChild('campaignWide', {static: false}) campaignWide:ElementRef;
@@ -81,6 +84,20 @@ import {MembershipService} from '../../../../services/membership/membership.serv
             this.memberConfig.fields.cities.options.push({name: this.cities[i], value: this.cities[i]})
             this.indivConfig.fields.cities.options.push({name: this.cities[i], value: this.cities[i]})
           }
+      })
+    }
+
+    getZips(){
+      this.loadingZips = true
+      this.ampService.getZips(this.campaignBoundary).subscribe(
+        (zips: string[]) => {
+          this.zips = zips
+          for(var i = 0; i < zips.length; i++){
+            this.hhConfig.fields.zips.options.push({name: zips[i], value: zips[i]})
+            //this.memberConfig.fields.zips.options.push({name: zips[i], value: zips[i]})
+            this.indivConfig.fields.zips.options.push({name: zips[i], value: zips[i]})
+          }
+          this.loadingZips = false
       })
     }
 
@@ -266,21 +283,23 @@ import {MembershipService} from '../../../../services/membership/membership.serv
           this.memberConfig.fields.scripts.options = []
           this.indivConfig.fields.scripts.options = []
           for(var i = 0; i < scripts.length; i++){
-            for(var j = 0; j < scripts[i]['questions'].length; j++){
-              for(var k = 0; k < scripts[i]['questions'][j].responses.length; k++){
-                
-                var name = scripts[i]['title'] + " - " + 
-                           scripts[i]['questions'][j]['question'] + " - " + 
-                           scripts[i]['questions'][j]['responses'][k]['response']
-
-                var value = {title: scripts[i]['title'], 
-                             _id:scripts[i]['_id'],
-                             question: scripts[i]['questions'][j]['question'], 
-                             response: scripts[i]['questions'][j]['responses'][k]['response']}
-
-                this.hhConfig.fields.scripts.options.push({name: name, value: value})
-                this.memberConfig.fields.scripts.options.push({name: name, value: value})
-                this.indivConfig.fields.scripts.options.push({name: name, value: value})
+            if(scripts[i]['orgStatus'].active){
+              for(var j = 0; j < scripts[i]['questions'].length; j++){
+                for(var k = 0; k < scripts[i]['questions'][j].responses.length; k++){
+                  
+                  var name = scripts[i]['title'] + " - " + 
+                             scripts[i]['questions'][j]['question'] + " - " + 
+                             scripts[i]['questions'][j]['responses'][k]['response']
+  
+                  var value = {title: scripts[i]['title'], 
+                               _id:scripts[i]['_id'],
+                               question: scripts[i]['questions'][j]['question'], 
+                               response: scripts[i]['questions'][j]['responses'][k]['response']}
+  
+                  this.hhConfig.fields.scripts.options.push({name: name, value: value})
+                  this.memberConfig.fields.scripts.options.push({name: name, value: value})
+                  this.indivConfig.fields.scripts.options.push({name: name, value: value})
+                }
               }
             }
           }
@@ -386,5 +405,6 @@ import {MembershipService} from '../../../../services/membership/membership.serv
       this.getCities();
       this.getOrgTags();
       this.getUploads();
+      this.getZips()
     }
 }
