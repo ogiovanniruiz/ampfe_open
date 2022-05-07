@@ -1,4 +1,5 @@
 <h2 mat-dialog-title fxLayoutAlign="center">Target Summary</h2>
+<mat-progress-bar mode="indeterminate" *ngIf="downloadingList"></mat-progress-bar>
 <mat-dialog-content fxLayout="column">
   <mat-progress-bar mode="indeterminate" *ngIf="loadingData"></mat-progress-bar>
   <mat-tab-group>
@@ -12,12 +13,14 @@
           <mat-list>
             <mat-list-item *ngFor="let rule of orgTarget.properties.queries.rules">{{rule.field}} {{rule.operator}} {{rule.value}}</mat-list-item>
           </mat-list>
-          <button mat-stroked-button color='accent' *ngIf='dataManager || dev' (click)="downloadTarget(orgTarget._id)">Download Mailer List</button>
-          <button mat-stroked-button color='warn' *ngIf='dev'  (click)="downloadAsSocialMediaList(orgTarget._id)">Download Email Phone List</button>
-          <button mat-stroked-button color='warn' *ngIf='dev'  (click)="removeTarget(orgTarget._id)">Delete Target</button>
-         
+          <mat-error *ngIf="displayErrorMsg">{{errorMessage}}</mat-error>
+          <button mat-stroked-button [disabled]='downloadingList' color='primary' *ngIf="orgTarget.properties.idByHousehold === 'HOUSEHOLD'" (click)="downloadMailerList(orgTarget)">Download Mailer List</button>
+          <button mat-stroked-button [disabled]='downloadingList' color='accent' *ngIf="orgTarget.properties.idByHousehold === 'INDIVIDUAL'"  (click)="downloadEmailPhoneList(orgTarget)">Download Email Phone List</button>
+          <button mat-stroked-button [disabled]='downloadingList' color='warn' *ngIf='dev'  (click)="removeTarget(orgTarget._id)">Delete Target</button>
+          
         </mat-expansion-panel>
       </mat-accordion>
+
     </mat-tab>
     <mat-tab label="Campaign Wide Targets">
       <mat-accordion>

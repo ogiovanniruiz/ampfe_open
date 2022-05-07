@@ -9,6 +9,7 @@ import {MembershipService} from '../../../../services/membership/membership.serv
 
 @Component({
   templateUrl: './uploadDialog.html',
+  styleUrls: ['../../membership.component.scss']
 })
 
 export class UploadDialog implements OnInit{

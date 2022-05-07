@@ -43,7 +43,6 @@ export class OrgReportDialog implements OnInit {
                   console.log(data)
 
               }
-    onNoClick(): void {this.dialogRef.close(); }
 
     getOrgReport(){
         var campaignID: number = parseInt(sessionStorage.getItem('campaignID'));

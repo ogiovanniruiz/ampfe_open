@@ -1,4 +1,5 @@
-<h2 mat-dialog-title fxLayoutAlign="center">Organization Specific Settings and Details v0.9.6.4</h2>
+<button mat-icon-button class="close-button" matTooltip="Cancel" (click)="closeDialog()"><mat-icon>close</mat-icon></button>
+<h2 mat-dialog-title fxLayoutAlign="center">Organization Specific Settings and Details</h2>
 <mat-dialog-content fxLayoutAlign="center" fxLayout="column" fxLayoutGap="5%">
   <mat-tab-group mat-stretch-tabs>
     <mat-tab label="Organization Logos">
@@ -35,8 +36,5 @@
     </mat-tab>
   </mat-tab-group>
 </mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-raised-button  color="accent" (click)="closeDialog()">CLOSE</button> 
-</mat-dialog-actions>
 
  

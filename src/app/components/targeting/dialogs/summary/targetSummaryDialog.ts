@@ -21,6 +21,11 @@ import {OrganizationService} from '../../../../services/organization/organizatio
     allCampaignTargets = []
     dev: boolean = false;
 
+    downloadingList: boolean = false;
+
+    errorMessage: string = ''
+    displayErrorMsg: boolean = false
+
     constructor(
         public dialogRef: MatDialogRef<TargetSummaryDialog>, 
         public targetService: TargetService,
@@ -58,69 +63,75 @@ import {OrganizationService} from '../../../../services/organization/organizatio
     removeTarget(targetID: string){
       if(confirm('Are you sure you want to delete the target? This needs to check if any activites are using.')){
         this.targetService.removeTarget(targetID).subscribe(result =>{
-          console.log(result)
           this.getOrgTargets();
         })
 
       }
     }
 
-    downloadAsSocialMediaList(targetID: string){
+    downloadEmailPhoneList(target){
       var campaignID = parseInt(sessionStorage.getItem('campaignID'))
-      var activityType = 'Social Media'
       var orgID = sessionStorage.getItem('orgID')
 
-      var potentialActivity = {targetID: targetID, campaignID: campaignID, activityType: activityType, _id: "string", orgIDs: [orgID]}
-      this.targetService.downloadTarget(potentialActivity).subscribe(houseHolds =>{
-        let binaryData = ['firstName,lastName,phone,email\n'];
+      var potentialActivity = {targetID: target._id, campaignID: campaignID, orgIDs: [orgID]}
 
-        for(var i = 0; i < houseHolds['length']; i++){
-          for(var j = 0; j < houseHolds[i]['houseHold']['residents'].length; j++){
+      this.downloadingList = true
+      
+      this.targetService.downloadTargetList(potentialActivity).subscribe(
+        people =>{
+          let binaryData = ['firstName,lastName,phone,email\n'];
 
-            if(houseHolds[i]['houseHold']['residents'][j]['phones'][0] ||houseHolds[i]['houseHold']['residents'][j]['emails'][0]){
-              binaryData.push(houseHolds[i]['houseHold']['residents'][j]['name']['firstName'] + ',')
-              binaryData.push(houseHolds[i]['houseHold']['residents'][j]['name']['lastName'] + ',')
-  
-              if(houseHolds[i]['houseHold']['residents'][j]['phones'][0]){
-                binaryData.push(houseHolds[i]['houseHold']['residents'][j]['phones'][0]['number'] + ',')
-              }else{
-                binaryData.push(',')
-              }
+          for(var i = 0; i < people['length']; i++){
 
-              if(houseHolds[i]['houseHold']['residents'][j]['emails'][0]){
+            binaryData.push(people[i]['name']['firstName'] + ',')
+            binaryData.push(people[i]['name']['lastName'] + ',')
 
-                binaryData.push(houseHolds[i]['houseHold']['residents'][j]['emails'][0] + '\n')
-              }else{
-                binaryData.push('\n')
+            if(people[i]['phones'][0]){
+              binaryData.push(people[i]['phones'][0]['number'] + ',')
+            }else{
+              binaryData.push(',')
+            }
 
-              }
+            if(people[i]['emails'][0]){
+
+              binaryData.push(people[i]['emails'][0] + '\n')
+            }else{
+              binaryData.push('\n')
+
             }
           }
-        }
-      
-        let downloadLink = document.createElement('a');
-  
-        let blob = new Blob(binaryData, {type: 'blob'});
-        downloadLink.href = window.URL.createObjectURL(blob);
-        downloadLink.setAttribute('download', 'EmailPhoneList.csv');
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
+        
+          this.downloadingList = false;
+          let downloadLink = document.createElement('a');
+          
+          let blob = new Blob(binaryData, {type: 'blob'});
+          downloadLink.href = window.URL.createObjectURL(blob);
 
-      })
+          var filename: string = target['properties']['name'] + '_EmailPhoneList.csv'
+          downloadLink.setAttribute('download', filename );
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+
+      },
+      error =>{
+        console.log(error)
+        this.errorMessage = 'Server Error';
+        this.displayErrorMsg = true;
+        this.downloadingList = false;
+      }
+      
+      )
 
     }
 
-    downloadTarget(targetID: string){
+    downloadMailerList(target){
       var campaignID = parseInt(sessionStorage.getItem('campaignID'))
       var orgID = sessionStorage.getItem('orgID')
-      var activityType = 'Mailer'
 
+      var potentialActivity = {targetID: target._id, campaignID: campaignID, orgIDs: [orgID]}
 
-      var potentialActivity = {targetID: targetID, campaignID: campaignID, activityType: activityType, _id: "string", orgIDs: [orgID]}
-
-
-      this.targetService.downloadTarget(potentialActivity).subscribe(houseHolds =>{
-        console.log(houseHolds)
+      this.downloadingList = true
+      this.targetService.downloadTargetList(potentialActivity).subscribe(houseHolds =>{
         let binaryData = ['firstName,lastName,address,city,state,zip,\n'];
 
         for(var i = 0; i < houseHolds['length']; i++){
@@ -161,15 +172,25 @@ import {OrganizationService} from '../../../../services/organization/organizatio
         }
 
         }
+
+        this.downloadingList = false
       
         let downloadLink = document.createElement('a');
   
         let blob = new Blob(binaryData, {type: 'blob'});
         downloadLink.href = window.URL.createObjectURL(blob);
-        downloadLink.setAttribute('download', 'MailerList.csv');
+
+        var filename: string = target['properties']['name'] + '_MailerList.csv'
+        downloadLink.setAttribute('download', filename);
         document.body.appendChild(downloadLink);
         downloadLink.click();
 
+      },
+      error =>{
+        console.log(error)
+        this.errorMessage = 'Server Error';
+        this.displayErrorMsg = true;
+        this.downloadingList = false;
       })
     }
 

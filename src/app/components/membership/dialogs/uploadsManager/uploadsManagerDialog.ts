@@ -10,6 +10,7 @@ import {MembershipService} from '../../../../services/membership/membership.serv
 
 @Component({
   templateUrl: './uploadsManagerDialog.html',
+  styleUrls: ['../../membership.component.scss']
 })
 
 export class UploadsManagerDialog implements OnInit{

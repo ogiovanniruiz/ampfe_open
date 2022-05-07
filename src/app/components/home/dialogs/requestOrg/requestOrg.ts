@@ -10,6 +10,7 @@ import {User} from '../../../../models/users/user.model'
 
 @Component({
     templateUrl: './requestOrg.html',
+    styleUrls: ['../../home.component.scss']
 })
   
 export class RequestOrgDialog implements OnInit{

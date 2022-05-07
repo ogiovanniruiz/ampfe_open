@@ -8,6 +8,7 @@ import {User} from '../../../../models/users/user.model'
 
 @Component({
     templateUrl: './devStatus.html',
+    styleUrls: ['../../home.component.scss']
   })
   
 export class DevStatusDialog implements OnInit{

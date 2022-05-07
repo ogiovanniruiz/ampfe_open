@@ -1,3 +1,4 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel" ><mat-icon>close</mat-icon></button>
 <section fxLayout="column" fxLayoutAlign="center">
     <h2 mat-dialog-title fxLayoutAlign="center">Edit Texting Activity </h2> 
 </section>
@@ -51,7 +52,7 @@
         </mat-form-field>
 
         <button mat-raised-button color="warn" [disabled]='resetting' (click)="resetActivity()" fxFlexAlign="center">Reset Activity</button>
-        <p *ngIf='activity'>Passes: {{activity.passes}}</p>
+        <p *ngIf='activity'>Number of Resets: {{activity.passes}}</p>
         <mat-progress-bar mode='indeterminate' *ngIf='resetting'></mat-progress-bar>
         
 

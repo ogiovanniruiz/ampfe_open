@@ -1,3 +1,4 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel"  (click)="return();"><mat-icon>close</mat-icon></button>
 <h2 mat-dialog-title fxLayoutAlign="center">Edit Organization</h2>
 <mat-dialog-content fxLayout="column">
     <mat-form-field>
@@ -25,7 +26,6 @@
 </mat-dialog-content>
 <mat-dialog-actions align="end">
     <button mat-raised-button color="primary" (click)="editOrganization('edit')">SUBMIT</button>
-    <button mat-raised-button color="accent" (click)="return();">CANCEL</button>
     <button mat-raised-button color="primary" (click)="editOrganization('activate')" *ngIf="!data.active">ACTIVATE</button>
     <button mat-raised-button color="warn" (click)="editOrganization('deactivate')" *ngIf="data.active">DEACTIVATE</button>
 </mat-dialog-actions>

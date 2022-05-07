@@ -11,6 +11,7 @@ import {UpdatedOrg} from '../../../../models/organizations/organization.model'
 
 @Component({
   templateUrl: './tagsDialog.html',
+  styleUrls: ['../../membership.component.scss']
 })
 
 export class TagManagementDialog implements OnInit{

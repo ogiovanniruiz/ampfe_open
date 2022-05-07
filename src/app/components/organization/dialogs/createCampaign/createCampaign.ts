@@ -6,6 +6,7 @@ import {UpdatedCampaign} from '../../../../models/campaigns/campaign.model';
 
 @Component({
   templateUrl: './createCampaign.html',
+  styleUrls: ['../../organization.component.scss']
 })
 
 export class CreateCampaignDialog implements OnInit{

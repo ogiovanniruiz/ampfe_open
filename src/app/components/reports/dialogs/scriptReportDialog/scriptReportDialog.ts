@@ -37,7 +37,6 @@ export class ScriptReportDialog implements OnInit {
                 public dialog: MatDialog,
                 public reportService: ReportService,
               ) {}
-    onNoClick(): void {this.dialogRef.close(); }
 
     getScriptReport(){
         var campaignID: number = parseInt(sessionStorage.getItem('campaignID'));

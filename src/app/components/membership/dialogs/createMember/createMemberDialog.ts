@@ -9,6 +9,7 @@ import {MembershipService} from '../../../../services/membership/membership.serv
 
 @Component({
   templateUrl: './createMemberDialog.html',
+  styleUrls: ['../../membership.component.scss']
 })
 
 export class CreateMemberDialog implements OnInit{

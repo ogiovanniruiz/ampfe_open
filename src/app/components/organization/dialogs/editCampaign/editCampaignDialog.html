@@ -1,3 +1,4 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel" (click)="return();"><mat-icon>close</mat-icon></button>
 <h2 mat-dialog-title fxLayoutAlign="center">Edit Campaign</h2>
 <mat-progress-bar *ngIf="loader" mode="indeterminate"></mat-progress-bar>
 <mat-dialog-content fxLayout="column" [style.visibility]="!loader ? 'visible' : 'hidden'" [style.height]="!loader ? 'auto' : '0px'">
@@ -76,11 +77,9 @@
     <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
 </mat-dialog-content>
 <mat-dialog-actions align="end" *ngIf="finishLoading && !loader">
-    <button mat-stroked-button color="primary" *ngIf="!loadingIDS" (click)="editCampaign('edit')">SUBMIT</button>
-    <button mat-stroked-button color="accent" (click)="return();">CANCEL</button>
-  
-    <button mat-stroked-button color="primary" (click)="editCampaign('activate')" *ngIf="!data.active">ACTIVATE</button>
-    <button mat-stroked-button color="warn" (click)="editCampaign('deactivate')" *ngIf="data.active">DEACTIVATE</button>
-    <button mat-stroked-button color="warn" (click)="deleteCampaign()" *ngIf="!targetsNum">DELETE</button>
+    <button mat-stroked-button color="primary" *ngIf="!loadingIDS" (click)="editCampaign('edit')">SUBMIT</button>  
+    <button mat-stroked-button color="primary" (click)="editCampaign('activate')" *ngIf="!data.active && !loadingIDS">ACTIVATE</button>
+    <button mat-stroked-button color="warn" (click)="editCampaign('deactivate')" *ngIf="data.active && !loadingIDS">DEACTIVATE</button>
+    <button mat-stroked-button color="warn" (click)="deleteCampaign()" *ngIf="!targetsNum && !loadingIDS">DELETE</button>
 </mat-dialog-actions>
 <mat-error *ngIf="displayErrorMsg" >{{errorMessage}}</mat-error>

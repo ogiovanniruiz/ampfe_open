@@ -8,6 +8,7 @@ import { Ball } from '../../../../models/animation/ball';
 
 @Component({
   templateUrl: './memberGraph.html',
+  styleUrls: ['../../membership.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 

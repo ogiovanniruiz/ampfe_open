@@ -142,6 +142,9 @@ export class HouseHoldDialog implements OnInit{
 
     this.canvassService.submitNonResponse(this.activity, nonResponse, nonResponseType, personID, user, orgID, houseHoldID, hhSize, this.nonResponseSet['_id']).subscribe(
       (houseHold: unknown)=>{
+
+        if(houseHold['passed']) this.dialogRef.close(houseHold)
+
         if(houseHold['numResContacted'] >= this.houseHold.residents.length ){
           this.dialogRef.close(houseHold)
         }

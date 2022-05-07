@@ -8,6 +8,7 @@ import {UpdatedOrg} from '../../../../models/organizations/organization.model'
 
 @Component({
     templateUrl: './editOrgDialog.html',
+    styleUrls: ['../../home.component.scss']
 })
   
 export class EditOrgDialog implements OnInit{

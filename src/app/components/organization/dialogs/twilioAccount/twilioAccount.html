@@ -3,31 +3,7 @@
 <mat-error fxLayoutAlign="center" *ngIf="!accountExists && !loading">No Account Exists</mat-error> 
 <mat-dialog-content *ngIf="accountExists" style="padding-top:10px;padding-bottom:10px">
   <mat-tab-group mat-stretch-tabs>
-    <mat-tab label="Account Usage">
-      <mat-list>
-        <mat-list-item>
-          <mat-icon matListIcon>sms</mat-icon>
-          <h3 matLine> Messages: {{msgCount}}</h3>
-          <p matLine><span>Charge: ${{msgCost}}</span></p>
-        </mat-list-item>
-        <mat-list-item>
-          <mat-icon matListIcon>call</mat-icon>
-          <h3 matLine> Call Minutes: {{callCount}}</h3>
-          <p matLine><span>Charge: ${{callCost}}</span></p>
-        </mat-list-item>
-        
-        <mat-list-item *ngIf="user.dev">
-          <mat-icon matListIcon>call</mat-icon>
-          <h3 matLine> Client Minutes: {{clientCount}}</h3>
-          <p matLine><span>Charge: ${{clientCost}}</span></p>
-        </mat-list-item>
-        <mat-divider></mat-divider>
-        <mat-list-item *ngIf="user.dev">
-          <h3 matLine> Total Charge: ${{totalCost}}</h3>
-        </mat-list-item>
-      </mat-list>
-      
-    </mat-tab>
+
     <mat-tab label="Purchase Numbers">
       <mat-list>
         <mat-list-item *ngFor="let number of phoneNumbers">
@@ -55,6 +31,31 @@
       <h2>Currently Funded: {{funded}}</h2>
       <mat-slide-toggle checked="{{funded}}" *ngIf='user.dev' (click)="toggleFundedStatus(!fundedToggle.checked);" #fundedToggle> Change Funded Status</mat-slide-toggle>
 
+    </mat-tab>
+    <mat-tab label="Account Usage" *ngIf="user.dev">
+      <mat-list>
+        <mat-list-item>
+          <mat-icon matListIcon>sms</mat-icon>
+          <h3 matLine> Messages: {{msgCount}}</h3>
+          <p matLine><span>Charge: ${{msgCost}}</span></p>
+        </mat-list-item>
+        <mat-list-item>
+          <mat-icon matListIcon>call</mat-icon>
+          <h3 matLine> Call Minutes: {{callCount}}</h3>
+          <p matLine><span>Charge: ${{callCost}}</span></p>
+        </mat-list-item>
+        
+        <mat-list-item *ngIf="user.dev">
+          <mat-icon matListIcon>call</mat-icon>
+          <h3 matLine> Client Minutes: {{clientCount}}</h3>
+          <p matLine><span>Charge: ${{clientCost}}</span></p>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+        <mat-list-item *ngIf="user.dev">
+          <h3 matLine> Total Charge: ${{totalCost}}</h3>
+        </mat-list-item>
+      </mat-list>
+      
     </mat-tab>
 
   </mat-tab-group>

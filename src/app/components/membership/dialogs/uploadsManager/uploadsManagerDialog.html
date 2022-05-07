@@ -1,3 +1,5 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel" (click)="cancel()"><mat-icon>close</mat-icon></button>
+
 <h2 mat-dialog-title fxLayoutAlign="center">Upload a Membership List</h2>
 <mat-dialog-content fxLayout="column" style="padding-top:7px;padding-bottom:7px">
   <mat-paginator #paginator [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 15]" [length]="totalSize" [pageIndex]="currentPage" (page)="pageEvent = handlePage($event)" ></mat-paginator>
@@ -23,6 +25,3 @@
 
 </mat-dialog-content>
 <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
-<mat-card-actions align="end">
-  <button mat-raised-button color="accent" (click)="cancel()">CANCEL</button>
-</mat-card-actions>

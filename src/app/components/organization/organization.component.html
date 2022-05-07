@@ -80,7 +80,7 @@
 <mat-card fxLayout="row" fxLayoutGap="1%" fxLayoutGap.xs="1%" *ngIf="dataLoaded && (dev || orgLevel === 'ADMINISTRATOR') " id="footer" fxLayoutAlign="center">
     <button class="extended-fab-button" mat-fab color="primary" matTooltip="Membership List Manager" (click)="openMembership()"><mat-icon>account_box</mat-icon><span id='fadeshow' class="extended-fab-button__text">Membership</span></button>
     <button class="extended-fab-button" mat-fab color="primary" matTooltip="Twilio Account" (click)="openTwilioAccountDialog()" ><mat-icon>call</mat-icon><span id='fadeshow' class="extended-fab-button__text">Twillio Account</span></button>
-    <button class="extended-fab-button" mat-fab color="primary" matTooltip="Organization's Settings" (click)="openOrgSettingsDialog()" ><mat-icon>settings</mat-icon><span id='fadeshow' class="extended-fab-button__text">Org Settings</span></button>
+    <button class="extended-fab-button" mat-fab *ngIf="dev" color="primary" matTooltip="Organization's Settings" (click)="openOrgSettingsDialog()" ><mat-icon>settings</mat-icon><span id='fadeshow' class="extended-fab-button__text">Org Settings</span></button>
     <button class="extended-fab-button" mat-fab *ngIf="dev" color="primary" matTooltip="Subscription" (click)="openOrgBillingDialog()"><mat-icon>monetization_on</mat-icon><span id='fadeshow' class="extended-fab-button__text">Billing</span></button>
 </mat-card>
 

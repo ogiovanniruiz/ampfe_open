@@ -40,7 +40,7 @@ export class TargetService {
     return this.http.post(this.API_URL + '/api/removeTarget', {_id});
   }
 
-  downloadTarget(potentialActivity){
-    return this.http.post(this.API_URL + '/api/downloadTarget', potentialActivity);
+  downloadTargetList(potentialActivity){
+    return this.http.post(this.API_URL + '/api/downloadTargetList', potentialActivity);
   }
 }

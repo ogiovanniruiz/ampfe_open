@@ -265,11 +265,13 @@ export class TargetingComponent implements OnInit {
 
     this.geoService.getPolygons(campaignID, orgID).subscribe(
       (polys: any) =>{
-        this.polys = polys[0].polys;
+
+        //this.polys = polys[0].polys;
 
         for(var i = 0; i < polys.length; i++){
           if(polys[i].orgID === orgID){
             this.orgName = polys[i].orgName + ' Polygons';
+            this.polys = polys[i].polys;
           }
 
           let layerPoly = L.geoJSON(polys[i]['polys'], {onEachFeature: onEachFeature.bind(this)});

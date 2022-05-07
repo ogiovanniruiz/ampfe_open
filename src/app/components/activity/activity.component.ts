@@ -167,11 +167,12 @@ export class ActivityComponent implements OnInit {
 
     this.activityService.getActivities(campaignID, orgID, this.activityType).subscribe(
         async (activities: unknown[]) => {
-          /*for(var i = activities.length -1; i >= 0; i--){
-            if(activities[i]['userIDs'].indexOf(userID) > -1 && this.orgLevel !== 'ADMINISTRATOR' && !this.dev){
+          
+          for(var i = activities.length -1; i >= 0; i--){
+            if(activities[i]['userIDs'].indexOf(userID) === -1 && this.orgLevel !== 'ADMINISTRATOR' && !this.dev && activities[i]['userIDs']['length'] > 1){
               activities.splice(i,1)
             }
-          }*/
+          }
         this.activities = activities.filter(function (activity) { return activity['active'] });
         this.completedActivities = activities.filter(function (activity) { return !activity['active'] });
         this.dataLoaded = true;

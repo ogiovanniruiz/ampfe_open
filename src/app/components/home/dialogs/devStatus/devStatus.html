@@ -1,3 +1,4 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel"  (click)="closeSettings();"><mat-icon>close</mat-icon></button>
 <h2 mat-dialog-title fxLayoutAlign="center">Developer Permissions</h2>
 <mat-dialog-content style="padding-top:7px;padding-bottom:7px">
     <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
@@ -23,7 +24,4 @@
         </tr>
     </table>
 </mat-dialog-content>
-<mat-dialog-actions align="end">
-    <button mat-raised-button color="accent" (click)="closeSettings();">CLOSE</button>
-</mat-dialog-actions>
 <mat-error *ngIf="displayErrorMsg">{{errorMessage}}</mat-error>

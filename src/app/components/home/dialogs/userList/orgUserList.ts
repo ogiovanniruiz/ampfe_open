@@ -7,6 +7,7 @@ import {User} from '../../../../models/users/user.model'
 
 @Component({
     templateUrl: './orgUserList.html',
+    styleUrls: ['../../home.component.scss']
 })
 
 export class OrgUserListDialog implements OnInit{

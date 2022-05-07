@@ -1,3 +1,4 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel" (click)="closeDialog();"><mat-icon>close</mat-icon></button>
 <h2 mat-dialog-title fxLayoutAlign="center">Create a Campaign</h2>
 <mat-spinner *ngIf="loader" style="margin: 0px auto"></mat-spinner>
 <mat-dialog-content fxLayout="column" [style.visibility]="!loader ? 'visible' : 'hidden'" [style.height]="!loader ? 'auto' : '0px'">
@@ -49,6 +50,5 @@
 </mat-dialog-content>
 <mat-dialog-actions align="end" [style.visibility]="!loader ? 'visible' : 'hidden'">
     <button mat-stroked-button color="primary" (click)="createCampaign()">SUBMIT</button>
-    <button mat-stroked-button color="accent" (click)="closeDialog();">CANCEL</button>
 </mat-dialog-actions>
 <mat-error *ngIf="displayErrorMsg" [style.visibility]="!loader ? 'visible' : 'hidden'">{{errorMessage}}</mat-error>

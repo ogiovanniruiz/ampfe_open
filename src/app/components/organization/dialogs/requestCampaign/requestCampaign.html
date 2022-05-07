@@ -1,3 +1,4 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel" (click)="closeDialog();"><mat-icon>close</mat-icon></button>
 <section *ngIf="mode === 'REQUEST'" >
     <h2 mat-dialog-title fxLayoutAlign="center">Request to join a Campaign</h2>
     <mat-dialog-content fxLayout="column">
@@ -8,7 +9,6 @@
     </mat-dialog-content>
     <mat-dialog-actions align="end" >
         <button mat-stroked-button color="primary" (click)="requestCampaign(requestID.value)">REQUEST CAMPAIGN</button>
-        <button mat-stroked-button color="accent" (click)="closeDialog();">CANCEL</button>
     </mat-dialog-actions>
 </section>
 
@@ -18,7 +18,6 @@
         <span fxLayoutAlign="center">
             <img width="200" height="200" alt="success" src="../assets/success.png">
         </span>
-        <button mat-stroked-button color="primary" (click)="closeDialog();">CLOSE</button>
     </mat-card>
 </section>
 

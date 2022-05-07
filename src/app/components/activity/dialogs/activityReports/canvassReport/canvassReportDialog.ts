@@ -67,6 +67,8 @@ import {Activity} from '../../../../../models/activities/activity.model'
       this.completed = true;
       this.canvassService.getCanvassReport(this.activityID, reportPickerStart, reportPickerEnd).subscribe(
           async (report: unknown[]) =>{
+
+            console.log(report)
             this.members = [];
             this.sortedMembers = [];
             for(var i = 0; i < report['activities'].length; i++){

@@ -53,3 +53,18 @@ img.noStretch{
   flex: 1 1 auto;
 }
 
+.close-button{
+  float: right;
+  top:-24px;
+  right:-24px;
+}
+
+.close.mat-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px;
+  line-height: 14px;
+  min-width: auto;
+}
+

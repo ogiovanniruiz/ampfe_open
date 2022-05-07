@@ -322,7 +322,7 @@ import {MembershipService} from '../../../../services/membership/membership.serv
 
           for(var i = 0; i < nonResponseSets.length; i++){
             for(var j = 0; j < nonResponseSets[i].nonResponses.length; j++){
-              var name = nonResponseSets[i]['title'] + " - " + nonResponseSets[i]['nonResponses'][j]['nonResponseType']
+              var name = nonResponseSets[i]['title'] + " - " + nonResponseSets[i]['nonResponses'][j]['nonResponse']
 
               var value = {title: nonResponseSets[i]['title'], 
                            _id: nonResponseSets[i]['_id'],

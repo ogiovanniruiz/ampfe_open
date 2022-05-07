@@ -15,6 +15,7 @@
         <button mat-raised-button color="accent" fxLayoutAlign="center" (click)="filterByDate()" >Filter</button>
         <mat-paginator #paginator [pageSize]="pageSize" [length]="totalSize" [pageIndex]="currentPage" (page)="pageEvent = handlePage($event)" fxflex fxFlexAlign="end" style="flex: 1 1 0%;"></mat-paginator>
     </div>
+    <mat-error>*Date Filter Defaulted to Today</mat-error>
     <table matSort (matSortChange)="sortData($event)" style="text-align: center!important;">
         <tr *ngIf="sortedScripts">
             <th *ngFor="let userCol of sortedScripts[0] | keyvalue : returnZero" mat-sort-header="{{userCol.key}}" style="text-align:center!important;">{{userCol.key | titlecase}}</th>

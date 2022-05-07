@@ -5,10 +5,13 @@ import {CampaignService} from '../../../../services/campaign/campaign.service';
 import {OrganizationService} from '../../../../services/organization/organization.service';
 import {TargetService} from '../../../../services/target/target.service';
 
+import {User, UpdatedUser} from '../../../../models/users/user.model'
+
 import {Organization, UpdatedOrg} from '../../../../models/organizations/organization.model';
 
 @Component({
     templateUrl: './editCampaignDialog.html',
+    styleUrls: ['../../organization.component.scss']
 })
   
 export class EditCampaignDialog implements OnInit{
@@ -203,9 +206,15 @@ export class EditCampaignDialog implements OnInit{
     this.editCampaignName.nativeElement.value = this.data.name;
     this.editCampaignDescription.nativeElement.value = this.data.description;
 
+    var user: User = JSON.parse(sessionStorage.getItem('user'));
+
     this.targetService.getAllCampaignTargets(this.data.campaignID).subscribe(async (targets: []) =>{
 
       this.targetsNum = targets.length;
+
+      if(user.dev){
+        this.targetsNum = 0
+      }
 
       if (this.targetsNum === 0) {
 

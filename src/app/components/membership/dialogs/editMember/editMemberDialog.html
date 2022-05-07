@@ -1,3 +1,5 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel" [disabled]='showProgressbar'  (click)="cancel()"><mat-icon>close</mat-icon></button>
+
 <h2 mat-dialog-title fxLayoutAlign="center">Edit a Member</h2>
 
 <mat-dialog-content fxLayout="column">
@@ -87,7 +89,6 @@
   <br>
 </mat-dialog-content>
 <mat-card-actions align="end">
-  <button mat-raised-button color="accent" [disabled]='showProgressbar' (click)="cancel()">CANCEL</button>
   <button mat-raised-button color="warn" [disabled]='showProgressbar' (click)="deleteMember()">DELETE</button>
   <button mat-raised-button  color="primary" [disabled]='showProgressbar' (click)="editMember()">SAVE</button>
 

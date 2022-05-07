@@ -38,7 +38,6 @@ export class UserReportDialog implements OnInit {
                 public reportService: ReportService,
                 public orgService: OrganizationService
               ) {}
-    onNoClick(): void {this.dialogRef.close(); }
 
     getUserReport(){
         var campaignID: number = parseInt(sessionStorage.getItem('campaignID'));

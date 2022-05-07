@@ -1,3 +1,4 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel"  (click)="closeDialog();"><mat-icon>close</mat-icon></button>
 <section fxLayout="column" *ngIf="mode === 'REQUEST'">
     <h2 mat-dialog-title fxLayoutAlign="center">Request to Join an Organization</h2>
     <mat-form-field>
@@ -20,9 +21,6 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
 </mat-dialog-content>
-<mat-dialog-actions align="end" *ngIf="mode === 'REQUEST'">
-    <button mat-raised-button color="accent" (click)="closeDialog();">CLOSE</button>
-</mat-dialog-actions>
 <mat-error fxLayoutAlign="center" *ngIf="displayMessage && mode === 'REQUEST'">{{userMessage}}</mat-error>
 <mat-error fxLayoutAlign="center" *ngIf="displayErrorMsg">{{errorMessage}}</mat-error>
 <section *ngIf="mode === 'SUCCESS'">
@@ -30,7 +28,6 @@
         <span fxLayoutAlign="center">
             <img width="200" height="200" alt="success" src="../assets/success.png">
         </span>
-        <button mat-raised-button color="primary" (click)="closeDialog();">CLOSE</button>
     </mat-card>
 </section>
 
