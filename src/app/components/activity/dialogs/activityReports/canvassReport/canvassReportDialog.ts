@@ -33,9 +33,10 @@ import {Activity} from '../../../../../models/activities/activity.model'
 
     userList = {}
     totalHouseHolds: number = 0
-    totalResidents: number = 0
+    //totalResidents: number = 0
 
     downloading: boolean = false;
+    activityName: string = ''
 
     @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
     @ViewChild('reportPickerStart', {static: false}) reportPickerStart: ElementRef;
@@ -46,13 +47,16 @@ import {Activity} from '../../../../../models/activities/activity.model'
                 public canvassService: CanvassService,
                 public orgService: OrganizationService
         ) { 
+
             this.activityID = data.activity._id
+            this.activityName = data.activity.name
 
         }
     getActivitySize(){
       this.activityService.getActivitySize(this.activityID).subscribe(
         (size: Object)=>{
           this.totalHouseHolds = size['totalHouseHolds']
+          //this.totalResidents = size['totalResidents']
           this.getOrgUsers(); 
         }
       )
@@ -96,7 +100,7 @@ import {Activity} from '../../../../../models/activities/activity.model'
                 report['activities'][i]['scripts']['NonResponse'] = report['activities'][i]['NONRESPONSE'];
 
                 if(this.userList[report['activities'][i]['_id']]){
-                  await this.members.push({
+                  this.members.push({
                     'User Name': this.userList[report['activities'][i]['_id']],
                     ...report['activities'][i]['scripts'],
                   });
@@ -223,6 +227,93 @@ import {Activity} from '../../../../../models/activities/activity.model'
           console.log(error)
         }
       )
+    }
+
+    downloadCanvassCORDReport(){
+      var reportPickerStart = '';
+      if (this.reportPickerStart){var reportPickerStart = this.reportPickerStart['startAt'] ? new Date(this.reportPickerStart['startAt']).toISOString().slice(0, 10) : ''}
+      var reportPickerEnd = '';
+      if (this.reportPickerEnd){var reportPickerEnd = this.reportPickerEnd['startAt'] ? new Date(this.reportPickerEnd['startAt']).toISOString().slice(0, 10) : ''}
+
+      this.completed = true;
+      this.canvassService.getCanvassReport(this.activityID, reportPickerStart, reportPickerEnd).subscribe(
+        async (report: unknown[]) =>{
+
+          var totalIMP = 0
+          var totalDNC = 0
+          var totalINVALID = 0
+          var totalNR = 0
+
+          var data = {}
+
+          let binaryData = []
+
+
+          if (report['script']._id) {              
+            for await (let questions of report['script'].questions) {
+              if (questions.responses.length) {
+                  for await (let response of questions.responses) {
+                    data[questions.question + ' - ' + response.response] = 0
+                  }
+              }
+            }
+          }
+
+          for(var i = 0; i < report['activities'].length; i++){
+
+
+            
+
+
+            if (report['script']._id) {
+              for await (let questions of report['script'].questions) {
+                  if (questions.responses.length) {
+                      for await (let response of questions.responses) {
+                          for (let IDS of report['activities'][i][response.idType]) {
+                              if(IDS[questions._id] !== undefined){
+                                  data[questions.question + ' - ' + response.response] = data[questions.question + ' - ' + response.response] + IDS[questions._id]
+                              }
+                          }
+                      }
+                  }
+              }
+            }
+
+            totalDNC = totalDNC + report['activities'][i]['DNC']
+            totalIMP = totalIMP + report['activities'][i]['IMP']
+            totalINVALID = totalINVALID + report['activities'][i]['INVALIDADDRESS']
+            totalNR = totalNR + report['activities'][i]['NONRESPONSE']
+
+
+          }
+
+          data['DNC'] = totalDNC
+          data['IMP'] = totalIMP
+          data['INVALID'] = totalINVALID
+          data['NR'] = totalNR
+
+          data['startDate'] = reportPickerStart
+          data['endDate'] = reportPickerEnd
+
+          for(let key of Object.keys(data)){
+            binaryData.push(key + ',')
+          }
+          binaryData.push('\n')
+          for( let value of Object.values(data)){
+            binaryData.push(value + ',')
+          }
+
+          let downloadLink = document.createElement('a');
+          var filename = "Aggregated_" + this.activityName + "_" + reportPickerStart + "_Canvass_Report.csv"
+  
+          let blob = new Blob(binaryData, {type: 'blob'});
+          downloadLink.href = window.URL.createObjectURL(blob);
+          downloadLink.setAttribute('download', filename );
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+
+        })
+
     }
   }
 

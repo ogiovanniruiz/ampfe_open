@@ -38,7 +38,11 @@ export class UploadDialog implements OnInit{
                 //public orgService: OrganizationService
                 public scriptService: ScriptService,
                 public campaignService: CampaignService
-                ) {}
+                ) {
+                  //this.data = JSON.stringify(this.data, undefined, 5) 
+
+                  console.log(this.data)
+                }
 
     onNoClick(): void {this.dialogRef.close("CLOSED")}
 

@@ -41,9 +41,7 @@
             </mat-select>
         </mat-form-field>
 
-        <mat-progress-bar *ngIf='!usersLoaded' mode='indeterminate'></mat-progress-bar>
-
-        <mat-form-field *ngIf='usersLoaded'>
+        <mat-form-field>
             <mat-label>Add Users</mat-label>
             <mat-select #activityAllUsers [formControl]="usersSelected" multiple>
                 <mat-option #ev (click)="selectAllUsers(ev)" value="1">Select All</mat-option>

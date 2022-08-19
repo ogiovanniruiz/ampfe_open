@@ -108,6 +108,14 @@ export class HomeComponent implements OnInit {
         this.activeOrgResults = this.activeOrgs
         this.inactiveOrgs = orgs.filter(function(org) { return !org['active'] });
 
+        if(this.user.homeOrgID && this.user.homeOrgID != ''){
+
+          //sessionStorage.setItem('orgName', org.name)
+          //sessionStorage.setItem('orgID', org._id)
+          //this.router.navigate(['/organization']);
+
+        }
+
         this.dataLoaded = true;
       },
       error =>{
@@ -127,9 +135,13 @@ export class HomeComponent implements OnInit {
   }
 
   enterOrganization(org: Organization){
-    sessionStorage.setItem('orgName', org.name)
-    sessionStorage.setItem('orgID', org._id)
-    this.router.navigate(['/organization']);
+    this.userService.updateHomeOrg(org._id, this.user._id).subscribe(user =>{
+      sessionStorage.setItem('user', JSON.stringify(user))
+      sessionStorage.setItem('orgName', org.name)
+      sessionStorage.setItem('orgID', org._id)
+      this.router.navigate(['/organization']);
+    })
+
   }
 
   openCreateOrgForm(){

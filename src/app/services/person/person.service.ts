@@ -11,6 +11,9 @@ export class PersonService {
 
   constructor(private http: HttpClient) {}
 
+  getPerson(person: Object){
+    return this.http.post(this.API_URL + '/api/getPerson', person);
+  }
 
   getHouseHold(address: Object){
     return this.http.post(this.API_URL + '/person/getHouseHold', address);

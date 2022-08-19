@@ -25,7 +25,7 @@
             </mat-select>
         </mat-form-field>
 
-        <button mat-raised-button color="warn" [disabled]='resetting' (click)="resetActivity()" fxFlexAlign="center">Reset Activity</button>
+        <button mat-raised-button color="warn" [disabled]='resetting' (click)="resetActivity()" fxFlexAlign="center" *ngIf="activity.active">Reset Activity</button>
         <p *ngIf='activity'>Number of Resets: {{activity.passes}}</p>
         <mat-progress-bar mode='indeterminate' *ngIf='resetting'></mat-progress-bar>
 
@@ -34,19 +34,19 @@
     </section>
 
     <!--Right Hand Section-->
-    <section fxLayout="column" fxLayoutGap="2%" fxFlex="50%">
+    <section fxLayout="column" fxLayoutGap="2%" fxFlex="50%" >
         <mat-card fxLayout="column" fxLayoutGap="2%">
             <h2 fxFlexAlign="center">Target Name: {{targetName}}</h2>
             <h2 fxFlexAlign="center">NonResponseSet Name: {{nonResponseSetName}}</h2>
             <h2 fxFlexAlign="center">Script Name: {{scriptName}}</h2>
         </mat-card>
-        <mat-card>
+        <mat-card *ngIf="activity.active">
             <div *ngFor="let phoneNumber of callPool">
                 {{phoneNumber.number}}
                 Available: {{phoneNumber.available}}
             </div>
 
-            <section fxLayout="column" fxLayoutGap="2%">
+            <section fxLayout="column" fxLayoutGap="2%" >
                 <button mat-raised-button color="primary" (click)="generateNewUserLink();" >Generate User Link</button>
                 <input type="text" value='{{userURL}}' #userinput >
                 <button (click)="copyInputMessage(userinput)" value="click to copy">Copy Link</button>
@@ -57,9 +57,9 @@
         <br>
     </section>
 </mat-dialog-content>
-<mat-dialog-actions align="end" [style.display]="!loading ? 'flex' : 'none'">
+<mat-dialog-actions align="end" [style.display]="!loading ? 'flex' : 'none'" >
     <button mat-raised-button color="accent" (click)="close()" fxFlexAlign="center">CLOSE</button>
     <button mat-raised-button color="primary" (click)="saveActivityEdits()" fxFlexAlign="center">SAVE</button>
     <button mat-raised-button color="warn" *ngIf="dev" (click)="deleteActivity()" fxFlexAlign="center">DELETE</button>
-    <button mat-raised-button color="primary" (click)="deactivate()" fxFlexAlign="center">COMPLETE</button>
+    <button mat-raised-button color="primary" (click)="deactivate()" *ngIf="activity.active" fxFlexAlign="center">COMPLETE</button>
 </mat-dialog-actions>

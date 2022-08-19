@@ -17,7 +17,7 @@ export class CreateCampaignDialog implements OnInit{
   errorMessage: string = '';
 
   stateList = ['California'];
-  districtBoundariesType = ['County', 'Bos', 'Citywide', 'Cityward', 'Assembly', 'Congressional', 'Board Of Equalization', 'Senate', 'Recreational', 'School', 'Water', 'Statewide'];
+  districtBoundariesType = ['SchoolDistrict','County', 'Bos', 'Citywide', 'Cityward', 'Assembly', 'Congressional', 'Board Of Equalization', 'Senate', 'Recreational', 'Water', 'Statewide'];
   districtBoundaries = [];
   districtBoundariesResults = [];
   electionTypes = ['General', 'Primary', 'Presidential General', 'Presidential Primary', 'Special', 'Local', 'None'];

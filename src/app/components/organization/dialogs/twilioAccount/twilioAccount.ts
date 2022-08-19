@@ -26,17 +26,16 @@ export class TwilioAccountDialog implements OnInit{
 
   user: User;
 
-  //smsCount: number = 0
-  //mmsCount: number = 0
+
   msgCount: number = 0
   callCount: number = 0
   msgCost: number = 0
   callCost: number = 0
-  //totalCost: string = '0'
+
   totalCost: number = 0.00
 
-  clientCost: number = 0
-  clientCount: number = 0
+  phoneNumCost: number = 0
+  phoneNumCount: number = 0
   funded: boolean = false;
 
   @ViewChild("areaCode", {static: false}) areaCode: ElementRef;
@@ -151,6 +150,18 @@ export class TwilioAccountDialog implements OnInit{
           this.displayErrorMsg = true;
         }
       )
+    }
+  }
+
+  releaseAllPhoneNumbers(){
+    if(confirm("Are you sure you want to release this number?")){
+      this.loading = true
+      var orgID: string = sessionStorage.getItem('orgID')
+
+      for( var i = 0; i < this.phoneNumbers['length']; i++){
+        console.log(this.phoneNumbers[i])
+
+      }
 
     }
 
@@ -183,15 +194,15 @@ export class TwilioAccountDialog implements OnInit{
       console.log(result)
 
       this.callCount = Number(result['callCount'])
-      this.callCost = Math.round(this.callCount*4)/100
+      this.callCost = Math.round(this.callCount*6.5)/100
 
-      this.clientCount = Number(result['clientCount'])
-      this.clientCost = Math.round(this.clientCount*1.5)/100.00
+      this.phoneNumCount = Number(result['phonenums'])
+      this.phoneNumCost = Math.round(this.phoneNumCount*2)
 
 
       this.msgCount = Number(result['smsCount']) + Number(result['mmsCount'])
       this.msgCost = Math.round(this.msgCount*4)/100
-      this.totalCost = Math.round((this.msgCost + this.clientCost + this.callCost)*100)/100.0000//.toFixed(2)
+      this.totalCost = Math.round((this.msgCost + this.phoneNumCost + this.callCost)*100)/100.0000//.toFixed(2)
       
 
     })

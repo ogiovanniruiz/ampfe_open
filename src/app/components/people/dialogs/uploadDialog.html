@@ -1,5 +1,7 @@
-<h2 mat-dialog-title fxLayoutAlign="center">Upload Contact List</h2>
+<h2 mat-dialog-title fxLayoutAlign="center">JSON Format</h2>
 <mat-dialog-content fxLayout="column" fxLayoutGap="2%" style="padding-top:7px;padding-bottom:7px">
+<pre>{{data | json}}</pre>
+  <!--
   <a color='primary' fxLayoutAlign="center" href="../../../assets/contactTemplate.csv" download>Download Template</a> 
   <mat-form-field appearance="fill">
     <mat-label>Activity Type</mat-label>
@@ -22,5 +24,5 @@
   </mat-form-field>  
   <input type="file" #file mat-raised-button (change)="fileChanged($event)" >  
   
-  <button mat-raised-button color='primary'>UPLOAD</button>
+  <button mat-raised-button color='primary'>UPLOAD</button>-->
 </mat-dialog-content>

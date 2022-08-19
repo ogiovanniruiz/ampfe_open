@@ -86,6 +86,10 @@ export class UserService {
 
   }
 
+  updateHomeOrg(orgID: string, userID: string){
+    return this.http.post(this.API_URL+'/api/updateHomeOrg', {orgID, userID});
+  }
+
   ////////////////////////////////////////////////////////////
 
   getUserProfile(userProfile: Object){

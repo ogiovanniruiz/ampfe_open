@@ -24,6 +24,8 @@ import { environment } from '../../../environments/environment';
 
 import {EditCampaignDialog} from './dialogs/editCampaign/editCampaignDialog'
 
+import {OrgUserListDialog} from '../home/dialogs/userList/orgUserList'
+
 @Component({
   selector: 'app-organization',
   templateUrl: './organization.component.html',
@@ -46,12 +48,15 @@ export class OrganizationComponent implements OnInit {
     xs: 1
   }
 
+  activeOrgs: Organization[];
+
   activeCampaigns: Campaign[];
   inactiveCampaigns: Campaign[];
   dev: boolean = false;
   orgLevel: string;
   org: Organization;
   dataLoaded: boolean = false;
+  homeOrgID: string = ''
 
   funded: boolean = false;
   subscribed: boolean = false;
@@ -126,6 +131,92 @@ export class OrganizationComponent implements OnInit {
     this.router.navigate(['/dashboard']);
   }
 
+
+
+  refreshUserProfile(){
+    var oldUserProfile: User = JSON.parse(sessionStorage.getItem('user'));
+    this.userService.getUser(oldUserProfile).subscribe(
+      (user: User) => {
+        sessionStorage.setItem('user', JSON.stringify(user))
+        this.dev =  user.dev 
+        this.getOrgCampaigns(); 
+      }, 
+      error =>{
+        console.log(error)
+        this.displayErrorMsg = true;
+        this.errorMessage = "There was an issue with the server."
+      }
+    )
+  }
+
+  getOrgPermissions(){
+    var user = JSON.parse(sessionStorage.getItem('user'));
+
+    this.homeOrgID = user.homeOrgID
+  
+    this.orgService.getOrgPermissions(user).subscribe(
+      (orgs: Organization[]) => {
+        this.activeOrgs = orgs.filter(function(org) { return org['active'] });
+      },
+      error =>{
+        this.displayErrorMsg = true;
+        this.errorMessage = "There was a problem fetching Organization Permissions."
+        console.log(error)
+      }
+    )
+  }
+
+
+
+  ngOnInit() {
+    this.campaignGrid.cols = 1;    
+    this.inactiveCampaignGrid.cols = 1;
+    this.refreshUserProfile();
+    this.getOrgPermissions()
+  }
+
+  ngAfterContentInit() {
+    this.observableMedia.media$.subscribe((change: MediaChange) => {
+      this.campaignGrid.cols = this.gridByBreakpoint[change.mqAlias];
+      this.inactiveCampaignGrid.cols =  this.gridByBreakpoint[change.mqAlias];
+    });
+  }
+
+  //////////////////////////////////////////////////////////////////////////
+
+
+
+  enterOrganization(org: Organization){
+
+    var user = JSON.parse(sessionStorage.getItem('user'));
+    this.dataLoaded = false
+    
+    this.userService.updateHomeOrg(org._id, user._id).subscribe(user =>{
+
+      sessionStorage.setItem('user', JSON.stringify(user))
+
+      sessionStorage.setItem('orgName', org.name)
+      sessionStorage.setItem('orgID', org._id)
+      this.router.navigate(['/organization']);
+  
+      this.refreshUserProfile();
+      this.getOrgPermissions()
+    })
+  }
+
+  openUserList(){
+    const dialogRef =this.dialog.open(OrgUserListDialog, {data: this.org, width: '50%'});
+    dialogRef.afterClosed().subscribe(result => {
+      if(result) {
+        this.getOrgPermissions()
+      }
+    });
+  }
+
+  openMembership(){
+    this.router.navigate(['/membership']);
+  }
+
   openCreateCampaignDialog(): void {
     const dialogRef = this.dialog.open(CreateCampaignDialog, {width: "50%"});
     dialogRef.afterClosed().subscribe(result => {
@@ -187,39 +278,6 @@ export class OrganizationComponent implements OnInit {
         this.getOrgCampaigns()
         this.refreshUserProfile();
       }
-    });
-  }
-
-  refreshUserProfile(){
-    var oldUserProfile: User = JSON.parse(sessionStorage.getItem('user'));
-    this.userService.getUser(oldUserProfile).subscribe(
-      (user: User) => {
-        sessionStorage.setItem('user', JSON.stringify(user))
-        this.dev =  user.dev 
-        this.getOrgCampaigns(); 
-      }, 
-      error =>{
-        console.log(error)
-        this.displayErrorMsg = true;
-        this.errorMessage = "There was an issue with the server."
-      }
-    )
-  }
-
-  openMembership(){
-    this.router.navigate(['/membership']);
-  }
-
-  ngOnInit() {
-    this.campaignGrid.cols = 1;    
-    this.inactiveCampaignGrid.cols = 1;
-    this.refreshUserProfile();
-  }
-
-  ngAfterContentInit() {
-    this.observableMedia.media$.subscribe((change: MediaChange) => {
-      this.campaignGrid.cols = this.gridByBreakpoint[change.mqAlias];
-      this.inactiveCampaignGrid.cols =  this.gridByBreakpoint[change.mqAlias];
     });
   }
 }

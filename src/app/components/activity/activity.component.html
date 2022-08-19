@@ -15,10 +15,16 @@
                     <div>
                         <h1>{{activity.name}}</h1>
                         <h4>{{activity.description}}</h4>
+                        <mat-error *ngIf='!activity.hhReady'>Processing...</mat-error>
                     </div>
                     <br>
                     <div fxLayout="row" fxLayoutGap="20%" fxLayoutGap.lg="15px" fxLayoutGap.md="10%" fxLayoutGap.sm="5%">
-                        <button mat-flat-button color="primary" (click)="enterActivity(activity)">ENTER</button>
+                       <!--
+<button mat-flat-button color="primary" (click)="enterActivity(activity)">ENTER</button>
+                            
+                       --> 
+                       
+                        <button mat-flat-button color="primary" [disabled]= '!activity.hhReady' (click)="enterActivity(activity)">ENTER</button>
                         <button mat-mini-fab color="accent" matTooltip="Edit Activity" *ngIf="orgLevel === 'ADMINISTRATOR' || dev" (click)="editActivity(activity)"><mat-icon>create</mat-icon></button>
                         <button mat-mini-fab color="accent" matTooltip="Activity Report" *ngIf="orgLevel === 'ADMINISTRATOR' || dev" (click)="openReportsDialog(activity)"><mat-icon>insert_chart</mat-icon></button>
                     </div>
@@ -44,6 +50,7 @@
                     <div fxLayout="row" fxLayoutGap="20%" fxLayoutGap.lg="15px" fxLayoutGap.md="10%" fxLayoutGap.sm="5%">
                         <button mat-mini-fab color="accent" matTooltip="Activity Report" *ngIf="orgLevel === 'ADMINISTRATOR' || dev" (click)="openReportsDialog(completedActivity)"><mat-icon>insert_chart</mat-icon></button>
                         <button mat-raised-button color="primary" *ngIf="dev" (click)="reactivate(completedActivity)">REACTIVATE</button>
+                        <button mat-mini-fab color="accent" matTooltip="Edit Activity" *ngIf="dev" (click)="editActivity(completedActivity)"><mat-icon>create</mat-icon></button>
                     </div>
                 </mat-card>
                 <br>
@@ -67,8 +74,8 @@
 <footer fxLayoutGap="10%" *ngIf="dataLoaded">
     <section fxLayoutAlign="end">
         <section fxLayout="column" fxLayoutGap="10%">
-            <button  mat-fab *ngIf="orgLevel === 'ADMINISTRATOR' || dev" matTooltip="Create Activity" (click)="createActivity()"><mat-icon>add</mat-icon></button>
-            <button  mat-fab *ngIf="(orgLevel === 'ADMINISTRATOR' || dev) && activityType === 'Phonebank'" matTooltip="Unlock All Numbers." (click)="hangUpAllNumbers()" color="warn"><mat-icon>warning</mat-icon></button>
+            <button  mat-fab *ngIf="dataManager || dev" matTooltip="Create Activity" (click)="createActivity()"><mat-icon>add</mat-icon></button>
+            <button  mat-fab *ngIf="(dataManager || dev) && activityType === 'Phonebank'" matTooltip="Unlock All Numbers." (click)="hangUpAllNumbers()" color="warn"><mat-icon>warning</mat-icon></button>
         </section>
     </section>
 </footer>

@@ -2,8 +2,9 @@
 <div *ngIf="!completed">No records found</div>
 <mat-dialog-content *ngIf="sortedScripts && completed">
     <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1%">
+        
         <mat-form-field style="width:140px;">
-            <input matInput [matDatepicker]="reportPickerStart" placeholder="Start date" [formControl]="today">
+            <input matInput [matDatepicker]="reportPickerStart" placeholder="Start date" >
             <mat-datepicker-toggle matSuffix [for]="reportPickerStart"></mat-datepicker-toggle>
             <mat-datepicker #reportPickerStart disabled="false"></mat-datepicker>
         </mat-form-field>
@@ -15,14 +16,18 @@
         <button mat-raised-button color="accent" fxLayoutAlign="center" (click)="filterByDate()" >Filter</button>
         <mat-paginator #paginator [pageSize]="pageSize" [length]="totalSize" [pageIndex]="currentPage" (page)="pageEvent = handlePage($event)" fxflex fxFlexAlign="end" style="flex: 1 1 0%;"></mat-paginator>
     </div>
-    <mat-error>*Date Filter Defaulted to Today</mat-error>
+    <!--
+    <mat-error>*Date Filter Defaulted to Today</mat-error>-->
     <table matSort (matSortChange)="sortData($event)" style="text-align: center!important;">
         <tr *ngIf="sortedScripts">
             <th *ngFor="let userCol of sortedScripts[0] | keyvalue : returnZero" mat-sort-header="{{userCol.key}}" style="text-align:center!important;">{{userCol.key | titlecase}}</th>
         </tr>
-        <tr *ngFor="let user of sortedScripts">
-            <td *ngFor="let userInfo of user | keyvalue : returnZero">{{userInfo.value}}</td>
+        <tr *ngFor="let script of sortedScripts">
+            <td *ngFor="let scriptInfo of script | keyvalue : returnZero">{{scriptInfo.value}}</td>
+            <button (click)="downloadNotes(script)">Download Emails</button>
             <mat-divider></mat-divider>
+            
         </tr>
     </table>
+    <button (click)="downloadNotes(data.selectedScript)">Download Emails</button>
 </mat-dialog-content>

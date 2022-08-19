@@ -33,9 +33,11 @@ import {Activity} from '../../../../../models/activities/activity.model'
 
     userList = {}
     totalHouseHolds: number = 0
-    totalResidents: number = 0
+    //totalResidents: number = 0
 
     downloading: boolean = false;
+
+    activityName: string = ''
 
     @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
     @ViewChild('reportPickerStart', {static: false}) reportPickerStart: ElementRef;
@@ -47,12 +49,14 @@ import {Activity} from '../../../../../models/activities/activity.model'
                 public orgService: OrganizationService
         ) { 
             this.activityID = data.activity._id
+            this.activityName = data.activity.name
 
         }
     getActivitySize(){
       this.activityService.getActivitySize(this.activityID).subscribe(
         (size: Object)=>{
           this.totalHouseHolds = size['totalHouseHolds']
+          //this.totalResidents = size['totalResidents']
           this.getOrgUsers(); 
         }
       )
@@ -304,7 +308,7 @@ import {Activity} from '../../../../../models/activities/activity.model'
           }
 
           let downloadLink = document.createElement('a');
-          var filename = "Aggregated_" + reportPickerStart + "_Phonebank_Report.csv"
+          var filename = "Aggregated_" + this.activityName + "_" + reportPickerStart + "_Phonebank_Report.csv"
   
           let blob = new Blob(binaryData, {type: 'blob'});
           downloadLink.href = window.URL.createObjectURL(blob);

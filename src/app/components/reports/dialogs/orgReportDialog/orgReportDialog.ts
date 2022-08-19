@@ -31,7 +31,7 @@ export class OrgReportDialog implements OnInit {
     @ViewChild('reportPickerStart', {static: false}) reportPickerStart: ElementRef;
     @ViewChild('reportPickerEnd', {static: false}) reportPickerEnd: ElementRef;
 
-    today = new FormControl(new Date());
+    //today = new FormControl(new Date());
 
     constructor(public scriptService: ScriptService,
                 public dialogRef: MatDialogRef<OrgReportDialog>,
@@ -40,7 +40,7 @@ export class OrgReportDialog implements OnInit {
                 public reportService: ReportService,
                 public orgService: OrganizationService
               ) {
-                  console.log(data)
+                  //console.log(data)
 
               }
 
@@ -50,9 +50,9 @@ export class OrgReportDialog implements OnInit {
         var reportPickerStart = '';
 
         if (this.reportPickerStart){reportPickerStart = this.reportPickerStart['startAt'] ? new Date(this.reportPickerStart['startAt']).toISOString().slice(0, 10) : ''}
-        else{
-            reportPickerStart = new Date().toISOString().slice(0, 10)
-        }
+        //else{
+        //    reportPickerStart = new Date().toISOString().slice(0, 10)
+        //}
         
         var reportPickerEnd = '';
         if (this.reportPickerEnd){var reportPickerEnd = this.reportPickerEnd['startAt'] ? new Date(this.reportPickerEnd['startAt']).toISOString().slice(0, 10) : ''}
@@ -63,6 +63,7 @@ export class OrgReportDialog implements OnInit {
 
         this.reportService.getOrgReport(campaignID, data).subscribe(
             async (report: unknown[]) =>{
+
                 this.orgService.getCampaignOrgs(campaignID).subscribe(
                     async (orgs: Organization[]) => {
 
@@ -89,12 +90,12 @@ export class OrgReportDialog implements OnInit {
                                         }
                                     }
 
-                                    report[i]['scripts']['IMP'] = report[i]['IMP'];
-                                    report[i]['scripts']['Invalid Phone'] = report[i]['INVALIDPHONE'];
-                                    report[i]['scripts']['DNC'] = report[i]['DNC'];
-                                    report[i]['scripts']['NonResponse'] = report[i]['NONRESPONSE'];
+                                    //report[i]['scripts']['IMP'] = report[i]['IMP'];
+                                    //report[i]['scripts']['Invalid Phone'] = report[i]['INVALIDPHONE'];
+                                    //report[i]['scripts']['DNC'] = report[i]['DNC'];
+                                    //report[i]['scripts']['NonResponse'] = report[i]['NONRESPONSE'];
 
-                                    await this.members.push({
+                                    this.members.push({
                                         'Org Name': org.name,
                                         ...report[i]['scripts'],
                                     });

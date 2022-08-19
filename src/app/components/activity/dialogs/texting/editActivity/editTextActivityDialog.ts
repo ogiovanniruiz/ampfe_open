@@ -84,7 +84,7 @@ export class EditTextActivityDialog implements OnInit{
   @ViewChild('imageURL', {static: false}) imageURL: ElementRef;
 
   @ViewChild('activityAllOrgs', {static: false}) activityAllOrgs: ElementRef;
-  @ViewChild('activityAllUsers', {static: false}) activityAllUsers: ElementRef;
+  @ViewChild('activityAllUsers', {static: true}) activityAllUsers: ElementRef;
 
 
   constructor(public dialogRef: MatDialogRef<EditTextActivityDialog>, 

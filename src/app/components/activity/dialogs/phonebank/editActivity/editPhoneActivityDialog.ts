@@ -21,16 +21,16 @@ import {Activity} from '../../../../../models/activities/activity.model'
 export class EditPhoneActivityDialog implements OnInit{
     campaignOrgs: Organization[] = [];
     campaignOrgsSelected = new FormControl();
-    campaignOrgsUpdate: Organization[] = [];
+    campaignOrgsUpdate: string[] = [];
 
     users: User[] = [];
     usersSelected = new FormControl();
-    usersUpdate: User[] = [];
+    usersUpdate: string[] = [];
 
     displayMessage: boolean = false;
     userMessage: string;
 
-    activity: unknown;
+    activity: Activity;
     script: unknown;
     nonResponseSet: unknown;
     target: unknown;
@@ -50,6 +50,8 @@ export class EditPhoneActivityDialog implements OnInit{
     userURL: string;
     resetting = false;
 
+    active: boolean = true
+
     @ViewChild('activityName', {static: true}) activityName: ElementRef;
     @ViewChild('description' , {static: true}) description: ElementRef;
 
@@ -65,6 +67,7 @@ export class EditPhoneActivityDialog implements OnInit{
               public userService: UserService,
               ) {
                 this.activity = data.activity;
+                
               }
 
   resetActivity(){

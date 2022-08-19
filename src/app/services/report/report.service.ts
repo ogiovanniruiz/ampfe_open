@@ -30,6 +30,11 @@ export class ReportService {
     return this.http.post(this.API_URL + '/api/getScriptReport', {campaignID, orgID, data})
   }
 
+  downloadNotes(scripts: string){
+    return this.http.post(this.API_URL + '/api/downloadNotes', {scripts})
+
+  }
+
 
 
 }

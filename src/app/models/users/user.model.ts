@@ -19,6 +19,7 @@ export class User {
     dataManager?: [];
     userAgreements?: UserAgreement[];
     oauths?: [];
+    homeOrgID?: string;
 
     constructor(name, dev, loginEmail, orgPermissions, dataManager, userAgreements, oauths) {
     }

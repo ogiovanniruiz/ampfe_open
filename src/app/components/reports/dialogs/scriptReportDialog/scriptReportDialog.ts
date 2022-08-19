@@ -17,7 +17,7 @@ export class ScriptReportDialog implements OnInit {
     pageEvent: PageEvent;
   
     currentPage: number = 0
-    public pageSize: number = 5;
+    public pageSize: number = 10;
     public totalSize: number = 0;
 
     scripts = [];
@@ -29,7 +29,7 @@ export class ScriptReportDialog implements OnInit {
     @ViewChild('reportPickerStart', {static: false}) reportPickerStart: ElementRef;
     @ViewChild('reportPickerEnd', {static: false}) reportPickerEnd: ElementRef;
 
-    today = new FormControl(new Date());
+    //today = new FormControl(new Date());
 
     constructor(public scriptService: ScriptService,
                 public dialogRef: MatDialogRef<ScriptReportDialog>,
@@ -44,9 +44,9 @@ export class ScriptReportDialog implements OnInit {
 
         var reportPickerStart = '';
         if (this.reportPickerStart){var reportPickerStart = this.reportPickerStart['startAt'] ? new Date(this.reportPickerStart['startAt']).toISOString().slice(0, 10) : ''}
-        else{
-            reportPickerStart = new Date().toISOString().slice(0, 10)
-        }
+        //else{
+            //reportPickerStart = new Date().toISOString().slice(0, 10)
+        //}
         
         var reportPickerEnd = '';
         if (this.reportPickerEnd){var reportPickerEnd = this.reportPickerEnd['startAt'] ? new Date(this.reportPickerEnd['startAt']).toISOString().slice(0, 10) : ''}
@@ -58,48 +58,67 @@ export class ScriptReportDialog implements OnInit {
 
         this.reportService.getScriptReport(campaignID, reportOrg, data).subscribe(
           async (report: unknown[]) =>{
+              //console.log(report)
+
               this.scripts = [];
               this.sortedScripts = [];
 
               for await (let selectedScript of this.data.selectedScript) {
-                  for await (let questions of selectedScript.questions) {
+
                       var row = [];
 
-                      for await (let reportType of report) {
-                          if(reportType['_id'] === selectedScript._id){
-                              for await (let responses of questions.responses) {
-                                  for await (let data of reportType[responses.idType]) {
-                                      if(data[questions._id] !== undefined) {
-                                          row[responses.idType] = data[questions._id];
-                                      }
-                                  }
-                              }
+                      for await (let scriptReport of report['ids']) {
+                          if(scriptReport['_id'] === selectedScript._id){
+                            row['ids'] = scriptReport['ids']
+                            //row['contacts'] = scriptReport['ids'] + scriptReport['dncs']
                           }
                       }
 
+                      for await (let scriptReport of report['dncs']) {
+                        if(scriptReport['_id'] === selectedScript._id){
+                          row['dncs'] = scriptReport['dncs']
+                        }
+                    }
+
+                      for await (let scriptReport of report['attempts']) {
+                        if(scriptReport['scriptID'] === selectedScript._id){
+                          row['attempts'] = scriptReport['attempts']
+                        }
+                    }
+
+                    if(row['dncs'] === undefined){
+                        row['dncs'] = 0
+                    }
+
+                    row['contacts'] = row['ids']  + row['dncs']
+
+
                       var newRow = {
-                          'Very Positive': row['VERYPOSITIVE'] ? row['VERYPOSITIVE'] : 0,
-                          'Positive': row['POSITIVE'] ? row['POSITIVE'] : 0,
-                          'Neutral': row['NEUTRAL'] ? row['NEUTRAL'] : 0,
-                          'Negative': row['NEGATIVE'] ? row['NEGATIVE'] : 0,
-                          'Very Negative': row['VERYNEGATIVE'] ? row['VERYNEGATIVE'] : 0
+                          
+                          'Attempts': row['attempts'] ? row['attempts'] : 0,
+                          'Contacts': row['contacts'] ? row['contacts'] : 0,
+                          'IDs': row['ids'] ? row['ids'] : 0,
                       };
 
-                      await this.scripts.push({
-                          'Script Name & Question': selectedScript.title + ' - ' + questions.question,
+                      this.scripts.push({
+                          'Script Name': selectedScript.title,
+                          '_id': selectedScript._id,
                           ...newRow,
                       });
+
 
                       this.sortedScripts = this.scripts.slice();
                       this.totalSize = this.scripts.length;
                       this.iterator();
 
-                  }
+                  
               }
 
               if (!report.length && !reportPickerStart && !reportPickerEnd) {
-                  this.completed = false;
+                  //this.completed = false;
               }
+
+            
           }
         );
     }
@@ -143,6 +162,41 @@ export class ScriptReportDialog implements OnInit {
 
     ngOnInit() {
         this.getScriptReport()
+    }
+
+    downloadNotes(scripts){
+        this.reportService.downloadNotes(scripts).subscribe((report: unknown[])=>{
+
+            console.log(report)
+
+            let binaryData = ['FirstName, LastName, Script, Response\n'];
+            for(var i = 0; i < report.length; i++){
+
+                //if()
+                binaryData.push(report[i]['firstName'] + ',')
+                binaryData.push(report[i]['lastName'] + ',')
+
+                for (let selectedScript of this.data.selectedScript) {
+                    if( report[i]['scriptID'] === selectedScript._id){
+                        binaryData.push(selectedScript.title + ',')
+
+                    }
+                }
+                binaryData.push(report[i]['response']+ '\n')
+            }
+
+            let downloadLink = document.createElement('a');
+  
+            let blob = new Blob(binaryData, {type: 'blob'});
+            downloadLink.href = window.URL.createObjectURL(blob);
+
+            var filename = 'emails.csv'
+            downloadLink.setAttribute('download', filename);
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            //this.downloading = false;
+        })
+
     }
 }
 

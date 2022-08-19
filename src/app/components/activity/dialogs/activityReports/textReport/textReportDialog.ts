@@ -5,7 +5,7 @@ import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 import { ActivityService } from '../../../../../services/activity/activity.service';
 import { TextingService } from '../../../../../services/texting/texting.service';
-import {log} from 'util';
+
 import {Activity} from '../../../../../models/activities/activity.model'
 
 @Component({
@@ -29,7 +29,7 @@ import {Activity} from '../../../../../models/activities/activity.model'
     completed: boolean = true;
 
     totalHouseHolds: number = 0
-    totalResidents: number = 0
+    //totalResidents: number = 0
 
     downloading: boolean = false;
 

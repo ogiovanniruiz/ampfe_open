@@ -43,6 +43,8 @@ export class ActivityComponent implements OnInit {
   dataLoaded: boolean = false;
   orgName: string = ''
 
+  dataManager: boolean = false
+
   gridByBreakpoint = {
     xl: 4,
     lg: 4,
@@ -60,6 +62,7 @@ export class ActivityComponent implements OnInit {
 
   refreshUserProfile() {
     this.userProfile = JSON.parse(sessionStorage.getItem('user'));
+    this.getDataManagerStatus(this.userProfile)
     this.dev = this.userProfile['dev'];
     this.getOrgLevel(this.userProfile)
   }
@@ -70,6 +73,15 @@ export class ActivityComponent implements OnInit {
     for (var i = 0; i< user.orgPermissions.length; i++){
       if(user.orgPermissions[i].orgID === orgID){
         this.orgLevel = user.orgPermissions[i].level
+      }
+    }
+  }
+
+  getDataManagerStatus(user: any){
+    var campaignID: number = parseInt(sessionStorage.getItem('campaignID'));
+    for (var i = 0; i< user.dataManager.length; i++){
+      if(user.dataManager[i] === campaignID ){
+        this.dataManager = true;
       }
     }
   }
