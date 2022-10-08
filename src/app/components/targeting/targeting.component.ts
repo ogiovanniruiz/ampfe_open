@@ -106,6 +106,8 @@ export class TargetingComponent implements OnInit {
   onMapReady(map: L.Map){
     this.leafletMap = map;
     this.bounds = this.leafletMap.getBounds();
+
+    //this.map = map
     
     this.leafletMap.createPane('b').style.zIndex = '603';
     this.leafletMap.createPane('bg').style.zIndex = '602';
@@ -203,6 +205,7 @@ export class TargetingComponent implements OnInit {
 
   onDrawReady(drawControl: any) {
     this.map = drawControl.options.edit;
+   
   }
 
   drawCreated(draw: any){
@@ -448,7 +451,46 @@ export class TargetingComponent implements OnInit {
 
   openTargetSummary() {
     this.zone.run(() => {
-      this.dialog.open(TargetSummaryDialog, {data: this.campaignBoundary, width: '50%'});
+      const dialogRef =  this.dialog.open(TargetSummaryDialog, {data: this.campaignBoundary, width: '50%'});
+
+      dialogRef.afterClosed().subscribe(
+        async (hhRecords: any[]) => {
+
+
+  
+          
+          for (var i = 0; i < hhRecords.length; i++) {
+
+            var numResidents = 0
+
+            for(var j = 0; j < hhRecords[i].records.length; j++){
+              numResidents = numResidents + hhRecords[i].records[j].houseHold.residents.length
+            }
+
+            var toolTip = hhRecords[i].records[0].houseHold.fullAddress1 + '<br>' +
+            hhRecords[i].records[0].houseHold.fullAddress2 + '<br>' + 
+            "# Residents: " + numResidents
+
+            var color = 'blue'
+
+            if(hhRecords[i].records.length > 1){
+              var toolTip =  toolTip + "<br># Units: " + hhRecords[i].records.length
+              color = 'purple'
+            
+            }
+
+            var marker = L.circle([hhRecords[i].records[0].houseHold.location.coordinates[1], hhRecords[i].records[0].houseHold.location.coordinates[0]], {color: color})
+            .bindTooltip(toolTip)
+            .addTo(this.leafletMap)
+
+
+            //this.houseHolds.addLayer(marker)
+
+
+          }
+        }
+
+      )
     });
   }
 

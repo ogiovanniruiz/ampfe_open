@@ -10,9 +10,12 @@
             <mat-panel-title>{{orgTarget.properties.name}}</mat-panel-title>
             <mat-panel-description>{{orgTarget.properties.idByHousehold}}</mat-panel-description>
           </mat-expansion-panel-header>
-          <mat-list>
+          <pre>{{orgTarget.properties.queries | json}}</pre>
+
+          <!---          <mat-list>
             <mat-list-item *ngFor="let rule of orgTarget.properties.queries.rules">{{rule.field}} {{rule.operator}} {{rule.value}}</mat-list-item>
-          </mat-list>
+          </mat-list>-->
+
           <mat-error *ngIf="displayErrorMsg">{{errorMessage}}</mat-error>
           <button mat-stroked-button [disabled]='downloadingList' color='primary' *ngIf="orgTarget.properties.idByHousehold === 'HOUSEHOLD'" (click)="downloadMailerList(orgTarget)">Download Mailer List</button>
           <button mat-stroked-button [disabled]='downloadingList' color='accent' *ngIf="orgTarget.properties.idByHousehold === 'INDIVIDUAL'"  (click)="downloadEmailPhoneList(orgTarget)">Download Email Phone List</button>
@@ -29,9 +32,8 @@
             <mat-panel-title>{{campaignWideTarget.properties.name}}</mat-panel-title>
             <mat-panel-description>{{campaignWideTarget.properties.idByHousehold}}</mat-panel-description>
           </mat-expansion-panel-header>
-          <mat-list>
-            <mat-list-item *ngFor="let rule of campaignWideTarget.properties.queries.rules">{{rule.field}} {{rule.operator}} {{rule.value}}</mat-list-item>
-          </mat-list>
+          <pre>{{campaignWideTarget.properties.queries | json}}</pre>
+
         </mat-expansion-panel>
       </mat-accordion>
     </mat-tab>
@@ -42,11 +44,30 @@
             <mat-panel-title>{{campaignTarget.properties.name}}</mat-panel-title>
             <mat-panel-description>{{campaignTarget.properties.targetType}}</mat-panel-description>
           </mat-expansion-panel-header>
+          <pre>{{campaignTarget.properties.queries | json}}</pre>
+          <!--
           <mat-list>
             <mat-list-item *ngFor="let rule of campaignTarget.properties.queries.rules">{{rule.field}} {{rule.operator}} {{rule.value}}</mat-list-item>
-          </mat-list>
+          </mat-list>-->
         </mat-expansion-panel>
       </mat-accordion>
+    </mat-tab>
+    <mat-tab label="Canvasses">
+      <mat-accordion>
+        <mat-expansion-panel *ngFor="let canvass of canvasses">
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{canvass.name}}</mat-panel-title>
+            <mat-panel-description>{{canvass.description}}</mat-panel-description>
+          </mat-expansion-panel-header>
+          <button mat-stroked-button [disabled]='downloadingList' color='primary'  (click)="displayCanvassHouseholds(canvass._id)">Display Canvass Households</button>
+
+          <!--<pre>{{canvass | json}}</pre>
+          <mat-list>
+            <mat-list-item *ngFor="let rule of campaignTarget.properties.queries.rules">{{rule.field}} {{rule.operator}} {{rule.value}}</mat-list-item>
+          </mat-list>-->
+        </mat-expansion-panel>
+      </mat-accordion>
+
     </mat-tab>
   </mat-tab-group>
 </mat-dialog-content>

@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild, ElementRef, Inject} from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {TargetService} from '../../../../services/target/target.service';
 import {OrganizationService} from '../../../../services/organization/organization.service';
+import { ActivityService } from '../../../../services/activity/activity.service';
+import { CanvassService } from 'src/app/services/canvass/canvass.service';
 
 @Component({
     templateUrl: './targetSummaryDialog.html',
@@ -19,6 +21,7 @@ import {OrganizationService} from '../../../../services/organization/organizatio
     orgTargets = []
     campaignWideTargets = []
     allCampaignTargets = []
+    canvasses = []
     dev: boolean = false;
 
     downloadingList: boolean = false;
@@ -29,7 +32,11 @@ import {OrganizationService} from '../../../../services/organization/organizatio
     constructor(
         public dialogRef: MatDialogRef<TargetSummaryDialog>, 
         public targetService: TargetService,
-        public orgService: OrganizationService) {
+        public orgService: OrganizationService,
+        public activityService: ActivityService,
+        private canvassService: CanvassService,
+
+        ) {
         }
 
     getOrgTargets(){
@@ -211,5 +218,22 @@ import {OrganizationService} from '../../../../services/organization/organizatio
     ngOnInit(){
       this.getOrgTargets();
       this.getDataManagerStatus()
+      this.getCanvasses()
+    }
+
+    displayCanvassHouseholds(activityID: string){
+      this.canvassService.getCanvassHouseHolds(activityID).subscribe((hhRecords: any[])=> {
+        this.dialogRef.close(hhRecords)
+      })
+    }
+
+
+    getCanvasses(){
+      const campaignID: number = parseInt(sessionStorage.getItem('campaignID'));
+      const orgID: string = sessionStorage.getItem('orgID');
+
+      this.activityService.getActivities(campaignID, orgID, "Canvass").subscribe(async (activities: unknown[]) => {
+        this.canvasses = activities
+      })
     }
 }
