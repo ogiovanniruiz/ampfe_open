@@ -1,0 +1,495 @@
+#progress-bar {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  background: #fff;
+  z-index: 1001;
+  .mat-mdc-progress-bar {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.example-list {
+  width: 500px;
+  max-width: 100%;
+  border: solid 1px #ccc;
+  min-height: 60px;
+  display: block;
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.example-box {
+  padding: 20px 10px;
+  border-bottom: solid 1px #ccc;
+  color: rgba(0, 0, 0, 0.87);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  cursor: move;
+  background: white;
+  font-size: 14px;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+              0 8px 10px 1px rgba(0, 0, 0, 0.14),
+              0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.example-box:last-child {
+  border: none;
+}
+
+.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+// Toolbar: ampFitLabels sets data-fit on .toolbar-actions by measuring, so labels stay whenever they fit
+.map-toolbar {
+  position: relative;
+  overflow: hidden;
+  gap: 4px;
+}
+
+.toolbar-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 12px 0 4px;
+  line-height: 1.2;
+}
+
+.toolbar-campaign,
+.toolbar-org {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toolbar-campaign {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.toolbar-org {
+  font-size: 12px;
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+.toolbar-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.toolbar-label {
+  margin-left: 4px;
+  font-weight: bold;
+}
+
+.toolbar-actions[data-fit="icons"] {
+  .toolbar-label {
+    display: none;
+  }
+
+  button {
+    min-width: 0;
+    padding: 0 10px;
+  }
+}
+
+// Hidden but still laid out, so ampFitLabels can tell when there is room again
+.toolbar-actions[data-fit="menu"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@media only screen and (max-width: 600px) {
+  .toolbar-title {
+    margin: 0 4px;
+  }
+
+  .toolbar-campaign {
+    font-size: 15px;
+  }
+}
+
+.close-button{
+  float: right;
+  top:-24px;
+  right:-24px;
+}
+
+.extended-fab-button {
+  width: unset;
+  padding: 0 26px;
+  border-radius: 29px;
+  .extended-fab-button__text {
+    font-weight: 300;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+}
+
+.modified-mc-content > mat-expansion-panel > .mat-expansion-panel-content {
+  max-height: 50vh;
+  overflow: auto;
+}
+
+.example-card {
+  max-width: 100%;
+  width: 100%;
+}
+
+.user-image {
+  background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+  background-size: cover;
+}
+
+
+.assistant-image {
+  background-image: url('/favicon.ico');
+  background-size: cover;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.inputbox {
+  width: 100%;
+}
+
+.dialog-element-long{
+  width:100%;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.mat-mdc-dialog-container {
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.mat-mdc-dialog-content {
+  overflow-x: auto !important;
+}
+
+.sticky-table {
+  border-collapse: collapse;
+  width: 100%;
+  overflow: auto;
+}
+
+.sticky-table th, .sticky-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.sticky-table thead th {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 2;
+}
+
+.sticky-table tbody td:first-child,
+.sticky-table thead th:first-child {
+  position: sticky;
+  left: 0;
+  background: #fff;
+  z-index: 3;
+}
+
+.rule-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.rule-fields mat-form-field {
+  flex: 1 1 250px;
+}
+
+
+
+
+
+.activities-separator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 12px 8px;
+}
+
+.activities-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.45); /* or your theme's secondary text */
+}
+
+.activities-separator mat-divider {
+  flex: 1;
+}
+
+.example-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkbox-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  align-items: center;
+}
+
+.top-actions {
+  margin-bottom: 8px;
+}
+
+/* Grid keeps every checkbox in a fixed-width column,
+   so they align vertically row to row */
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(140px, 1fr));
+  row-gap: 10px;
+  column-gap: 5px;
+}
+
+/* Responsive: fewer columns as screen narrows */
+@media (max-width: 1100px) {
+  .checkbox-grid {
+    grid-template-columns: repeat(4, minmax(140px, 1fr));
+  }
+}
+
+@media (max-width: 880px) {
+  .checkbox-grid {
+    grid-template-columns: repeat(3, minmax(140px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .checkbox-grid {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .checkbox-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.example-radio-button {
+  margin: 5px;
+}
+
+
+// Side drawer
+.map-drawer {
+  width: 300px;
+  max-width: 85vw;
+}
+
+.drawer-accordion {
+  display: block;
+  padding: 0 8px;
+
+  ::ng-deep .mat-expansion-panel-body {
+    padding: 0 4px 8px;
+  }
+
+  ::ng-deep .mat-expansion-panel-header {
+    padding: 0 16px 0 12px;
+  }
+}
+
+.drawer-panel-icon {
+  margin-right: 10px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+mat-panel-title {
+  align-items: center;
+}
+
+.drawer-panel-count {
+  flex-grow: 0;
+  justify-content: flex-end;
+  margin-left: auto;
+  margin-right: 8px;
+}
+
+.drawer-count {
+  min-width: 20px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.07);
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.drawer-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  color: rgba(0, 0, 0, 0.87);
+  cursor: pointer;
+
+  mat-icon {
+    flex-shrink: 0;
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.45;
+  }
+}
+
+.drawer-item-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drawer-create {
+  font-weight: 500;
+  color: #193155;
+
+  mat-icon {
+    color: #193155;
+  }
+}
+
+.drawer-footer {
+  margin-top: 4px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 0 0 8px 8px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.drawer-empty {
+  padding: 8px 10px 8px 44px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.drawer-chip {
+  flex-shrink: 0;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.drawer-chip-wide {
+  background: rgba(63, 81, 181, 0.12);
+  color: #3f51b5;
+}
+
+.drawer-icon-wide.mat-icon {
+  color: #3f51b5;
+}
+
+.drawer-chip-processing {
+  background: rgba(255, 152, 0, 0.15);
+  color: #8a5300;
+}
+
+// Activity rows: the name opens Edit, plus explicit Edit and Report buttons
+.drawer-activity {
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+
+  .drawer-item {
+    flex: 1;
+    padding-right: 4px;
+  }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.drawer-actions {
+  display: flex;
+  flex-shrink: 0;
+
+  button {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+  }
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    color: rgba(0, 0, 0, 0.55);
+  }
+}

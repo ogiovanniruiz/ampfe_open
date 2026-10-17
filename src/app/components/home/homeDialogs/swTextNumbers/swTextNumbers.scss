@@ -1,0 +1,240 @@
+.tn-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.tn-title {
+  margin: 0 !important;
+  font-weight: 600;
+}
+
+.tn-summary {
+  margin-top: 2px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.tn-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 4px 4px 4px 12px;
+  border-radius: 8px;
+  background: #fdecea;
+  color: #b71c1c;
+  font-size: 14px;
+}
+
+.tn-content {
+  padding-top: 12px !important;
+}
+
+.tn-accordion .mat-expansion-panel {
+  margin-bottom: 8px;
+}
+
+.tn-panel-title {
+  font-weight: 600;
+}
+
+.tn-panel-desc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.tn-desc-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tn-count {
+  flex: 0 0 auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+// Buy row
+.tn-buy {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0 12px;
+  padding: 12px 12px 0;
+  margin: 8px 0 12px;
+  background: #f6f7f9;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+}
+
+.tn-areacode {
+  width: 140px;
+}
+
+.tn-buy-button {
+  margin-top: 8px;
+}
+
+// Buy failures sit right of the button and wrap below it when the row is narrow
+.tn-buy-error {
+  flex: 1 1 200px;
+  min-width: 0;
+  // Same top and height as the button, so one line lines up with its label
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  margin: 8px 0 12px;
+  color: #c62828;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+// Number rows
+.tn-list {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tn-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 8px 10px 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:nth-child(even) {
+    background: rgba(0, 0, 0, 0.015);
+  }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.035);
+  }
+}
+
+.tn-row-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.tn-number-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tn-index {
+  min-width: 20px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  font-variant-numeric: tabular-nums;
+}
+
+.tn-number {
+  font-size: 16px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.tn-meta {
+  margin: 4px 0 0 28px;
+}
+
+.tn-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.tn-chip-hotline {
+  background: rgba(63, 81, 181, 0.12);
+  color: #3f51b5;
+}
+
+.tn-tone-good {
+  background: rgba(76, 175, 80, 0.15);
+  color: #2e7d32;
+}
+
+.tn-tone-pending {
+  background: rgba(255, 152, 0, 0.18);
+  color: #a15c00;
+}
+
+.tn-tone-bad {
+  background: rgba(244, 67, 54, 0.12);
+  color: #c62828;
+}
+
+.tn-tone-neutral {
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.tn-danger {
+  color: #c62828;
+}
+
+.tn-panel-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.tn-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 40px 16px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.6);
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    opacity: 0.6;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.tn-empty-small {
+  padding: 20px 16px;
+}
+
+@media (max-width: 600px) {
+  .tn-desc-text {
+    display: none;
+  }
+
+  .tn-meta {
+    margin-left: 0;
+  }
+
+  .tn-areacode {
+    flex: 1;
+    width: auto;
+  }
+}

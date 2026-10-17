@@ -1,0 +1,81 @@
+<div class="rg-header">
+  <h2 mat-dialog-title class="rg-title">Export group data</h2>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" (click)="return();"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="rg-content">
+  <!-- 1. Group -->
+  <div class="rg-step">
+    <div class="rg-step-label"><span class="rg-step-num">1</span> Group</div>
+    <mat-form-field appearance="outline" class="rg-group-field">
+      <mat-label>{{loadingGroups ? 'Loading groups…' : 'Select a group'}}</mat-label>
+      <mat-select [value]="selectedGroup" (selectionChange)="selectGroup($event.value)" [disabled]="loadingGroups || !orgGroups.length">
+        <mat-option *ngFor="let group of orgGroups" [value]="group">
+          {{group.name}} <span class="rg-option-type">· {{groupTypeLabel(group)}}</span>
+        </mat-option>
+      </mat-select>
+      <mat-hint *ngIf="!loadingGroups && !orgGroups.length">Your organization has no active groups on this campaign.</mat-hint>
+    </mat-form-field>
+  </div>
+
+  <!-- 2. Export type -->
+  <div class="rg-step">
+    <div class="rg-step-label"><span class="rg-step-num">2</span> Export type</div>
+    <div class="rg-modes">
+      <button type="button" class="rg-mode" [class.rg-mode-selected]="exportMode === 'emailPhoneList'" (click)="setMode('emailPhoneList')">
+        <mat-icon>contact_phone</mat-icon>
+        <span class="rg-mode-text">
+          <span class="rg-mode-title">Email &amp; phone list</span>
+          <span class="rg-mode-desc">One row per person who has an email or phone. Choose the columns below.</span>
+        </span>
+      </button>
+      <button type="button" class="rg-mode" [class.rg-mode-selected]="exportMode === 'mailer'" [disabled]="!mailerAvailable" (click)="setMode('mailer')">
+        <mat-icon>markunread_mailbox</mat-icon>
+        <span class="rg-mode-text">
+          <span class="rg-mode-title">Mailer</span>
+          <span class="rg-mode-desc" *ngIf="mailerAvailable">One row per household with a mailing name and address. Households with several people become one family line.</span>
+          <span class="rg-mode-desc" *ngIf="!mailerAvailable">Not available for membership groups, which have no mailing addresses.</span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 3. Columns -->
+  <div class="rg-step">
+    <div class="rg-step-label">
+      <span class="rg-step-num">3</span> Columns
+      <ng-container *ngIf="exportMode === 'emailPhoneList'">
+        <span class="spacer"></span>
+        <button mat-button color="primary" class="rg-link" (click)="setAllFields(true)">Select all</button>
+        <button mat-button class="rg-link" (click)="setAllFields(false)">Clear</button>
+      </ng-container>
+    </div>
+
+    <div class="rg-fixed-columns" *ngIf="exportMode === 'mailer'">
+      <span class="rg-chip" *ngFor="let column of mailerColumns">{{column}}</span>
+    </div>
+
+    <div class="rg-field-groups" *ngIf="exportMode === 'emailPhoneList'" [formGroup]="fields">
+      <div class="rg-field-group" *ngFor="let group of fieldGroups">
+        <div class="rg-field-group-title">{{group.title}}</div>
+        <mat-checkbox *ngFor="let field of group.fields" [formControlName]="field.key" color="primary">{{field.label}}</mat-checkbox>
+      </div>
+    </div>
+  </div>
+
+  <div class="rg-result" *ngIf="resultMessage" [class.rg-result-error]="resultIsError">
+    <mat-icon>{{resultIsError ? 'error_outline' : 'check_circle'}}</mat-icon>
+    <span>{{resultMessage}}</span>
+  </div>
+</mat-dialog-content>
+
+<mat-progress-bar *ngIf="exporting" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-actions class="rg-actions">
+  <span class="rg-summary" *ngIf="selectedGroup && exportMode === 'emailPhoneList'">{{selectedFields.length}} {{selectedFields.length === 1 ? 'column' : 'columns'}} selected</span>
+  <span class="spacer"></span>
+  <button mat-raised-button color="primary" [disabled]="!canExport" (click)="exportCSV()">
+    <mat-icon>download</mat-icon> {{exporting ? 'Exporting…' : 'Export CSV'}}
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,78 @@
+<div class="sl-header">
+    <div class="sl-title-row">
+        <h2 mat-dialog-title class="sl-title">Street List</h2>
+        <span class="sl-spacer"></span>
+        <button mat-icon-button matTooltip="Download walk list" *ngIf="!loadingStreets && !activityInactive && streets.length" (click)="printStreetList()"><mat-icon>download</mat-icon></button>
+        <button mat-icon-button matTooltip="Close" (click)="return()"><mat-icon>close</mat-icon></button>
+    </div>
+
+    <ng-container *ngIf="!loadingStreets && !activityInactive && totalDoors > 0">
+        <div class="sl-progress-label"><b>{{doneDoors}} / {{totalDoors}}</b> doors done</div>
+        <mat-progress-bar mode="determinate" [value]="totalDoors ? (doneDoors / totalDoors) * 100 : 0"></mat-progress-bar>
+
+        <mat-form-field appearance="outline" class="sl-search">
+            <mat-icon matPrefix>search</mat-icon>
+            <input matInput [(ngModel)]="searchText" (ngModelChange)="refreshView()" placeholder="House number, street or unit" autocomplete="off">
+            <button mat-icon-button matSuffix *ngIf="searchText" (click)="clearSearch()"><mat-icon>close</mat-icon></button>
+        </mat-form-field>
+
+        <div class="sl-toggles">
+            <mat-button-toggle-group [(ngModel)]="showMode" (change)="refreshView()" aria-label="Which doors to show">
+                <mat-button-toggle value="todo">To do</mat-button-toggle>
+                <mat-button-toggle value="all">All</mat-button-toggle>
+            </mat-button-toggle-group>
+            <mat-button-toggle-group [(ngModel)]="sortMode" (change)="refreshView()" aria-label="Door order">
+                <mat-button-toggle value="order">In order</mat-button-toggle>
+                <mat-button-toggle value="sides">Odd · Even</mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+    </ng-container>
+</div>
+
+<mat-progress-bar mode="indeterminate" *ngIf="loadingStreets"></mat-progress-bar>
+
+<mat-dialog-content class="sl-content">
+    <mat-error *ngIf="activityInactive">This activity is no longer active. Please contact your administrator for more information.</mat-error>
+    <mat-error *ngIf="loadError">Could not load the street list. <button mat-button color="primary" (click)="getHouseholdList()">Retry</button></mat-error>
+
+    <p class="sl-empty" *ngIf="!loadingStreets && !activityInactive && !loadError && streetViews.length === 0">
+        <ng-container *ngIf="searchText; else noDoors">No doors match "{{searchText}}".</ng-container>
+        <ng-template #noDoors>There are no doors in this activity.</ng-template>
+    </p>
+
+    <mat-accordion multi>
+        <mat-expansion-panel *ngFor="let street of streetViews; trackBy: trackStreet"
+                             class="sl-street" [class.sl-street-done]="street.finished"
+                             [expanded]="isExpanded(street)" (opened)="setExpanded(street, true)" (closed)="setExpanded(street, false)">
+            <mat-expansion-panel-header>
+                <div class="sl-street-header">
+                    <div class="sl-street-name">
+                        <mat-icon *ngIf="street.finished" class="sl-done-icon">check_circle</mat-icon>
+                        <span>{{street.name}}</span>
+                        <span class="sl-street-count">{{street.done}} / {{street.total}}</span>
+                    </div>
+                    <div class="sl-street-bar"><div class="sl-street-bar-fill" [class.sl-bar-done]="street.finished" [style.width.%]="street.total ? (street.done / street.total) * 100 : 0"></div></div>
+                </div>
+            </mat-expansion-panel-header>
+
+            <ng-template matExpansionPanelContent>
+                <p class="sl-empty" *ngIf="street.visibleCount === 0">All doors on this street are done 🎉</p>
+
+                <div *ngFor="let group of street.groups">
+                    <div class="sl-group-label" *ngIf="group.label">{{group.label}}</div>
+
+                    <button type="button" class="sl-door" *ngFor="let door of group.doors; trackBy: trackDoor" (click)="openHousehold(door.building)">
+                        <span class="sl-door-number" [class.sl-door-number-done]="door.finished">{{door.number || '#'}}</span>
+                        <span class="sl-door-text">
+                            <span class="sl-door-title">{{door.title}}</span>
+                            <span class="sl-door-sub">{{door.detail}}<ng-container *ngIf="door.subtitle"> · {{door.subtitle}}</ng-container></span>
+                        </span>
+                        <span class="sl-status" [ngClass]="'sl-status-' + door.status">
+                            <mat-icon *ngIf="door.status === 'complete'" inline>check</mat-icon>{{door.statusLabel}}
+                        </span>
+                    </button>
+                </div>
+            </ng-template>
+        </mat-expansion-panel>
+    </mat-accordion>
+</mat-dialog-content>

@@ -1,0 +1,20 @@
+// Layout, rows, chips and banner come from the Twilio Calling Pool styles (cp-*); see styleUrls.
+
+// Texting operation picker, in the row where Twilio shows its compliance checks
+.cp-textop {
+  width: 260px;
+  max-width: 100%;
+  margin: 6px 0 -16px 28px;
+}
+
+.cp-chip-hotline {
+  background: rgba(63, 81, 181, 0.12);
+  color: #3f51b5;
+}
+
+@media (max-width: 600px) {
+  .cp-textop {
+    width: 100%;
+    margin-left: 0;
+  }
+}

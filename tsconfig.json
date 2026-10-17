@@ -1,0 +1,27 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "strictPropertyInitialization": false,
+    "esModuleInterop": true,
+    "strict": false,
+    "paths": {
+      "src/*": ["./src/*"]
+    },
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "resolveJsonModule": true,
+    "target": "ES2022",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "useDefineForClassFields": false,
+    "types": [
+      "google.maps"
+    ]
+  }
+}

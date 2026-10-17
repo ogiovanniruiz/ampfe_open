@@ -1,0 +1,158 @@
+.mau-summary {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: -8px 0 12px;
+}
+
+.mau-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  background: rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.mau-pill-dev {
+  background: rgba(63, 81, 181, 0.12);
+  color: #3f51b5;
+}
+
+.mau-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.mau-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+
+  .mau-search {
+    flex: 1 1 260px;
+  }
+
+  mat-icon[matPrefix] {
+    margin-right: 8px;
+    color: rgba(0, 0, 0, 0.54);
+  }
+}
+
+.mau-table-wrap {
+  max-height: 55vh;
+  overflow: auto;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+}
+
+.mau-table {
+  width: 100%;
+
+  // override the bordered th/td rule from home.component.scss
+  th, td {
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 8px 12px;
+  }
+
+  th.mat-mdc-header-cell {
+    font-weight: 600;
+    background: #fafafa;
+  }
+
+  tr.mat-mdc-row:hover {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  .mau-col-dev {
+    width: 110px;
+    text-align: center;
+  }
+
+  .mau-col-actions {
+    width: 56px;
+    text-align: right;
+  }
+}
+
+.mau-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.mau-avatar {
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  background: #e0e0e0;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.mau-avatar-dev {
+  background: #3f51b5;
+  color: #fff;
+}
+
+.mau-user-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mau-name {
+  font-weight: 500;
+}
+
+.mau-email {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.54);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mau-empty {
+  padding: 32px !important;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.54);
+
+  mat-icon {
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+}
+
+.mau-danger {
+  color: #f44336;
+}
+
+@media (max-width: 700px) {
+  .mau-email {
+    max-width: 160px;
+  }
+
+  .mau-table .mau-col-dev {
+    width: 72px;
+  }
+}
+
+// Rows open the user's profile
+.mau-row {
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.03);
+  }
+}

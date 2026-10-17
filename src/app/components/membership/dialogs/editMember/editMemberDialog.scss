@@ -1,0 +1,112 @@
+.em-message {
+  display: block;
+  margin-top: 12px;
+}
+
+.em-section-label {
+  margin: 12px 0 2px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+// Fields flow into as many columns as fit; one column on phones
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0 16px;
+
+  mat-form-field {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .span-2 {
+    grid-column: span 2;
+  }
+}
+
+.em-details {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 16px;
+  margin: 4px 0 8px;
+  font-size: 14px;
+
+  dt {
+    color: rgba(0, 0, 0, 0.55);
+  }
+
+  dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.em-muted {
+  margin: 4px 0;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+// Contact history, newest first
+.em-timeline {
+  margin: 4px 0 8px;
+  padding: 0;
+  list-style: none;
+
+  li {
+    padding: 8px 0 8px 14px;
+    border-left: 2px solid rgba(25, 49, 85, 0.25);
+  }
+}
+
+.em-timeline-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+}
+
+.em-timeline-activity {
+  font-weight: 500;
+}
+
+.em-timeline-outcome {
+  font-size: 13px;
+}
+
+.em-responses {
+  margin: 4px 0 0;
+  font-size: 13px;
+}
+
+.em-actions {
+  display: flex;
+}
+
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+
+    .span-2 {
+      grid-column: auto;
+    }
+  }
+}
+
+// Consent switches
+.em-consent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-bottom: 16px;
+}
+
+.em-consent-date {
+  margin-left: 4px;
+  font-size: 12px;
+  opacity: 0.6;
+}

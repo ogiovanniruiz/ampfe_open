@@ -1,0 +1,66 @@
+<div class="mc-header">
+  <div>
+    <h2 mat-dialog-title class="mc-title">Manage Campaigns</h2>
+    <div class="mc-subtitle" *ngIf="homeOrg?.name">{{homeOrg.name}}</div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" (click)="closeDialog();"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-progress-bar *ngIf="loadingCampaigns" mode="indeterminate"></mat-progress-bar>
+
+<div class="mc-banner" *ngIf="displayErrorMsg">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-button (click)="getOrgCampaigns()">Retry</button>
+  <button mat-icon-button matTooltip="Dismiss" (click)="displayErrorMsg = false"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="mc-content">
+  <!-- Actions -->
+  <div class="mc-actions">
+    <button type="button" class="mc-action" (click)="openCreateCampaignDialog()">
+      <mat-icon class="mc-action-icon">add_circle</mat-icon>
+      <span class="mc-action-text">
+        <span class="mc-action-title">Create a new campaign</span>
+        <span class="mc-action-desc">Start a campaign owned by {{homeOrg?.name || 'your organization'}}.</span>
+      </span>
+    </button>
+    <button type="button" class="mc-action" (click)="openRequestCampaignDialog()">
+      <mat-icon class="mc-action-icon">group_add</mat-icon>
+      <span class="mc-action-text">
+        <span class="mc-action-title">Join an existing campaign</span>
+        <span class="mc-action-desc">Ask to add {{homeOrg?.name || 'your organization'}} to a campaign another organization runs.</span>
+      </span>
+    </button>
+  </div>
+
+  <!-- Inactive campaigns -->
+  <div class="mc-section-header">
+    <span class="mc-section-title">Inactive campaigns</span>
+    <span class="mc-count" *ngIf="!loadingCampaigns">{{inactiveCampaigns.length}}</span>
+  </div>
+
+  <div class="mc-list" *ngIf="inactiveCampaigns.length">
+    <div class="mc-row" *ngFor="let campaign of inactiveCampaigns; trackBy: trackCampaign">
+      <div class="mc-row-text">
+        <div class="mc-name">{{campaign.name}}</div>
+        <div class="mc-desc" *ngIf="campaign.description" [matTooltip]="campaign.description" [matTooltipShowDelay]="500">{{campaign.description}}</div>
+        <div class="mc-meta">
+          <span>Campaign ID {{campaign.campaignID}}</span>
+          <span class="mc-chip">Inactive</span>
+        </div>
+      </div>
+      <div class="mc-row-actions">
+        <button mat-stroked-button (click)="openEditCampaignDialog(campaign)"><mat-icon>edit</mat-icon> Edit</button>
+        <button mat-flat-button color="primary" (click)="enterMap(campaign.campaignID)"><mat-icon>map</mat-icon> Open map</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mc-empty" *ngIf="!loadingCampaigns && !displayErrorMsg && inactiveCampaigns.length === 0">
+    <mat-icon>flag</mat-icon>
+    <p>No inactive campaigns.</p>
+  </div>
+</mat-dialog-content>

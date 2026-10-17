@@ -1,0 +1,413 @@
+<mat-progress-bar mode="indeterminate" *ngIf="loadingData" color="primary"></mat-progress-bar>
+<mat-drawer-container class="membership-container" [hasBackdrop]="isMobile">
+  <mat-drawer class="membership-drawer" [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile">
+    <div class="drawer-header" *ngIf="isMobile">
+      <button mat-icon-button matTooltip="Close lists" aria-label="Close lists" (click)="drawer.close()"><mat-icon>menu_open</mat-icon></button>
+      <span class="drawer-title">Lists</span>
+    </div>
+    <button mat-menu-item class="sidebar-item all-members-item"
+            [class.active]="listType === 'all' && filters.length === 0 && listName === 'All members'"
+            (click)="showAllMembers()">
+      <mat-icon>groups</mat-icon><span class="truncate">All members</span>
+      <span class="spacer"></span>
+      <span class="item-count" *ngIf="orgSummary">{{orgSummary.total}}</span>
+    </button>
+
+    <mat-accordion>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon class="panel-icon">upload</mat-icon>
+            Uploads
+          </mat-panel-title>
+          <mat-panel-description class="panel-count">{{uploads.length}}</mat-panel-description>
+        </mat-expansion-panel-header>
+        <button mat-stroked-button color="primary" class="full-width-button" (click)="openCreateUploadMembershipListDialog()">
+          <mat-icon>add</mat-icon> Upload a list
+        </button>
+        <mat-list dense>
+          <div class="sidebar-row" *ngFor="let upload of uploads">
+            <button mat-menu-item class="sidebar-item"
+                    [class.active]="listType === 'upload' && selectedUpload?._id === upload._id"
+                    (click)="getUploadMembershipList(upload)">
+              <mat-icon>list</mat-icon><span class="truncate">{{upload.uploadName}}</span>
+            </button>
+            <button mat-icon-button class="row-action" matTooltip="Rename upload" (click)="openEditUploadDialog(upload)">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+        </mat-list>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon class="panel-icon">event_available</mat-icon>
+            Activities
+          </mat-panel-title>
+          <mat-panel-description class="panel-count">{{activities.length}}</mat-panel-description>
+        </mat-expansion-panel-header>
+        <mat-list dense>
+          <button mat-menu-item *ngFor="let activity of activities" class="sidebar-item"
+                  [class.active]="listType === 'activity' && source.id === activity._id"
+                  (click)="getActivityMembershipList(activity)">
+            <mat-icon>{{activityIcon(activity.activityType)}}</mat-icon><span class="truncate">{{activity.name}}</span>
+            <span class="spacer"></span>
+            <span class="item-count">{{activity.count}}</span>
+          </button>
+          <p class="sidebar-empty" *ngIf="activities.length === 0">No members from activities yet</p>
+        </mat-list>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon class="panel-icon">sell</mat-icon>
+            Tags
+          </mat-panel-title>
+          <mat-panel-description class="panel-count">{{tags.length}}</mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="tag-actions">
+          <button mat-flat-button color="primary" (click)="openCreateTagDialog()">
+            <mat-icon>add</mat-icon> New tag
+          </button>
+          <button mat-stroked-button color="primary" (click)="openBulkTagDialog()">
+            <mat-icon>new_label</mat-icon> Tag lists
+          </button>
+          <button mat-stroked-button color="primary" [disabled]="tags.length < 2" (click)="openMergeTagsDialog()">
+            <mat-icon>merge</mat-icon> Merge tags
+          </button>
+        </div>
+        <mat-list dense>
+          <button mat-menu-item *ngFor="let tag of tags" class="sidebar-item"
+                  [class.active]="listType === 'tag' && listName === tag"
+                  (click)="getTagMembershipList(tag)">
+            <mat-icon [style.color]="tagDot(tag) || null">label</mat-icon><span class="truncate">{{tag}}</span>
+          </button>
+        </mat-list>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon class="panel-icon">badge</mat-icon>
+            Organizer Lists
+          </mat-panel-title>
+          <mat-panel-description class="panel-count">{{organizers.length}}</mat-panel-description>
+        </mat-expansion-panel-header>
+        <mat-list dense>
+          <button mat-menu-item *ngFor="let organizer of organizers" class="sidebar-item"
+                  [class.active]="listType === 'organizer' && selectedOrganizer?._id === organizer._id"
+                  (click)="getOrganizerMembershipList(organizer)">
+            <mat-icon>person</mat-icon><span class="truncate">{{organizerName(organizer)}}</span>
+          </button>
+          <p class="sidebar-empty" *ngIf="organizers.length === 0">No team members</p>
+        </mat-list>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon class="panel-icon">health_and_safety</mat-icon>
+            Data health
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-list dense>
+          <button mat-menu-item class="sidebar-item"
+                  [class.active]="listType === 'duplicates'"
+                  (click)="showDuplicates()">
+            <mat-icon>content_copy</mat-icon><span class="truncate">Possible duplicates</span>
+            <span class="spacer"></span>
+            <span class="item-count">{{duplicateGroups.length}}</span>
+          </button>
+          <button mat-menu-item *ngFor="let item of healthItems" class="sidebar-item"
+                  [class.active]="listType === 'all' && listName === item.label"
+                  (click)="showHealth(item)">
+            <mat-icon>{{item.icon}}</mat-icon><span class="truncate">{{item.label}}</span>
+            <span class="spacer"></span>
+            <span class="item-count" *ngIf="orgSummary">{{orgSummary[item.filter]}}</span>
+          </button>
+        </mat-list>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </mat-drawer>
+
+  <mat-drawer-content class="membership-content">
+    <div class="error-banner" *ngIf="displayErrorMsg">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{errorMessage}}</span>
+      <span class="spacer"></span>
+      <button mat-icon-button matTooltip="Dismiss" (click)="displayErrorMsg = false"><mat-icon>close</mat-icon></button>
+    </div>
+
+    <mat-card class="members-card">
+      <div class="card-header">
+        <button mat-icon-button class="lists-button" *ngIf="isMobile" matTooltip="Lists" (click)="openLists()"><mat-icon>menu</mat-icon></button>
+        <!-- The org's logo; a spinner while it loads, the members icon when there is none -->
+        <ng-container *ngIf="{logo: orgLogo$ | async} as org">
+          <div class="title-icon" *ngIf="org.logo === undefined" aria-label="Loading logo"><mat-spinner diameter="22"></mat-spinner></div>
+          <img class="org-logo" *ngIf="org.logo" [src]="org.logo" alt="">
+          <div class="title-icon" *ngIf="org.logo === null"><mat-icon>groups</mat-icon></div>
+        </ng-container>
+        <div class="card-title">
+          <p class="org-name truncate" *ngIf="orgName">{{orgName}}</p>
+          <h2 class="list-title">{{listName}}</h2>
+          <p class="list-subtitle" *ngIf="listType !== 'duplicates'">{{listTypeLabel}} · {{totalSize}} {{totalSize === 1 ? 'member' : 'members'}}<span *ngIf="filters.length || search || tagValueFilter.length"> shown</span></p>
+          <p class="list-subtitle" *ngIf="listType === 'duplicates'">{{listTypeLabel}} · {{duplicateGroups.length}} {{duplicateGroups.length === 1 ? 'group' : 'groups'}} that look like the same person</p>
+        </div>
+        <span class="spacer"></span>
+        <button mat-icon-button color="warn" *ngIf="listType === 'upload'" matTooltip="Delete this upload" (click)="deleteUpload()">
+          <mat-icon>delete</mat-icon>
+        </button>
+        <button mat-icon-button *ngIf="listType === 'tag'" matTooltip="Edit this tag" (click)="openEditTagDialog()">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <span *ngIf="listType === 'tag'" [matTooltip]="summary?.total > 0 ? 'Remove all members from this tag before deleting it' : 'Delete this tag'">
+          <button mat-icon-button color="warn" [disabled]="!summary || summary.total > 0" (click)="deleteTag()">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </span>
+      </div>
+
+      <!-- Possible duplicates: one block per group -->
+      <ng-container *ngIf="listType === 'duplicates'">
+        <div class="empty-state small" *ngIf="duplicateGroups.length === 0 && !loadingData">
+          <mat-icon>check_circle</mat-icon>
+          <p>No duplicates found.</p>
+        </div>
+        <div class="bulk-bar" *ngIf="duplicateGroups.length">
+          <mat-checkbox color="primary" [checked]="allGroupsSelected" [indeterminate]="selectedGroups.size > 0 && !allGroupsSelected" (change)="toggleAllGroups()" matTooltip="Select all groups"></mat-checkbox>
+          <span class="bulk-count">{{selectedGroups.size ? selectedGroups.size + ' selected' : 'Select groups to merge'}}</span>
+          <span class="spacer"></span>
+          <ng-container *ngIf="selectedGroups.size">
+            <button mat-stroked-button color="primary" (click)="mergeSelectedGroups()" matTooltip="Each group keeps its oldest member"><mat-icon>merge</mat-icon> Merge selected</button>
+            <button mat-icon-button matTooltip="Clear selection" (click)="selectedGroups.clear()"><mat-icon>close</mat-icon></button>
+          </ng-container>
+        </div>
+        <div class="duplicate-group" *ngFor="let group of duplicateGroups" [class.selected-group]="selectedGroups.has(group.signature)">
+          <div class="duplicate-header">
+            <mat-checkbox color="primary" [checked]="selectedGroups.has(group.signature)" (change)="toggleGroup(group)"></mat-checkbox>
+            <span class="duplicate-reason">{{group.reason}}</span>
+            <span class="duplicate-key truncate">{{group.key}}</span>
+            <span class="spacer"></span>
+            <button mat-button class="duplicate-action" matTooltip="These are different people" (click)="dismissGroup(group)"><mat-icon>person_off</mat-icon> Not duplicates</button>
+            <button mat-stroked-button color="primary" class="duplicate-action" (click)="openMergeMembersDialog(group)"><mat-icon>merge</mat-icon> Merge</button>
+          </div>
+          <div class="duplicate-member" *ngFor="let member of group.members">
+            <div class="duplicate-member-body">
+              <div class="member-card-name">{{fullName(member) || 'No name'}}</div>
+              <div class="duplicate-member-meta">
+                <span *ngIf="memberPhone(member)">{{memberPhone(member)}}</span>
+                <span *ngIf="memberEmail(member)">{{memberEmail(member)}}</span>
+                <span *ngIf="sourceLabel(member)">{{sourceLabel(member)}}</span>
+                <span *ngIf="addedDate(member)">Added {{addedDate(member) | date:'mediumDate'}}</span>
+              </div>
+            </div>
+            <button mat-icon-button matTooltip="Edit member" (click)="openEditMemberDialog(member)"><mat-icon>edit</mat-icon></button>
+            <button mat-icon-button color="warn" matTooltip="Delete member" (click)="deleteOneMember(member)"><mat-icon>delete</mat-icon></button>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="listType !== 'duplicates'">
+        <div class="toolbar">
+          <mat-form-field class="search-field" appearance="outline">
+            <mat-icon matPrefix>search</mat-icon>
+            <input matInput #searchBox placeholder="Search name, phone or email" [value]="search" (input)="onSearch(searchBox.value)">
+            <button mat-icon-button matSuffix *ngIf="searchBox.value" matTooltip="Clear search" (click)="clearSearch(searchBox)"><mat-icon>close</mat-icon></button>
+          </mat-form-field>
+
+          <div class="summary-chips" *ngIf="summary">
+            <button class="summary-chip" *ngFor="let chip of summaryChips"
+                    [class.active]="filters.includes(chip.filter)"
+                    [matTooltip]="filters.includes(chip.filter) ? 'Remove filter' : 'Show only these members'"
+                    (click)="toggleFilter(chip.filter)">
+              <mat-icon>{{chip.icon}}</mat-icon>
+              <span class="chip-count">{{summary[chip.filter]}}</span>
+              <span>{{chip.label}}</span>
+            </button>
+            <button class="summary-chip" *ngIf="filters.includes('notGeocoded')" [class.active]="true" matTooltip="Remove filter" (click)="toggleFilter('notGeocoded')">
+              <mat-icon>wrong_location</mat-icon>
+              <span class="chip-count">{{summary.notGeocoded}}</span>
+              <span>Not geocoded</span>
+            </button>
+          </div>
+
+          <!-- In a tag's list: members per value; clicking values narrows the list -->
+          <div class="summary-chips value-chips" *ngIf="tagValueChips.length">
+            <span class="value-chips-label">{{listName}}</span>
+            <button class="summary-chip" *ngFor="let chip of tagValueChips; trackBy: trackChip"
+                    [class.active]="chip.active" [class.empty-chip]="!chip.count && !chip.active"
+                    [attr.aria-label]="chip.label + ', ' + chip.count + (chip.count === 1 ? ' member' : ' members')"
+                    [attr.aria-pressed]="chip.active"
+                    [matTooltip]="chip.active ? 'Remove filter' : 'Show only these members'"
+                    (click)="toggleTagValue(chip.value)">
+              <span class="menu-tag-dot value-chip-dot" [style.background]="chip.color || null"></span>
+              <span class="chip-count">{{chip.count}}</span>
+              <span>{{chip.label}}</span>
+            </button>
+            <button mat-button class="value-chips-clear" *ngIf="tagValueFilter.length" (click)="clearTagValues()">Clear</button>
+          </div>
+        </div>
+
+        <!-- Bulk actions for the selected members -->
+        <div class="bulk-bar" *ngIf="selected.size > 0">
+          <span class="bulk-count">{{selected.size}} selected</span>
+          <button mat-button *ngIf="selected.size < totalSize" (click)="selectAllMatching()">Select all {{totalSize}}</button>
+          <span class="spacer"></span>
+          <button mat-stroked-button [matMenuTriggerFor]="addTagMenu"><mat-icon>new_label</mat-icon> Add tag</button>
+          <button mat-stroked-button [matMenuTriggerFor]="removeTagMenu" [disabled]="selectedTags.length === 0"><mat-icon>label_off</mat-icon> Remove tag</button>
+          <button mat-stroked-button (click)="exportMembershipList()"><mat-icon>download</mat-icon> Export</button>
+          <button mat-stroked-button color="warn" (click)="bulkAction('delete')"><mat-icon>delete</mat-icon> Delete</button>
+          <button mat-icon-button matTooltip="Clear selection" (click)="clearSelection()"><mat-icon>close</mat-icon></button>
+        </div>
+
+        <mat-menu #addTagMenu="matMenu">
+          <div class="menu-new-tag" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+            <mat-form-field>
+              <mat-label>New tag</mat-label>
+              <input matInput [(ngModel)]="newBulkTag" (keyup.enter)="bulkAction('addTag', newBulkTag)">
+            </mat-form-field>
+            <button mat-icon-button color="primary" matTooltip="Add new tag" [disabled]="!newBulkTag.trim()" (click)="bulkAction('addTag', newBulkTag)"><mat-icon>add_circle</mat-icon></button>
+          </div>
+          <ng-container *ngFor="let tag of tags">
+            <!-- Tags with values ask for the value first -->
+            <button mat-menu-item *ngIf="tagDefinition(tag)?.values?.length; else plainTag" [matMenuTriggerFor]="tagValueMenu" [matMenuTriggerData]="{tag: tag}">
+              <span class="menu-tag-dot" [style.background]="tagDot(tag)"></span>{{tag}}
+            </button>
+            <ng-template #plainTag>
+              <button mat-menu-item (click)="bulkAction('addTag', tag)"><mat-icon>label</mat-icon>{{tag}}</button>
+            </ng-template>
+          </ng-container>
+        </mat-menu>
+
+        <mat-menu #tagValueMenu="matMenu">
+          <ng-template matMenuContent let-tag="tag">
+            <button mat-menu-item *ngFor="let option of tagDefinition(tag).values" (click)="bulkAction('addTag', tag, option.value)">
+              <span class="menu-tag-dot" [style.background]="option.color"></span>{{option.value}}
+            </button>
+            <button mat-menu-item (click)="bulkAction('addTag', tag)"><span class="menu-tag-dot"></span>No value</button>
+          </ng-template>
+        </mat-menu>
+
+        <mat-menu #removeTagMenu="matMenu">
+          <button mat-menu-item *ngFor="let tag of selectedTags" (click)="bulkAction('removeTag', tag)"><mat-icon>label_off</mat-icon>{{tag}}</button>
+        </mat-menu>
+
+        <div class="info-banner" *ngIf="openUpload?.tagValueMissCount" role="status">
+          <mat-icon>info</mat-icon>
+          <span>
+            {{openUpload.tagValueMissCount}} tag {{openUpload.tagValueMissCount === 1 ? 'value' : 'values'}} in this file didn't match the tag and
+            {{openUpload.tagValueMissCount === 1 ? 'was' : 'were'}} imported without a value: {{uploadMissText}}<span *ngIf="openUpload.tagValueMisses.length >= 20">, …</span>
+          </span>
+        </div>
+
+        <div class="empty-state small" *ngIf="members.length === 0 && !loadingData">
+          <mat-icon>person_off</mat-icon>
+          <p>{{search || filters.length ? 'No members match.' : 'No members in this list.'}}</p>
+        </div>
+
+        <!-- Phones: one tappable card per member -->
+        <div class="member-cards" *ngIf="isMobile && members.length > 0">
+          <div class="member-card" *ngFor="let member of members" (click)="openEditMemberDialog(member)">
+            <div class="member-card-body">
+              <div class="member-card-name">
+                {{fullName(member)}}
+                <mat-icon class="reach-icon" inline *ngIf="isTextable(member)">sms</mat-icon>
+                <mat-icon class="reach-icon" inline *ngIf="isEmailable(member)">mail</mat-icon>
+              </div>
+              <div class="member-card-contact">
+                <a *ngIf="memberPhone(member)" [href]="'tel:' + memberPhone(member)" (click)="$event.stopPropagation()"><mat-icon inline>call</mat-icon> {{memberPhone(member)}}</a>
+                <a *ngIf="memberEmail(member)" [href]="'mailto:' + memberEmail(member)" (click)="$event.stopPropagation()"><mat-icon inline>mail</mat-icon> {{memberEmail(member)}}</a>
+                <span class="member-card-none" *ngIf="!memberPhone(member) && !memberEmail(member)">No contact info</span>
+              </div>
+              <div class="member-card-source" *ngIf="sourceLabel(member) || addedDate(member)">
+                {{sourceLabel(member)}}<span *ngIf="sourceLabel(member) && addedDate(member)"> · </span>{{addedDate(member) | date:'mediumDate'}}
+              </div>
+              <div class="member-card-tags" *ngIf="member.tags?.length">
+                <tag-chip *ngFor="let tag of member.tags" [tag]="tag" [definitions]="tagDefinitions"></tag-chip>
+              </div>
+            </div>
+            <mat-icon class="member-card-chevron">chevron_right</mat-icon>
+          </div>
+        </div>
+
+        <div class="table-wrapper" *ngIf="!isMobile && members.length > 0">
+          <table mat-table [dataSource]="members" class="members-table">
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef class="select-cell">
+                <mat-checkbox color="primary" [checked]="pageAllSelected" [indeterminate]="pageSomeSelected" (change)="togglePage()" matTooltip="Select this page"></mat-checkbox>
+              </th>
+              <td mat-cell *matCellDef="let member" class="select-cell" (click)="$event.stopPropagation()">
+                <mat-checkbox color="primary" [checked]="isSelected(member)" (change)="toggleMember(member)"></mat-checkbox>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let member" class="name-cell">{{fullName(member)}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="email">
+              <th mat-header-cell *matHeaderCellDef>Email</th>
+              <td mat-cell *matCellDef="let member">{{member.resident?.emails?.[0] ?? '—'}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="phone">
+              <th mat-header-cell *matHeaderCellDef>Phone</th>
+              <td mat-cell *matCellDef="let member">
+                <span [class.invalid-number]="member.resident?.invalidnumber" [matTooltip]="member.resident?.invalidnumber ? 'Marked as an invalid number' : ''">{{member.resident?.phones?.[0]?.number ?? '—'}}</span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="reach">
+              <th mat-header-cell *matHeaderCellDef>Reach</th>
+              <td mat-cell *matCellDef="let member" class="reach-cell">
+                <mat-icon class="reach-icon" *ngIf="isTextable(member)" matTooltip="Opted in to texts">sms</mat-icon>
+                <mat-icon class="reach-icon" *ngIf="isEmailable(member)" matTooltip="Opted in to email">mail</mat-icon>
+                <mat-icon class="reach-icon warn" *ngIf="!memberPhone(member) && !memberEmail(member)" matTooltip="No contact info">warning_amber</mat-icon>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="source">
+              <th mat-header-cell *matHeaderCellDef>Source</th>
+              <td mat-cell *matCellDef="let member" class="source-cell"><span class="truncate">{{sourceLabel(member) || '—'}}</span></td>
+            </ng-container>
+
+            <ng-container matColumnDef="added">
+              <th mat-header-cell *matHeaderCellDef>Added</th>
+              <td mat-cell *matCellDef="let member" class="nowrap">{{addedDate(member) ? (addedDate(member) | date:'mediumDate') : '—'}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="tags">
+              <th mat-header-cell *matHeaderCellDef>Tags</th>
+              <td mat-cell *matCellDef="let member">
+                <tag-chip *ngFor="let tag of member.tags ?? []" [tag]="tag" [definitions]="tagDefinitions"></tag-chip>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let member" class="actions-cell">
+                <button mat-icon-button matTooltip="Edit member" (click)="$event.stopPropagation(); openEditMemberDialog(member)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+            <tr mat-row *matRowDef="let member; columns: displayedColumns;" class="member-row" [class.selected-row]="isSelected(member)" (click)="openEditMemberDialog(member)"></tr>
+          </table>
+        </div>
+
+        <div class="card-actions" *ngIf="totalSize > 0">
+          <button mat-stroked-button color="primary" (click)="exportMembershipList()">
+            <mat-icon>download</mat-icon> Export {{selected.size > 0 ? 'selected' : 'CSV'}}
+          </button>
+          <span class="spacer"></span>
+          <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="[10, 25, 50]" [hidePageSize]="isMobile" [length]="totalSize" [pageIndex]="currentPage" (page)="pageEvent = handlePage($event)"></mat-paginator>
+        </div>
+      </ng-container>
+    </mat-card>
+  </mat-drawer-content>
+</mat-drawer-container>

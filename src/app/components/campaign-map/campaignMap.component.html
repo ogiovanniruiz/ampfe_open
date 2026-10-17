@@ -1,0 +1,172 @@
+<mat-progress-bar mode="indeterminate" *ngIf="loadingPrecinctLayer"></mat-progress-bar>
+<mat-progress-bar mode="indeterminate" *ngIf="loadingPolygons"></mat-progress-bar>
+
+<mat-toolbar class="map-toolbar">
+  <button mat-icon-button data-fit-fixed matTooltip="Toggle side menu" (click)="drawer.toggle();"><mat-icon>menu</mat-icon></button>
+  <div class="toolbar-title" [matTooltip]="myOrgName + ' – ' + campaignName" matTooltipShowDelay="600">
+    <span class="toolbar-campaign">{{campaignName}}</span>
+    <span class="toolbar-org">{{myOrgName}}</span>
+  </div>
+
+  <!-- Labels show when they fit; otherwise icons only, then the ⋮ menu (ampFitLabels) -->
+  <div class="toolbar-actions" ampFitLabels [fitReserve]="toolbarTitleMin" [fitMenuBelow]="toolbarMenuBelow" (fitChange)="toolbarMode = $event"
+       [attr.aria-hidden]="toolbarMode === 'menu' ? 'true' : null">
+    <button mat-stroked-button matTooltip="Aggregated Outreach Summary" color='primary' [matMenuTriggerFor]="summaryMenu" [disabled]="gettingCampaignBoundary"><mat-icon>insert_chart</mat-icon><span class="toolbar-label">Summaries</span></button>
+    <button mat-stroked-button matTooltip="District Data Breakdown" color='primary' [matMenuTriggerFor]="districtMenu" [disabled]="gettingCampaignBoundary"><mat-icon>layers</mat-icon><span class="toolbar-label">District</span></button>
+    <button mat-stroked-button matTooltip="Search By Address or Voter" color='primary' [matMenuTriggerFor]="searchMenu" *ngIf="campaignActive && subscription !== 'FREE'" [disabled]="gettingCampaignBoundary"><mat-icon>search</mat-icon><span class="toolbar-label">Search</span></button>
+    <button mat-stroked-button matTooltip="Campaign Permissions" (click)="openPermissionsDialog()" *ngIf="(dataManager || dev) && campaignActive && subscription !== 'FREE'" [disabled]="gettingCampaignBoundary"><mat-icon>settings</mat-icon><span class="toolbar-label">Permissions</span></button>
+    <button mat-stroked-button matTooltip="Campaign Billing" color='primary' (click)="openCampaignBillingDialog()" *ngIf="(dataManager || dev) && campaignActive && subscription !== 'FREE'" [disabled]="gettingCampaignBoundary"><mat-icon>monetization_on</mat-icon><span class="toolbar-label">Billing</span></button>
+  </div>
+
+  <!-- No room for the actions: the same actions behind one menu -->
+  <button mat-icon-button class="toolbar-overflow" *ngIf="toolbarMode === 'menu'" matTooltip="More" [matMenuTriggerFor]="moreMenu" [disabled]="gettingCampaignBoundary"><mat-icon>more_vert</mat-icon></button>
+  <mat-menu #moreMenu="matMenu">
+    <button mat-menu-item [matMenuTriggerFor]="summaryMenu"><mat-icon>insert_chart</mat-icon><span>Summaries</span></button>
+    <button mat-menu-item [matMenuTriggerFor]="districtMenu"><mat-icon>layers</mat-icon><span>District</span></button>
+    <button mat-menu-item [matMenuTriggerFor]="searchMenu" *ngIf="campaignActive && subscription !== 'FREE'"><mat-icon>search</mat-icon><span>Search</span></button>
+    <button mat-menu-item (click)="openPermissionsDialog()" *ngIf="(dataManager || dev) && campaignActive && subscription !== 'FREE'"><mat-icon>settings</mat-icon><span>Permissions</span></button>
+    <button mat-menu-item (click)="openCampaignBillingDialog()" *ngIf="(dataManager || dev) && campaignActive && subscription !== 'FREE'"><mat-icon>monetization_on</mat-icon><span>Billing</span></button>
+  </mat-menu>
+  <mat-menu #summaryMenu="matMenu">
+    <button mat-menu-item (click)="openUserSummary()"><mat-icon>person</mat-icon><span>User Summary</span></button>
+    <button mat-menu-item (click)="openActivitySummary()"><mat-icon>event_note</mat-icon><span>Activity Summary</span></button>
+    <button mat-menu-item (click)="openOrgSummary()"><mat-icon>corporate_fare</mat-icon><span>Organization Summary</span></button> 
+    <button mat-menu-item (click)="openDateSummary()" ><mat-icon>calendar_month</mat-icon><span>Date Summary</span></button>
+    <button mat-menu-item (click)="openGeoSummary()" ><mat-icon>public</mat-icon><span>Geographic Summary</span></button>
+    <button mat-menu-item (click)="openDemographicSummary()" ><mat-icon>diversity_3</mat-icon><span>Demographic Summary</span></button>
+    <button mat-menu-item (click)="openRawContactDataDialog()"><mat-icon>download</mat-icon><span>Export Raw Contact Data</span></button> 
+
+  </mat-menu>
+  <mat-menu #districtMenu="matMenu">
+    <button mat-menu-item (click)="openDistrictDataSummary()"><mat-icon>insights</mat-icon><span>District Data Summary</span></button> 
+    <button mat-menu-item (click)="openPrecinctPlanningSummary()"><mat-icon>map</mat-icon><span>Precinct Planning Summary</span></button> 
+    <button mat-menu-item (click)="openMorePolygonsDialog()"><mat-icon>pentagon</mat-icon><span>Polygon Allocation List</span></button>
+    <button mat-menu-item (click)="openRawGroupDataDialog()"><mat-icon>download</mat-icon><span>Export Raw Group Data</span></button> 
+
+  </mat-menu>
+  <mat-menu #searchMenu="matMenu">
+    <button mat-menu-item (click)="openAddressSearchDialog()"><mat-icon>home_pin</mat-icon><span>Find Address On Map</span></button>
+    <button mat-menu-item (click)="openSearchPrecinctsDialog()"><mat-icon>map</mat-icon><span>Find Precinct On Map</span></button> 
+ 
+    <button mat-menu-item (click)="openSearchVoterListDialog()"><mat-icon>person_search</mat-icon><span>Voter Lookup</span></button> 
+  </mat-menu>
+</mat-toolbar>
+<mat-drawer-container class="example-container" [hasBackdrop]="false">
+  <mat-drawer #drawer class="map-drawer" [mode]="'over'" opened>
+    <div class="activities-separator">
+      <mat-divider></mat-divider>
+      <div class="activities-label">
+        <mat-icon>inventory_2</mat-icon>
+        <span>Resources</span>
+      </div>
+      <mat-divider></mat-divider>
+    </div>
+    <mat-accordion class="drawer-accordion">
+
+      <!-- SURVEYS -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title><mat-icon class="drawer-panel-icon">quiz</mat-icon>Surveys</mat-panel-title>
+          <mat-panel-description class="drawer-panel-count"><span class="drawer-count">{{surveys.length}}</span></mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="drawer-list">
+          <button class="drawer-item drawer-create" (click)="openCreateSurveyDialog()"><mat-icon>add</mat-icon><span class="drawer-item-name">Create a survey</span></button>
+          <button class="drawer-item" *ngFor="let survey of surveys; trackBy: trackById" (click)="openEditSurveyDialog(survey)">
+            <mat-icon>assignment</mat-icon><span class="drawer-item-name">{{survey.name}}</span>
+          </button>
+          <div class="drawer-empty" *ngIf="!surveys.length">No surveys yet</div>
+          <button class="drawer-item drawer-footer" (click)="openOtherSurveysDialog()"><mat-icon>folder</mat-icon><span class="drawer-item-name">More surveys</span></button>
+        </div>
+      </mat-expansion-panel>
+
+      <!-- NONRESPONSE SETS -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title><mat-icon class="drawer-panel-icon">block</mat-icon>Nonresponse sets</mat-panel-title>
+          <mat-panel-description class="drawer-panel-count"><span class="drawer-count">{{nonResponseSets.length}}</span></mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="drawer-list">
+          <button class="drawer-item drawer-create" (click)="openCreateNonresponseSetDialog()"><mat-icon>add</mat-icon><span class="drawer-item-name">Create a nonresponse set</span></button>
+          <button class="drawer-item" *ngFor="let nonResponseSet of nonResponseSets; trackBy: trackById" (click)="openEditNonResponseSetDialog(nonResponseSet)">
+            <mat-icon>assignment</mat-icon><span class="drawer-item-name">{{nonResponseSet.name}}</span>
+          </button>
+          <div class="drawer-empty" *ngIf="!nonResponseSets.length">No nonresponse sets yet</div>
+          <button class="drawer-item drawer-footer" (click)="openOtherNonresponseSetsDialog()"><mat-icon>folder</mat-icon><span class="drawer-item-name">More nonresponse sets</span></button>
+        </div>
+      </mat-expansion-panel>
+
+      <!-- GROUPS -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title><mat-icon class="drawer-panel-icon">people</mat-icon>Groups</mat-panel-title>
+          <mat-panel-description class="drawer-panel-count"><span class="drawer-count">{{campaignGroups.length + orgGroups.length}}</span></mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="drawer-list">
+          <button class="drawer-item drawer-create" (click)="openGroupCreatorDialog()" [disabled]="!polygonsLoaded"><mat-icon>add</mat-icon><span class="drawer-item-name">Create a group</span></button>
+          <button class="drawer-item" *ngFor="let campaignGroup of campaignGroups; trackBy: trackById" (click)="openGroupEditorDialog(campaignGroup)">
+            <mat-icon class="drawer-icon-wide">public</mat-icon><span class="drawer-item-name">{{campaignGroup.name}}</span>
+            <span class="drawer-chip drawer-chip-wide">Campaign-wide</span>
+          </button>
+          <button class="drawer-item" *ngFor="let orgGroup of orgGroups; trackBy: trackById" (click)="openGroupEditorDialog(orgGroup)" >
+            <mat-icon>group</mat-icon><span class="drawer-item-name">{{orgGroup.name}}</span>
+          </button>
+          <div class="drawer-empty" *ngIf="!campaignGroups.length && !orgGroups.length">No groups yet</div>
+          <button class="drawer-item drawer-footer" (click)="openGroupReviewDialog()"><mat-icon>folder</mat-icon><span class="drawer-item-name">More groups</span></button>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <div class="activities-separator">
+      <mat-divider></mat-divider>
+      <div class="activities-label">
+        <mat-icon>apps</mat-icon>
+        <span>Activities</span>
+      </div>
+      <mat-divider></mat-divider>
+    </div>
+    <mat-accordion class="drawer-accordion">
+      <mat-expansion-panel *ngFor="let panel of activityPanels">
+        <mat-expansion-panel-header>
+          <mat-panel-title><mat-icon class="drawer-panel-icon">{{panel.icon}}</mat-icon>{{panel.title}}</mat-panel-title>
+          <mat-panel-description class="drawer-panel-count"><span class="drawer-count">{{activitiesOf(panel.type).length}}</span></mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="drawer-list">
+          <button class="drawer-item drawer-create" (click)="createActivity(panel.type)" [disabled]="subscription === 'LITE' || subscription === 'FREE'"><mat-icon>add</mat-icon><span class="drawer-item-name">{{panel.create}}</span></button>
+
+          <div class="drawer-activity" *ngFor="let activity of activitiesOf(panel.type); trackBy: trackById">
+            <button class="drawer-item" (click)="editActivity(activity)">
+              <mat-icon>{{panel.icon}}</mat-icon><span class="drawer-item-name">{{activity.name}}</span>
+              <span class="drawer-chip drawer-chip-processing" *ngIf="!activity.hhReady">Processing</span>
+            </button>
+            <div class="drawer-actions">
+              <button mat-icon-button matTooltip="Edit" [attr.aria-label]="'Edit ' + activity.name" (click)="editActivity(activity)"><mat-icon>edit</mat-icon></button>
+              <button mat-icon-button matTooltip="Report" [attr.aria-label]="'Report for ' + activity.name" (click)="openActivityReport(activity)"><mat-icon>insert_chart</mat-icon></button>
+            </div>
+          </div>
+
+          <div class="drawer-empty" *ngIf="!activitiesOf(panel.type).length">No active {{panel.title | lowercase}}</div>
+          <button class="drawer-item drawer-footer" (click)="enterActivityDashboard(panel.type)"><mat-icon>dashboard</mat-icon><span class="drawer-item-name">{{panel.title}} dashboard</span></button>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </mat-drawer>
+  <mat-drawer-content>
+    <div style="height:calc(100vh - 150px)" leaflet
+      [leafletOptions]="options" 
+      (leafletMapReady)="onMapReady($event)"
+      [leafletLayersControl]="layersControl" 
+      [leafletCenter]="center"
+      [(leafletZoom)]="zoom"                             
+      leafletDraw
+      (leafletDrawReady)="onDrawReady($event)"
+      [leafletDrawOptions]="drawOptions"
+      (leafletDrawCreated)="drawCreated($event)"
+      (leafletDrawEdited)='drawEdited($event)'
+      (leafletMapMoveStart)="mapStart($event)"
+      (leafletMapMoveEnd)="mapMoved($event)">
+      <div [leafletLayer]="drawnItems"></div>
+      <div [leafletLayer]="polygons"></div>
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>
+

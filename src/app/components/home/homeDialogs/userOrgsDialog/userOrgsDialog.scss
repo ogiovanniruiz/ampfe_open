@@ -1,0 +1,108 @@
+// The whole row switches organizations
+.uo-row {
+  cursor: pointer;
+  flex-wrap: nowrap;
+
+  &:focus-visible {
+    outline: 2px solid #3f51b5;
+    outline-offset: -2px;
+  }
+}
+
+.uo-row-busy {
+  cursor: default;
+  pointer-events: none;
+}
+
+.uo-row-current {
+  background: rgba(63, 81, 181, 0.05);
+}
+
+.uo-icon {
+  flex: 0 0 auto;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.uo-row-current .uo-icon {
+  color: #3f51b5;
+}
+
+.uo-chip-current {
+  background: rgba(46, 125, 50, 0.12);
+  color: #2e7d32;
+}
+
+.uo-enter {
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  color: #3f51b5;
+}
+
+.uo-chevron {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+// Non-developers have one tab; hide the tab header
+.uo-single-tab ::ng-deep .mat-mdc-tab-header,
+.uo-single-tab ::ng-deep .mat-mdc-tab-header {
+  display: none;
+}
+
+.uo-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+// Phones: Home opens dialogs full width, so give the name the room
+@media (max-width: 600px) {
+  .uo-row {
+    gap: 10px;
+    padding: 12px 10px;
+  }
+
+  // The shared row styles stretch actions to a full line on phones; these rows stay on one line
+  .uo-row .og-row-actions {
+    width: auto;
+  }
+
+  .og-row-text {
+    flex-basis: 0;
+  }
+
+  .og-preview {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .uo-enter-label {
+    display: none;
+  }
+
+  .uo-chevron {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+
+  // Request on top, Close under it
+  .uo-actions {
+    flex-direction: column;
+    align-items: stretch;
+
+    .spacer {
+      display: none;
+    }
+
+    button {
+      width: 100%;
+      margin-left: 0 !important;
+    }
+  }
+}

@@ -1,0 +1,94 @@
+<div class="ge-header">
+  <div class="ge-heading">
+    <h2 mat-dialog-title class="ge-title">Merge tags</h2>
+    <div class="ge-subtitle">Combine two or more tags under one name.</div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="saving" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ge-banner" *ngIf="errorMessage" role="alert">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-progress-bar *ngIf="saving" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-content class="ge-content">
+
+  <!-- RESULT -->
+  <div class="bt-done" *ngIf="result; else picker" role="status">
+    <mat-icon>check_circle</mat-icon>
+    <span>
+      Merged {{mergedCount}} tags into “{{result.tag}}”:
+      {{result.members}} {{result.members === 1 ? 'member' : 'members'}}<ng-container *ngIf="result.groups">, {{result.groups}} saved {{result.groups === 1 ? 'group' : 'groups'}} updated</ng-container>.
+    </span>
+  </div>
+
+  <ng-template #picker>
+    <!-- TAGS -->
+    <section class="ge-section">
+      <div class="ge-section-header">
+        <span class="ge-section-title">Tags to merge</span>
+        <span class="bt-count" *ngIf="selected.size">{{selected.size}} selected</span>
+      </div>
+
+      <mat-form-field appearance="outline" class="bt-filter" *ngIf="data.tags.length > 6">
+        <mat-label>Filter tags</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput [(ngModel)]="filter" autocomplete="off">
+        <button mat-icon-button matSuffix *ngIf="filter" matTooltip="Clear" (click)="filter = ''"><mat-icon>close</mat-icon></button>
+      </mat-form-field>
+
+      <div class="bt-options" *ngIf="visibleTags.length">
+        <div class="bt-option" *ngFor="let tag of visibleTags; trackBy: trackTag">
+          <mat-checkbox color="primary" [checked]="selected.has(tag)" (change)="toggle(tag, $event.checked)">
+            <span class="bt-label" [title]="tag">{{tag}}</span>
+          </mat-checkbox>
+        </div>
+      </div>
+      <div class="bt-empty" *ngIf="!data.tags.length">There are no tags yet.</div>
+      <div class="bt-empty" *ngIf="data.tags.length && !visibleTags.length">No tags match “{{filter}}”.</div>
+    </section>
+
+    <!-- NEW NAME -->
+    <section class="ge-section">
+      <mat-form-field appearance="outline" class="bt-tag">
+        <mat-label>Merged tag name</mat-label>
+        <mat-icon matPrefix>sell</mat-icon>
+        <input matInput [(ngModel)]="newTag" (ngModelChange)="confirming = false" [matAutocomplete]="tagAuto" autocomplete="off" required>
+        <mat-autocomplete #tagAuto="matAutocomplete">
+          <mat-optgroup label="Selected tags" *ngIf="selectedSuggestions.length">
+            <mat-option *ngFor="let option of selectedSuggestions" [value]="option">{{option}}</mat-option>
+          </mat-optgroup>
+          <mat-optgroup label="All other tags" *ngIf="otherSuggestions.length">
+            <mat-option *ngFor="let option of otherSuggestions" [value]="option">{{option}}</mat-option>
+          </mat-optgroup>
+        </mat-autocomplete>
+        <mat-hint *ngIf="tagName && existingTag && selected.has(existingTag)">Keeps the existing tag “{{existingTag}}”</mat-hint>
+        <mat-hint *ngIf="tagName && existingTag && !selected.has(existingTag)" class="ge-error">“{{existingTag}}” already exists; these tags will be merged into it</mat-hint>
+        <mat-hint *ngIf="tagName && !existingTag" class="bt-hint-new">New tag</mat-hint>
+      </mat-form-field>
+    </section>
+
+    <div class="ge-note" *ngIf="canMerge">
+      {{selected.size}} tags → “{{targetName}}”. The old tags will be removed from members, the tag list and saved groups.
+    </div>
+  </ng-template>
+</mat-dialog-content>
+
+<mat-dialog-actions class="ge-actions">
+  <ng-container *ngIf="!result; else doneActions">
+    <span class="spacer"></span>
+    <button mat-button [disabled]="saving" (click)="confirming ? confirming = false : close()">{{confirming ? 'Back' : 'Cancel'}}</button>
+    <button mat-raised-button [color]="confirming ? 'warn' : 'primary'" [disabled]="!canMerge || saving" (click)="merge()">
+      <mat-icon>merge</mat-icon> {{saving ? 'Merging…' : (confirming ? 'Confirm merge' : 'Merge tags')}}
+    </button>
+  </ng-container>
+  <ng-template #doneActions>
+    <span class="spacer"></span>
+    <button mat-raised-button color="primary" (click)="close()">Done</button>
+  </ng-template>
+</mat-dialog-actions>

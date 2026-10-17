@@ -1,0 +1,73 @@
+<mat-toolbar color="primary">
+    <div class="menu-font" *ngIf ="(this.router.url != '/' && this.router.url != '/passwordreset' && this.router.url != '/register')" >
+        <button mat-button (click)="goToHome()">
+            <img *ngIf="screenSize === '50%'" width="90" height="20" src="../../../assets/amplify_inv.png">
+            <img *ngIf="screenSize != '50%'" width="20" height="20" src="../../../favicon.ico">
+        </button>
+        <button mat-button (click)="goBack()" *ngIf ="(this.router.url != '/home')">
+            <mat-icon>reply</mat-icon>
+            <b *ngIf="screenSize === '50%'">Back</b>
+        </button>
+        <button mat-button (click)="openContactDialog()" matTooltip="Customer Service" aria-label="Customer Service">
+            <mat-icon>error_outline</mat-icon>
+            <menu-font *ngIf="screenSize === '50%'">Customer Service</menu-font>
+        </button> 
+        <a href="https://ampdocs.p64.io" target="_blank" mat-button>
+            <mat-icon>my_library_books</mat-icon>
+            <menu-font *ngIf="screenSize === '50%'">Tutorials</menu-font>
+        </a>
+        <button mat-button (click)="openUserProfileDialog()">
+            <mat-icon>account_circle</mat-icon>
+            <menu-font *ngIf="screenSize === '50%'">User Profile</menu-font>
+        </button>
+    </div>
+
+    <span class="spacer"></span>
+    <!--
+    <button mat-button *ngIf ="(this.router.url === '/')" [disabled]='loadingMap' [matMenuTriggerFor]="precCountyMenu">
+        <mat-icon>map</mat-icon>
+        <menu-font *ngIf="screenSize === '50%'">Layers</menu-font>
+    </button> -->
+
+
+    <button mat-button (click)="openLoginDialog()" [disabled]='loadingMap' *ngIf ="(this.router.url === '/')" >
+        <mat-icon>login</mat-icon>
+        <menu-font>Log In To Amplify</menu-font>
+    </button> 
+
+    <button mat-button (click)="logOff()" *ngIf ="(this.router.url != '/' && this.router.url != '/passwordreset' && this.router.url != '/register')" >
+        <mat-icon>logout</mat-icon>
+        <menu-font *ngIf="screenSize === '50%'">Log Off</menu-font>
+    </button> 
+
+</mat-toolbar>
+
+<div style="height: calc(100vh - 64px)">
+    <body style="height: 100%">
+        <mat-progress-bar mode="indeterminate" *ngIf="loadingMap"></mat-progress-bar>
+        <div *ngIf="this.router.url === '/' || this.router.url.includes('dir')" #container style="height:calc(100vh - 87px)" 
+            leaflet 
+            [leafletOptions]="options"
+            [leafletCenter]="center"
+            (leafletMapReady)="onMapReady($event)"
+            [leafletLayersControl]="layersControl"
+            >
+        </div>
+        <router-outlet></router-outlet>
+        <br>
+    </body>
+</div>
+<mat-menu #precCountyMenu="matMenu">
+    <button mat-menu-item [disabled]='election2022LayerLoaded' (click)="loadElectionPrecincts('RIVERSIDE', '2022')">
+        <mat-icon>map</mat-icon>
+        <span >Electoral Riverside 2022</span>
+    </button> 
+    <button mat-menu-item [disabled]='election2020LayerLoaded' (click)="loadElectionPrecincts('RIVERSIDE', '2020')">
+        <mat-icon>map</mat-icon>
+        <span >Electoral Riverside 2020</span>
+    </button> 
+    <button mat-menu-item [disabled]='registrationLayerLoaded' (click)="loadRegistrationPrecincts('RIVERSIDE')">
+        <mat-icon>map</mat-icon>
+      <span>Registration Riverside</span>
+    </button> 
+</mat-menu>

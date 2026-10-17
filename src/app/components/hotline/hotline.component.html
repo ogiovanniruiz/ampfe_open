@@ -1,0 +1,37 @@
+<div style="display: none;">
+  <video id="localVideo" autoplay="true"></video>
+  <video id="remoteVideo" autoplay="true"></video>
+</div>
+<mat-toolbar >
+  <button mat-icon-button (click)="drawer.toggle();"><mat-icon>menu</mat-icon></button>
+  <button mat-raised-button color="warn" (click)="createIncident([])">CREATE INCIDENT</button>
+
+  <span class="spacer"></span>
+  <mat-slide-toggle style="margin: 10px" [checked]="onDuty"  [disabled]="!dispatcherAccount" (click)="toggleOnDuty(!toggle.checked)" #toggle>On Duty</mat-slide-toggle>
+</mat-toolbar>
+<mat-drawer-container class="example-container" [hasBackdrop]="false">
+    <mat-drawer #drawer [mode]="'push'" opened>
+        <mat-list >
+          <mat-list-item>Main Menu</mat-list-item>            
+            <button mat-menu-item (click)="openCallsDialog()"><mat-icon>call</mat-icon><span>Calls</span></button>
+            <button mat-menu-item (click)="openIncidentsDialog()"><mat-icon>place</mat-icon><span>Incidents</span></button>
+            <mat-list-item>Messaging</mat-list-item>
+            <button mat-menu-item (click)="openMessagesDialog()"><mat-icon>sms</mat-icon><span>Messages</span></button>
+            <mat-list-item>People</mat-list-item>
+            <button mat-menu-item (click)='openContactsDialog()'><mat-icon>contacts</mat-icon><span>Contacts</span></button>
+            <button mat-menu-item (click)="openDispatchersDialog()"><mat-icon>ring_volume</mat-icon><span>Dispatchers</span></button>
+            <button mat-menu-item (click)="openRespondersDialog()"><mat-icon>flag</mat-icon><span>Responders</span></button>
+
+        </mat-list>
+    </mat-drawer>
+    <mat-drawer-content>
+      <div style="height:calc(100vh - 150px)" 
+      leaflet 
+      [leafletOptions]="options" 
+      (leafletMapReady)="onMapReady($event)" 
+      leafletDraw
+      [leafletDrawOptions]="drawOptions"
+      (leafletDrawCreated)="onDrawCreated($event)"
+      ></div>
+  </mat-drawer-content>
+</mat-drawer-container>

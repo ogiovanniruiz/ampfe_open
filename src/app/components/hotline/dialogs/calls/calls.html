@@ -1,0 +1,66 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel"  (click)="return();"><mat-icon>close</mat-icon></button>
+
+<h1 mat-dialog-title class="block-title"><b>Calls</b></h1>
+<mat-dialog-content>
+    <table style=" margin:auto;" mat-table [dataSource]="calls" >
+              
+        <ng-container matColumnDef="contact">
+          <th mat-header-cell *matHeaderCellDef> CONTACT </th>
+          <td mat-cell *matCellDef="let element"> {{element.contact}} </td>
+        </ng-container>
+      
+        <ng-container matColumnDef="phonenumber">
+          <th mat-header-cell *matHeaderCellDef> REMOTE PHONE NUMBER </th>
+          <td mat-cell *matCellDef="let element"> {{element.remote_phonenumber}} </td>
+        </ng-container>
+      
+        <ng-container matColumnDef="direction">
+          <th mat-header-cell *matHeaderCellDef> DIRECTION </th>
+          <td mat-cell *matCellDef="let element"> {{element.direction}} </td>
+        </ng-container>
+      
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef> STATUS </th>
+          <td mat-cell *matCellDef="let element"> {{element.call_status}} </td>
+        </ng-container>
+
+        <!--
+        <ng-container matColumnDef="operator_name">
+          <th mat-header-cell *matHeaderCellDef> OPERATOR NAME</th>
+          <td mat-cell *matCellDef="let element"> {{element.dispatcher_name.fullName}} </td>
+        </ng-container>-->
+
+        <ng-container matColumnDef="operator_phonenumber">
+            <th mat-header-cell *matHeaderCellDef> OPERATOR PHONENUMBER</th>
+            <td mat-cell *matCellDef="let element"> {{element.dispatcher_phonenumber}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="location">
+            <th mat-header-cell *matHeaderCellDef> LOCATION </th>
+            <td mat-cell *matCellDef="let element"> {{element.location}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="created_on">
+            <th mat-header-cell *matHeaderCellDef> CREATED ON </th>
+            <td mat-cell *matCellDef="let element"> {{element.date_created}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="call_back">
+          <th mat-header-cell *matHeaderCellDef> CALL DETAIL </th>
+          <td mat-cell *matCellDef="let element"> <button mat-icon-button [disabled]='!dev'(click)="openCallDialog(element)"><mat-icon>more_vert</mat-icon></button> </td>
+        </ng-container>
+        <!--
+
+        <ng-container matColumnDef="recording">
+          <th mat-header-cell *matHeaderCellDef> Recording</th>
+          <td mat-cell *matCellDef="let element"> <button mat-icon-button color="warn" [disabled]='!dev'(click)="getHotlineRecording(element)"><mat-icon>album</mat-icon></button> </td>
+
+        </ng-container>-->
+      
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+</mat-dialog-content>
+<mat-dialog-actions  >
+</mat-dialog-actions>

@@ -1,0 +1,114 @@
+<div class="ge-header">
+  <div class="ge-heading">
+    <h2 mat-dialog-title class="ge-title">Edit group</h2>
+    <div class="ge-subtitle">
+      <span class="ge-subtitle-name">{{group.name}}</span>
+      <span class="ge-chip ge-chip-groupby">{{groupByLabel}}</span>
+      <span class="ge-chip ge-chip-wide" *ngIf="group.campaignWide">Campaign-wide</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button [matTooltip]="'Copy group ID: ' + group._id" (click)="copyID()"><mat-icon>content_copy</mat-icon></button>
+  <button mat-icon-button matTooltip="Close" [disabled]="busy" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ge-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="ge-content">
+
+  <div class="ge-readonly" *ngIf="!canEdit">
+    <mat-icon inline>lock</mat-icon>
+    <span>Created by another organization. You can view it and get an estimate, but only its organization or a campaign data manager can change it.</span>
+  </div>
+
+  <!-- DETAILS -->
+  <section class="ge-section">
+    <mat-form-field appearance="outline" class="ge-name">
+      <mat-label>Group name</mat-label>
+      <input matInput [(ngModel)]="name" (ngModelChange)="nameError = ''" (keyup.enter)="save()" [readonly]="!canEdit" required autocomplete="off">
+      <mat-hint class="ge-error" *ngIf="nameError">{{nameError}}</mat-hint>
+    </mat-form-field>
+
+    <div class="ge-toggle" [matTooltip]="canSetCampaignWide ? '' : 'Only developers and campaign data managers can change this'">
+      <mat-slide-toggle color="primary" [(ngModel)]="campaignWide" [disabled]="!canEdit || !canSetCampaignWide">Campaign-wide</mat-slide-toggle>
+      <span class="ge-help">Visible to every organization in this campaign.</span>
+    </div>
+  </section>
+
+  <!-- FILTERS -->
+  <section class="ge-section">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Filters</span>
+      <span class="ge-section-sub">{{filterCount ? filterCount + (filterCount === 1 ? ' filter' : ' filters') : 'No filters'}} · {{groupByLabel}}</span>
+    </div>
+
+    <div class="ge-filters" *ngIf="sections.length; else noFilters">
+      <div class="ge-filter-group" *ngFor="let section of sections">
+        <div class="ge-filter-group-title">{{section.title}}</div>
+        <div class="ge-filter" *ngFor="let filter of section.filters">
+          <div class="ge-filter-label">{{filter.label}}</div>
+          <div class="ge-filter-values">
+            <span class="ge-value" *ngFor="let value of visibleValues(filter.key, filter.values)">{{value}}</span>
+            <button type="button" class="ge-more" *ngIf="hiddenCount(filter.key, filter.values) > 0" (click)="toggleExpanded(filter.key)">+{{hiddenCount(filter.key, filter.values)}} more</button>
+            <button type="button" class="ge-more" *ngIf="expandedFilters.has(filter.key)" (click)="toggleExpanded(filter.key)">Show less</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ng-template #noFilters>
+      <div class="ge-empty">This group has no filters, so it includes everyone in the campaign{{campaignWide ? '' : ' your organization can reach'}}.</div>
+    </ng-template>
+
+    <div class="ge-note">
+      <mat-icon inline>info</mat-icon>
+      <span>Filters can't be changed after a group is created. To target different people, create a new group.</span>
+    </div>
+  </section>
+
+  <!-- ESTIMATE -->
+  <section class="ge-section">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Estimate</span>
+      <span class="ge-section-sub" *ngIf="estimateResults">{{estimateIsSaved ? 'Saved estimate' : 'Just calculated'}}</span>
+      <span class="spacer"></span>
+      <button mat-stroked-button color="primary" [disabled]="estimating" (click)="getEstimate()">
+        <mat-icon>{{estimateResults ? 'refresh' : 'calculate'}}</mat-icon> {{estimateResults ? 'Refresh' : 'Get estimate'}}
+      </button>
+    </div>
+
+    <div class="ge-tiles" [class.ge-tiles-loading]="estimating">
+      <div class="ge-tile">
+        <div class="ge-tile-label">Households</div>
+        <div class="ge-tile-value">{{estimateResults ? (estimateResults.totalHHs | number) : '—'}}</div>
+      </div>
+      <div class="ge-tile">
+        <div class="ge-tile-label">Residents</div>
+        <div class="ge-tile-value">{{estimateResults ? (estimateResults.totalResidents | number) : '—'}}</div>
+      </div>
+      <div class="ge-tile">
+        <div class="ge-tile-label">Phones</div>
+        <div class="ge-tile-value">{{estimateResults ? (estimateResults.totalPhones | number) : '—'}}</div>
+      </div>
+      <div class="ge-tile" matTooltip="Phones minus landlines and numbers that failed before. This is about how many residents a textbank will get.">
+        <div class="ge-tile-label">Textable</div>
+        <div class="ge-tile-value">{{estimateResults?.totalTextable != null ? (estimateResults.totalTextable | number) : '—'}}</div>
+      </div>
+      <div class="ge-tiles-spinner" *ngIf="estimating"><mat-spinner diameter="28"></mat-spinner></div>
+    </div>
+  </section>
+</mat-dialog-content>
+
+<mat-progress-bar *ngIf="busy" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-actions class="ge-actions">
+  <button mat-button color="warn" *ngIf="canEdit" [disabled]="busy" (click)="archiveGroup()"><mat-icon>archive</mat-icon> Archive group</button>
+  <span class="spacer"></span>
+  <span class="ge-unsaved" *ngIf="hasChanges && !saving">Unsaved changes</span>
+  <button mat-button [disabled]="busy" (click)="close()">{{hasChanges ? 'Cancel' : 'Close'}}</button>
+  <button mat-raised-button color="primary" *ngIf="canEdit" [disabled]="!canSave" (click)="save()">Save changes</button>
+</mat-dialog-actions>

@@ -1,0 +1,27 @@
+<div class="sd-header">
+  <h2 mat-dialog-title class="sd-title">Find a precinct</h2>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" (click)="cancel()"><mat-icon>close</mat-icon></button>
+</div>
+<p class="sd-hint">Outlines a registration precinct on the map and zooms to it.</p>
+
+<mat-dialog-content class="sd-content">
+  <mat-form-field appearance="outline" class="sd-field">
+    <mat-label>Precinct ID</mat-label>
+    <mat-icon matPrefix>grid_on</mat-icon>
+    <input matInput [(ngModel)]="precinctID" autocomplete="off" (keyup.enter)="search()">
+  </mat-form-field>
+
+  <div class="sd-banner" *ngIf="errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{errorMessage}}</span>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="sd-actions" align="end">
+  <span class="spacer"></span>
+  <button mat-raised-button color="primary" [disabled]="searching" (click)="search()">
+    <mat-spinner *ngIf="searching" diameter="16" class="sd-button-spinner"></mat-spinner>
+    <mat-icon *ngIf="!searching">search</mat-icon> Search
+  </button>
+</mat-dialog-actions>

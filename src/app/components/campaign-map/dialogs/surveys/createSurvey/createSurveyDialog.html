@@ -1,0 +1,33 @@
+<div class="sv-header">
+  <div class="sv-heading">
+    <h2 mat-dialog-title class="sv-title">New survey</h2>
+    <div class="sv-subtitle">The questions volunteers ask in this campaign's activities</div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" (click)="return();"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="sv-content">
+  <mat-form-field appearance="outline" class="sv-name">
+    <mat-label>Survey name</mat-label>
+    <input matInput [(ngModel)]="name" required autocomplete="off" placeholder="e.g. Fall canvass">
+  </mat-form-field>
+
+  <app-survey-questions-editor [questions]="questions" [campaignOrgs]="campaignOrgs"></app-survey-questions-editor>
+
+
+  <div class="sv-banner" *ngIf="errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{errorMessage}}</span>
+  </div>
+</mat-dialog-content>
+
+<mat-progress-bar *ngIf="saving" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-actions class="sv-actions">
+  <span class="sv-summary">{{questions.length}} {{questions.length === 1 ? 'question' : 'questions'}}<ng-container *ngIf="validationSummary"> · {{validationSummary}}</ng-container></span>
+  <span class="spacer"></span>
+  <button mat-button [disabled]="saving || !isDirty" (click)="clear()">Clear</button>
+  <button mat-button (click)="return()">Cancel</button>
+  <button mat-raised-button color="primary" [disabled]="saving || !valid" (click)="createSurvey()">Create survey</button>
+</mat-dialog-actions>

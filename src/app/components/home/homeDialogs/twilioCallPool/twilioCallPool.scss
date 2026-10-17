@@ -1,0 +1,213 @@
+.cp-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.cp-title {
+  margin: 0 !important;
+  font-weight: 600;
+}
+
+.cp-summary {
+  margin-top: 2px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.cp-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 4px 4px 4px 12px;
+  border-radius: 8px;
+  background: #fdecea;
+  color: #b71c1c;
+  font-size: 14px;
+}
+
+.cp-content {
+  padding-top: 12px !important;
+}
+
+// Buy row
+.cp-buy {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0 12px;
+  padding: 12px 12px 0;
+  margin-bottom: 12px;
+  background: #f6f7f9;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+}
+
+.cp-areacode {
+  width: 140px;
+}
+
+.cp-quantity {
+  width: 110px;
+}
+
+.cp-buy-button {
+  margin-top: 8px;
+}
+
+.cp-hint-error {
+  color: #c62828;
+}
+
+// Number rows
+.cp-list {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cp-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 8px 12px 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:nth-child(even) {
+    background: rgba(0, 0, 0, 0.015);
+  }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.035);
+  }
+}
+
+.cp-row-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.cp-number-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cp-index {
+  min-width: 20px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  font-variant-numeric: tabular-nums;
+}
+
+.cp-number {
+  font-size: 16px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.cp-chip {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.cp-chip-available {
+  background: rgba(76, 175, 80, 0.15);
+  color: #2e7d32;
+}
+
+.cp-chip-inUse {
+  background: rgba(255, 152, 0, 0.18);
+  color: #a15c00;
+}
+
+.cp-chip-notInPool {
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.cp-meta {
+  margin: 4px 0 0 28px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.cp-compliance {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 6px 0 0 28px;
+}
+
+.cp-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  color: #b26a00;
+  cursor: default;
+}
+
+.cp-check-ok {
+  color: #2e7d32;
+}
+
+.cp-row-menu {
+  flex: 0 0 auto;
+}
+
+.cp-danger {
+  color: #c62828;
+}
+
+.cp-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 40px 16px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.6);
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    opacity: 0.6;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.cp-empty-small {
+  padding: 24px 16px;
+}
+
+.cp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .cp-meta,
+  .cp-compliance {
+    margin-left: 0;
+  }
+
+  .cp-areacode {
+    flex: 1;
+    width: auto;
+  }
+}

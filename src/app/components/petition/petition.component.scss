@@ -1,0 +1,181 @@
+// Card and form styles come from the register page (rg-*), survey questions from the canvass
+// household dialog (hh-*) and banners/chips from the shared dialog styles (ge-*); see styleUrls.
+
+// A little wider than the register card: the petition has more fields per row
+.pt-card {
+  max-width: 640px;
+}
+
+.pt-header-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+}
+
+.pt-org-logo {
+  flex-shrink: 0;
+  width: auto;
+  height: 44px;
+  max-width: 140px;
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+.pt-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(25, 49, 85, 0.08);
+  color: #193155;
+}
+
+.pt-heading {
+  flex: 1;
+  min-width: 0;
+
+  .rg-title {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .rg-subtitle {
+    margin-top: 2px;
+  }
+}
+
+.pt-prefix {
+  margin-right: 4px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.pt-text {
+  margin: -4px 0 8px;
+}
+
+// Consent choices as tappable cards (same look as the opt-in sheet)
+.pt-consents {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.pt-consent {
+  padding: 10px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  ::ng-deep .mdc-form-field {
+    align-items: flex-start;
+  }
+  ::ng-deep .mdc-form-field > label,
+  ::ng-deep .mdc-form-field > .mat-internal-form-field-label {
+    white-space: normal;
+    padding-top: 10px;
+  }
+}
+
+.pt-consent-checked {
+  border-color: #193155;
+  background: rgba(25, 49, 85, 0.05);
+}
+
+.pt-consent-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.pt-consent-help {
+  display: block;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.pt-section-title {
+  margin: 8px 0 6px;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pt-grid {
+  display: grid;
+  gap: 0 12px;
+
+  mat-form-field {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+.pt-names {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.pt-contact {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+// Street address spans the row; city and zip share the next one
+.pt-address {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+
+  .pt-address-line {
+    grid-column: 1 / -1;
+  }
+}
+
+.pt-zip-only {
+  grid-template-columns: minmax(0, 200px);
+}
+
+.pt-questions {
+  margin-top: 4px;
+}
+
+.pt-saved {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(46, 125, 50, 0.1);
+  color: #1b5e20;
+  font-size: 14px;
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .pt-org-logo {
+    max-width: 110px;
+  }
+
+  .pt-names,
+  .pt-contact,
+  .pt-address {
+    grid-template-columns: 1fr;
+  }
+
+  .pt-zip-only,
+  .pt-consents {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pt-tags {
+  margin-top: 12px;
+}

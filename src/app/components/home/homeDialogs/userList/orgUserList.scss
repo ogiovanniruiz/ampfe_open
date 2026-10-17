@@ -1,0 +1,278 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.ul-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ul-heading {
+  min-width: 0;
+}
+
+.ul-title {
+  margin: 0 !important;
+  font-weight: 600;
+}
+
+.ul-subtitle {
+  margin-top: 2px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+  overflow-wrap: anywhere;
+}
+
+.ul-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 4px 4px 4px 12px;
+  border-radius: 8px;
+  background: #fdecea;
+  color: #b71c1c;
+  font-size: 14px;
+}
+
+.ul-search {
+  width: 100%;
+  margin-top: 12px;
+
+  mat-icon[matPrefix] {
+    margin-right: 6px;
+    color: rgba(0, 0, 0, 0.5);
+  }
+}
+
+.ul-content {
+  max-height: 65vh;
+}
+
+.ul-tab {
+  padding: 16px 2px 8px;
+}
+
+.ul-tab-count {
+  margin-left: 6px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #c62828;
+  color: #fff;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.ul-list {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.ul-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.ul-row-me {
+  background: rgba(63, 81, 181, 0.04);
+}
+
+.ul-avatar {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(63, 81, 181, 0.14);
+  color: #303f9f;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.ul-avatar-waiting {
+  background: rgba(255, 152, 0, 0.18);
+  color: #8a5300;
+}
+
+.ul-person {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ul-name {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.ul-name-text,
+.ul-email {
+  overflow-wrap: anywhere;
+}
+
+.ul-email {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.ul-row-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ul-level {
+  padding: 0 4px 0 12px;
+
+  mat-icon {
+    margin-left: 2px;
+  }
+}
+
+.ul-chip {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  background: rgba(0, 0, 0, 0.07);
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.ul-chip-owner {
+  background: rgba(63, 81, 181, 0.12);
+  color: #3f51b5;
+}
+
+.ul-chip-administrator {
+  background: rgba(0, 137, 123, 0.12);
+  color: #00695c;
+}
+
+.ul-chip-you {
+  padding: 1px 8px;
+  font-size: 11px;
+  background: rgba(46, 125, 50, 0.12);
+  color: #2e7d32;
+}
+
+.ul-chip-waiting {
+  background: rgba(255, 152, 0, 0.16);
+  color: #8a5300;
+}
+
+// Approve + role menu, joined like a split button
+.ul-split {
+  display: inline-flex;
+
+  .ul-approve {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .ul-approve-more {
+    min-width: 0;
+    padding: 0 4px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.4);
+  }
+}
+
+.ul-menu-remove {
+  color: #c62828;
+}
+
+.ul-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 32px 16px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.55);
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    opacity: 0.6;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+// Phones: buttons drop under the name, aligned with it; a plain role tag stays beside it
+@media (max-width: 600px) {
+  .ul-row {
+    gap: 8px 12px;
+    padding: 10px 12px;
+  }
+
+  .ul-row-wrap {
+    flex-wrap: wrap;
+
+    .ul-person {
+      flex-basis: calc(100% - 48px);
+    }
+
+    // border-box: the 48px indent counts inside the 100% width instead of pushing the buttons off-screen
+    .ul-row-actions {
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 100%;
+      padding-left: 48px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+  }
+
+  .ul-row {
+    min-width: 0;
+  }
+}
+
+// Very narrow phones: no indent, so Decline + Approve fit side by side
+@media (max-width: 360px) {
+  .ul-row-wrap .ul-row-actions {
+    padding-left: 0;
+  }
+}
+
+// Role menus: the Owner item explains why it's unavailable
+.ul-menu-level.mat-mdc-menu-item {
+  height: auto;
+  min-height: 48px;
+  line-height: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.ul-menu-text {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0;
+}
+
+.ul-menu-caption {
+  font-size: 12px;
+  line-height: 16px;
+  color: rgba(0, 0, 0, 0.5);
+}

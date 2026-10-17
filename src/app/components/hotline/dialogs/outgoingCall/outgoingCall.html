@@ -1,0 +1,27 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel" [disabled]="inCall" (click)="return();"><mat-icon>close</mat-icon></button>
+
+<h1 mat-dialog-title class="block-title" ><b>Call Details</b></h1>
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+<mat-dialog-content>
+    STATUS: {{status}}
+    <br>
+    PHONE NUMBER: {{previousCall.remote_phonenumber}}
+    <mat-expansion-panel>
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            <b>Call Details</b>
+        </mat-panel-title>
+        <mat-panel-description>
+        </mat-panel-description>
+    </mat-expansion-panel-header>
+    <mat-form-field  class="dialog-element-long"> 
+        <mat-label>Notes</mat-label>
+        <input matInput #notes type="name">
+    </mat-form-field>
+    <button mat-icon-button (click)="saveCallNotes()"><mat-icon>save</mat-icon></button>
+    </mat-expansion-panel>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-raised-button color="primary" [disabled]="loading" class="dialog-element-long" (click)="call()" *ngIf="!inCall">CALL BACK</button>
+    <button mat-raised-button color="warn" [disabled]="loading" class="dialog-element-long" (click)="endCall()" *ngIf="inCall">End Call</button>
+</mat-dialog-actions>

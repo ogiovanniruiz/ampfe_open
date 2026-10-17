@@ -1,0 +1,109 @@
+<div class="cp-header">
+  <div>
+    <h2 mat-dialog-title class="cp-title">Twilio Calling Pool</h2>
+    <div class="cp-summary" *ngIf="accountExists && rows.length">
+      <b>{{summary.total}}</b> {{summary.total === 1 ? 'number' : 'numbers'}} ·
+      <b>{{summary.available}}</b> available ·
+      <b>{{summary.inUse}}</b> in use
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button *ngIf="accountExists" matTooltip="Refresh" [disabled]="loading" (click)="refreshAll()"><mat-icon>refresh</mat-icon></button>
+  <button mat-icon-button matTooltip="Close" (click)="return();"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
+<div class="cp-banner" *ngIf="displayErrorMsg">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="displayErrorMsg = false"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="cp-content">
+  <!-- No account yet -->
+  <div class="cp-empty" *ngIf="!accountExists && !loading">
+    <mat-icon>phone_disabled</mat-icon>
+    <p>No calling pool exists for this organization.</p>
+    <button mat-raised-button color="primary" *ngIf="user?.dev" (click)="createTwilioAccount()">Create Twilio calling pool</button>
+  </div>
+
+  <ng-container *ngIf="accountExists">
+    <!-- Buy -->
+    <div class="cp-buy">
+      <mat-form-field appearance="outline" class="cp-areacode">
+        <mat-label>Area code</mat-label>
+        <input matInput #areaCode maxlength="3" id="areacode" inputmode="numeric" autocomplete="off" (keyup.enter)="buyPhoneNumber()">
+        <mat-hint class="cp-hint-error" *ngIf="displayMessage">{{userMessage}}</mat-hint>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="cp-quantity">
+        <mat-label>How many</mat-label>
+        <mat-select [(ngModel)]="buyQuantity" [disabled]="loading">
+          <mat-option *ngFor="let quantity of buyQuantities" [value]="quantity">{{quantity}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button mat-raised-button color="primary" class="cp-buy-button" [disabled]="loading" (click)="buyPhoneNumber()">
+        <mat-icon>add_call</mat-icon> {{buyLabel}}
+      </button>
+    </div>
+
+    <!-- Numbers -->
+    <div class="cp-list" *ngIf="rows.length">
+      <div class="cp-row" *ngFor="let row of rows; let i = index; trackBy: trackRow">
+        <div class="cp-row-main">
+          <div class="cp-number-line">
+            <span class="cp-index">{{i + 1}}</span>
+            <span class="cp-number">{{row.formatted}}</span>
+            <span class="cp-chip" [ngClass]="'cp-chip-' + row.status">
+              {{row.status === 'available' ? 'Available' : row.status === 'inUse' ? 'In use' : 'Not in pool'}}
+            </span>
+          </div>
+          <div class="cp-meta">
+            <span>{{row.lastUsed ? ('Last used ' + (row.lastUsed | date:'MMM d, h:mm a')) : 'Never used'}}</span>
+            <span *ngIf="row.numCalls !== null"> · {{row.numCalls | number}} {{row.numCalls === 1 ? 'call' : 'calls'}}</span>
+          </div>
+          <div class="cp-compliance">
+            <span class="cp-check" [class.cp-check-ok]="row.profileSid" [matTooltip]="row.profileSid || 'Not registered'">
+              <mat-icon inline>{{row.profileSid ? 'check_circle' : 'error_outline'}}</mat-icon> Business profile
+            </span>
+            <span class="cp-check" [class.cp-check-ok]="row.shakenSid" [matTooltip]="row.shakenSid || 'Not registered'">
+              <mat-icon inline>{{row.shakenSid ? 'check_circle' : 'error_outline'}}</mat-icon> SHAKEN/STIR
+            </span>
+            <span class="cp-check" [class.cp-check-ok]="row.tegritySid" [matTooltip]="row.tegritySid || 'Not registered'">
+              <mat-icon inline>{{row.tegritySid ? 'check_circle' : 'error_outline'}}</mat-icon> Tegrity
+            </span>
+          </div>
+        </div>
+
+        <button mat-icon-button class="cp-row-menu" [matMenuTriggerFor]="numberMenu" matTooltip="Actions" [disabled]="loading"><mat-icon>more_vert</mat-icon></button>
+        <mat-menu #numberMenu="matMenu" xPosition="before">
+          <button mat-menu-item (click)="forceHangUpTwilioPhonenumber(row.number)">
+            <mat-icon>call_end</mat-icon><span>Force hang up</span>
+          </button>
+          <button mat-menu-item class="cp-danger" (click)="releaseTwilioPhonenumber(row.twilioNumber)">
+            <mat-icon color="warn">delete</mat-icon><span>Delete number</span>
+          </button>
+        </mat-menu>
+      </div>
+    </div>
+
+    <div class="cp-empty cp-empty-small" *ngIf="!rows.length && !loading">
+      <mat-icon>call</mat-icon>
+      <p>No numbers yet. Buy a number to start calling.</p>
+    </div>
+  </ng-container>
+</mat-dialog-content>
+
+<mat-dialog-actions class="cp-actions" *ngIf="accountExists">
+  <button mat-stroked-button *ngIf="user?.dev" [disabled]="loading" (click)="updateTwilioAccount()">
+    <mat-icon>sync</mat-icon> Update Twilio URLs
+  </button>
+  <span class="spacer"></span>
+  <button mat-stroked-button [disabled]="loading || !summary.inUse" matTooltip="Return every in-use number to the pool" (click)="forceHangUpAllTwilioPhonenumbers()">
+    <mat-icon>call_end</mat-icon> Force hang up all
+  </button>
+  <button mat-stroked-button color="warn" [disabled]="loading || !rows.length" (click)="releaseAllTwilioPhonenumbers()">
+    <mat-icon>delete_sweep</mat-icon> Delete all numbers
+  </button>
+</mat-dialog-actions>

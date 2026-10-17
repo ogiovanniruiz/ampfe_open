@@ -1,0 +1,78 @@
+<div class="cv-page">
+    <mat-progress-bar *ngIf="loading" mode='indeterminate' class="cv-loading"></mat-progress-bar>
+    <!-- Loading failed: show why, with Retry, instead of an empty map -->
+    <div class="cv-error-banner" *ngIf="displayErrorMsg && errorMessage" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{errorMessage}}</span>
+        <button mat-button color="primary" (click)="retryLoad()">Retry</button>
+    </div>
+    <div class="inactive-banner" *ngIf="activityInactive">
+        <mat-icon>block</mat-icon>
+        <span>This activity is no longer active. Please contact your administrator for more information.</span>
+    </div>
+
+    <!-- Outside the map so tapping it doesn't drop a household -->
+    <div class="cv-placing-banner" *ngIf="placingHousehold" role="status">
+        <mat-icon>add_home</mat-icon>
+        <span>Tap the map where the household is</span>
+        <button mat-button color="primary" (click)="cancelPlacingHousehold()">Cancel</button>
+    </div>
+
+    <div class="cv-map" leaflet
+        [leafletOptions]="options"
+        (leafletMapReady)="onMapReady($event)"
+        [leafletCenter]="center"
+        [(leafletZoom)]="zoom">
+
+        <!-- Desktop and tablet: panel under the zoom control -->
+        <section class="cv-panel" #mapPanel aria-label="Canvass tools">
+            <div class="cv-name" *ngIf="activity" [title]="activity.name">{{activity.name}}</div>
+
+            <div class="cv-progress" *ngIf="doorsTotal">
+                <div class="cv-progress-track"><div class="cv-progress-fill" [style.width.%]="progressPercent"></div></div>
+                <span class="cv-progress-text">{{doorsDone | number}} of {{doorsTotal | number}} doors done</span>
+            </div>
+
+            <div class="cv-actions">
+                <button mat-stroked-button (click)="openStreetList()" [disabled]="activityInactive"><mat-icon>list</mat-icon> Street list</button>
+                <button mat-stroked-button (click)="reloadMap()" [disabled]="loading"><mat-icon>refresh</mat-icon> {{loading ? 'Loading…' : 'Reload map'}}</button>
+                <button mat-stroked-button class="cv-share" [class.cv-share-on]="sendingReceivingLocations" (click)="toggleSharing()"
+                        [attr.aria-pressed]="sendingReceivingLocations">
+                    <mat-icon>{{sendingReceivingLocations ? 'my_location' : 'location_disabled'}}</mat-icon>
+                    {{sendingReceivingLocations ? 'Sharing location' : 'Share my location'}}
+                </button>
+                <button mat-stroked-button *ngIf="sendingReceivingLocations" (click)="toggleCenteringUserLocation(!keepUserCentered)">
+                    <mat-icon>{{keepUserCentered ? 'gps_off' : 'gps_fixed'}}</mat-icon> {{keepUserCentered ? 'Stop following' : 'Follow me'}}
+                </button>
+                <button mat-stroked-button *ngIf="canDropHousehold" [class.cv-share-on]="placingHousehold" (click)="togglePlacingHousehold()"
+                        [disabled]="loading" [attr.aria-pressed]="placingHousehold">
+                    <mat-icon>add_home</mat-icon> New household
+                </button>
+            </div>
+        </section>
+
+        <!-- Phones: name and progress at the top, actions at the bottom within thumb reach -->
+        <div class="cv-chip" *ngIf="activity">
+            <span class="cv-chip-name">{{activity.name}}</span>
+            <span class="cv-chip-count" *ngIf="doorsTotal">{{doorsDone}}/{{doorsTotal}}</span>
+        </div>
+
+        <nav class="cv-bar" #mapBar aria-label="Canvass tools">
+            <button class="cv-bar-button" (click)="openStreetList()" [disabled]="activityInactive">
+                <mat-icon>list</mat-icon><span>List</span>
+            </button>
+            <button class="cv-bar-button" (click)="reloadMap()" [disabled]="loading">
+                <mat-icon>refresh</mat-icon><span>Reload</span>
+            </button>
+            <button class="cv-bar-button" [class.cv-bar-on]="sendingReceivingLocations" (click)="toggleSharing()" [attr.aria-pressed]="sendingReceivingLocations">
+                <mat-icon>{{sendingReceivingLocations ? 'my_location' : 'location_disabled'}}</mat-icon><span>{{sendingReceivingLocations ? 'Sharing' : 'Location'}}</span>
+            </button>
+            <button class="cv-bar-button" *ngIf="sendingReceivingLocations" [class.cv-bar-on]="keepUserCentered" (click)="toggleCenteringUserLocation(!keepUserCentered)" [attr.aria-pressed]="keepUserCentered">
+                <mat-icon>{{keepUserCentered ? 'gps_off' : 'gps_fixed'}}</mat-icon><span>{{keepUserCentered ? 'Unfollow' : 'Follow'}}</span>
+            </button>
+            <button class="cv-bar-button" *ngIf="canDropHousehold" [class.cv-bar-on]="placingHousehold" (click)="togglePlacingHousehold()" [disabled]="loading" [attr.aria-pressed]="placingHousehold">
+                <mat-icon>add_home</mat-icon><span>New home</span>
+            </button>
+        </nav>
+    </div>
+</div>

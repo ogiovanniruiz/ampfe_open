@@ -1,0 +1,88 @@
+<div class="cp-header">
+  <div>
+    <h2 mat-dialog-title class="cp-title">SignalWire Calling Pool</h2>
+    <div class="cp-summary" *ngIf="accountExists && rows.length">
+      <b>{{summary.total}}</b> {{summary.total === 1 ? 'number' : 'numbers'}} ·
+      <b>{{summary.available}}</b> available ·
+      <b>{{summary.inUse}}</b> in use
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button *ngIf="accountExists" matTooltip="Refresh" [disabled]="loading" (click)="refreshAll()"><mat-icon>refresh</mat-icon></button>
+  <button mat-icon-button matTooltip="Close" (click)="return();"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
+<div class="cp-banner" *ngIf="displayErrorMsg">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="displayErrorMsg = false"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="cp-content">
+  <!-- No account yet -->
+  <div class="cp-empty" *ngIf="!accountExists && !loading">
+    <mat-icon>phone_disabled</mat-icon>
+    <p>No calling pool exists for this organization.</p>
+    <button mat-raised-button color="primary" *ngIf="user?.dev" (click)="createSWAccount()">Create SignalWire calling pool</button>
+  </div>
+
+  <ng-container *ngIf="accountExists">
+    <!-- Buy -->
+    <div class="cp-buy">
+      <mat-form-field appearance="outline" class="cp-areacode">
+        <mat-label>Area code</mat-label>
+        <input matInput #areaCode maxlength="3" id="areacode" inputmode="numeric" autocomplete="off" (keyup.enter)="buyPhonenumber()">
+        <mat-hint class="cp-hint-error" *ngIf="displayMessage">{{userMessage}}</mat-hint>
+      </mat-form-field>
+      <button mat-raised-button color="primary" class="cp-buy-button" [disabled]="loading" (click)="buyPhonenumber()">
+        <mat-icon>add_call</mat-icon> Buy number
+      </button>
+    </div>
+
+    <!-- Numbers -->
+    <div class="cp-list" *ngIf="rows.length">
+      <div class="cp-row" *ngFor="let row of rows; let i = index; trackBy: trackRow">
+        <div class="cp-row-main">
+          <div class="cp-number-line">
+            <span class="cp-index">{{i + 1}}</span>
+            <span class="cp-number">{{row.formatted}}</span>
+            <span class="cp-chip" [ngClass]="'cp-chip-' + row.status">
+              {{row.status === 'available' ? 'Available' : row.status === 'inUse' ? 'In use' : 'Not in pool'}}
+            </span>
+            <span class="cp-chip cp-chip-hotline" *ngIf="row.isHotline">Hotline</span>
+          </div>
+          <div class="cp-meta">
+            <span>{{row.lastUsed ? ('Last used ' + (row.lastUsed | date:'MMM d, h:mm a')) : 'Never used'}}</span>
+            <span *ngIf="row.numCalls !== null"> · {{row.numCalls | number}} {{row.numCalls === 1 ? 'call' : 'calls'}}</span>
+          </div>
+          <mat-form-field appearance="outline" class="cp-textop" *ngIf="textingCampaigns.length">
+            <mat-label>Texting operation</mat-label>
+            <mat-select [value]="row.assignedCampaignID" [disabled]="loading || row.isHotline"
+                        (selectionChange)="assignSWCampaign(row, $event.value)">
+              <mat-option *ngFor="let textingCampaign of textingCampaigns" [value]="textingCampaign.id">{{textingCampaign.name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <button mat-icon-button class="cp-row-menu" [matMenuTriggerFor]="numberMenu" matTooltip="Actions" [disabled]="loading"><mat-icon>more_vert</mat-icon></button>
+        <mat-menu #numberMenu="matMenu" xPosition="before">
+          <button mat-menu-item (click)="forceHangUpSWPhonenumber(row.number)">
+            <mat-icon>call_end</mat-icon><span>Force hang up</span>
+          </button>
+          <button mat-menu-item class="cp-danger" [disabled]="row.isHotline" [matTooltip]="row.isHotline ? 'This is the hotline number' : ''"
+                  (click)="releaseSWPhonenumber(row)">
+            <mat-icon color="warn">delete</mat-icon><span>Delete number</span>
+          </button>
+        </mat-menu>
+      </div>
+    </div>
+
+    <div class="cp-empty cp-empty-small" *ngIf="!rows.length && !loading">
+      <mat-icon>call</mat-icon>
+      <p>No numbers yet. Buy a number to start calling.</p>
+    </div>
+  </ng-container>
+</mat-dialog-content>

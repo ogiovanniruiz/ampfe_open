@@ -1,0 +1,289 @@
+// Same dialog language as the other summaries; bars follow the dataviz rules (one hue, ink text)
+.spacer {
+  flex: 1 1 auto;
+}
+
+.dd-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dd-heading {
+  min-width: 0;
+}
+
+.dd-title {
+  margin: 0 !important;
+  font-weight: 600;
+}
+
+.dd-subtitle {
+  margin-top: 2px;
+  font-size: 13px;
+  color: #52514e;
+}
+
+.dd-picker-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0 16px;
+  margin-top: 12px;
+}
+
+.dd-picker {
+  width: 100%;
+  max-width: 360px;
+}
+
+.dd-updated {
+  font-size: 12px;
+  color: #52514e;
+  margin-bottom: 1.25em;
+}
+
+.dd-loading {
+  padding: 16px 0 8px;
+
+  p {
+    margin: 12px 0 0;
+    font-size: 14px;
+    color: #52514e;
+    text-align: center;
+  }
+}
+
+.dd-content {
+  padding-top: 4px !important;
+}
+
+.dd-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 4px 4px 4px 12px;
+  border-radius: 8px;
+  background: #fdecea;
+  color: #b71c1c;
+  font-size: 14px;
+}
+
+.dd-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 32px 16px;
+  text-align: center;
+  color: #52514e;
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    opacity: 0.6;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+// Stat tiles
+.dd-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.dd-tile {
+  padding: 12px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background: #fcfcfb;
+}
+
+.dd-tile-label {
+  font-size: 13px;
+  color: #52514e;
+}
+
+.dd-tile-value {
+  margin-top: 4px;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #0b0b0b;
+}
+
+.dd-tile-sub {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #52514e;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Cards
+.dd-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 12px;
+}
+
+.dd-card {
+  padding: 14px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background: #fcfcfb;
+  min-width: 0;
+}
+
+.dd-compare {
+  margin-top: 12px;
+}
+
+.dd-card-header {
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+}
+
+.dd-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0b0b0b;
+}
+
+.dd-card-subtitle {
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: #52514e;
+}
+
+.dd-mini-toggle {
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+  }
+  ::ng-deep .mat-button-toggle-label-content {
+    line-height: 28px;
+    padding: 0 8px;
+  }
+}
+
+// Bars
+.dd-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 4px;
+  margin: 0 -4px;
+  border-radius: 6px;
+
+  &:first-of-type {
+    margin-top: 8px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: rgba(0, 0, 0, 0.04);
+    outline: none;
+  }
+}
+
+.dd-bar-label {
+  flex: 0 0 140px;
+  font-size: 13px;
+  color: #52514e;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dd-bar-track {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: #ecebe8;
+  overflow: hidden;
+}
+
+.dd-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 0 4px 4px 0;
+  background: #2a78d6;
+  transition: width 0.3s ease;
+}
+
+.dd-bar-value {
+  flex: 0 0 48px;
+  text-align: right;
+  font-size: 13px;
+  color: #0b0b0b;
+  font-variant-numeric: tabular-nums;
+}
+
+// Tables
+.dd-table {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  th, td {
+    padding: 6px 4px;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    text-align: left;
+  }
+
+  th {
+    font-size: 12px;
+    font-weight: 600;
+    color: #52514e;
+  }
+}
+
+.dd-num {
+  text-align: right !important;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.dd-center {
+  text-align: center !important;
+}
+
+.dd-row-off td:not(.dd-center) {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.dd-clickable {
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: rgba(42, 120, 214, 0.06);
+    outline: none;
+  }
+}
+
+.dd-footnote {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #52514e;
+}
+
+@media (max-width: 600px) {
+  .dd-bar-label {
+    flex-basis: 96px;
+  }
+}

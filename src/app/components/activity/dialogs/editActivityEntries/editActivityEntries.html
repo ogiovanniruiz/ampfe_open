@@ -1,0 +1,212 @@
+<div class="ea-header">
+  <div class="ea-heading">
+    <h2 mat-dialog-title class="ea-title">Edit entries</h2>
+    <div class="ea-subtitle">
+      <span class="ea-subtitle-name">{{activity.name}}</span>
+      <span class="ea-chip ea-chip-type">{{activity.activityType}}</span>
+      <span class="ea-chip ea-chip-pass" *ngIf="!loading || total">{{total | number}} {{total === 1 ? 'entry' : 'entries'}}{{activeFilterCount ? ' found' : ''}}</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" aria-label="Close" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ea-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-button (click)="load()">Retry</button>
+</div>
+
+<mat-dialog-content class="ea-content ea-entries">
+
+  <!-- SEARCH -->
+  <div class="ea-entries-filters">
+    <mat-form-field appearance="outline" class="ea-entries-search">
+      <mat-label>Search voters</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [(ngModel)]="filters.voter" (ngModelChange)="onTextChange()" placeholder="First or last name" autocomplete="off">
+      <button mat-icon-button matSuffix *ngIf="filters.voter" aria-label="Clear search" (click)="filters.voter = ''; search()"><mat-icon>close</mat-icon></button>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="ea-entries-filter">
+      <mat-label>Volunteer</mat-label>
+      <mat-select multiple [(ngModel)]="filters.userIDs" (selectionChange)="search()">
+        <mat-option *ngFor="let user of users" [value]="user._id">{{user.name}} <span class="ea-muted">({{user.count | number}})</span></mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="ea-entries-filter ea-report-date" subscriptSizing="dynamic">
+      <mat-label>Date range</mat-label>
+      <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+        <input matStartDate formControlName="start" placeholder="Start date">
+        <input matEndDate formControlName="end" placeholder="End date" (dateChange)="changeDateRange()">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
+      <button mat-icon-button matSuffix *ngIf="range.value.start || range.value.end" matTooltip="Clear dates" aria-label="Clear dates" (click)="clearDateRange()"><mat-icon>close</mat-icon></button>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+  </div>
+
+  <div class="ea-entries-bar">
+    <mat-button-toggle-group [(ngModel)]="filters.kind" (change)="search()" aria-label="Entry type" class="ea-entries-kind">
+      <mat-button-toggle value="all">All</mat-button-toggle>
+      <mat-button-toggle value="survey">Survey</mat-button-toggle>
+      <mat-button-toggle value="nonresponse" *ngIf="activity.activityType !== 'Petition'">Nonresponse</mat-button-toggle>
+    </mat-button-toggle-group>
+    <button mat-button color="primary" (click)="showMoreFilters = !showMoreFilters" [attr.aria-expanded]="showMoreFilters">
+      <mat-icon>tune</mat-icon> More filters<span *ngIf="moreFilterCount"> ({{moreFilterCount}})</span>
+    </button>
+    <span class="spacer"></span>
+    <button mat-button *ngIf="activeFilterCount" (click)="clearFilters()">Clear filters</button>
+  </div>
+
+  <div class="ea-entries-more" *ngIf="showMoreFilters">
+    <mat-form-field appearance="outline" class="ea-entries-filter" *ngIf="choiceQuestions.length">
+      <mat-label>Question</mat-label>
+      <mat-select [(ngModel)]="filters.question" (selectionChange)="onQuestionFilterChange()">
+        <mat-option value="">Any question</mat-option>
+        <mat-option *ngFor="let question of choiceQuestions" [value]="question.question">{{question.question}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="ea-entries-filter" *ngIf="filters.question">
+      <mat-label>Answer</mat-label>
+      <mat-select [(ngModel)]="filters.answer" (selectionChange)="search()">
+        <mat-option value="">Any answer</mat-option>
+        <mat-option *ngFor="let answer of answersForFilter" [value]="answer">{{answer}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="ea-entries-filter" *ngIf="nonResponseSet">
+      <mat-label>Nonresponse</mat-label>
+      <mat-select [(ngModel)]="filters.nonResponse" (selectionChange)="search()">
+        <mat-option value="">Any nonresponse</mat-option>
+        <mat-option *ngFor="let nonResponse of nonResponseSet.nonResponses" [value]="nonResponse.nonResponse">{{nonResponse.nonResponse}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="ea-entries-filter">
+      <mat-label>Phone</mat-label>
+      <input matInput [(ngModel)]="filters.phone" (ngModelChange)="onTextChange()" inputmode="tel" autocomplete="off">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="ea-entries-filter">
+      <mat-label>Address</mat-label>
+      <input matInput [(ngModel)]="filters.address" (ngModelChange)="onTextChange()" placeholder="Street, city or zip" autocomplete="off">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="ea-entries-filter ea-entries-pass" *ngIf="activity.activityType !== 'Petition'">
+      <mat-label>Pass</mat-label>
+      <mat-select [(ngModel)]="filters.pass" (selectionChange)="search()">
+        <mat-option [value]="null">Any pass</mat-option>
+        <mat-option *ngFor="let pass of passOptions" [value]="pass">{{pass | passLabel}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="ea-entries-filter">
+      <mat-label>Notes contain</mat-label>
+      <input matInput [(ngModel)]="filters.notes" (ngModelChange)="onTextChange()" autocomplete="off">
+    </mat-form-field>
+    <mat-checkbox color="primary" [(ngModel)]="filters.edited" (change)="search()">Edited only</mat-checkbox>
+  </div>
+
+  <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
+  <div class="ea-template-empty" *ngIf="!loading && !rows.length && !errorMessage">
+    <mat-icon>{{activeFilterCount ? 'search_off' : 'edit_note'}}</mat-icon>
+    <div class="ea-muted">{{activeFilterCount ? 'No entries match these filters.' : 'No survey responses or nonresponses in this activity yet.'}}</div>
+    <button mat-stroked-button *ngIf="activeFilterCount" (click)="clearFilters()">Clear filters</button>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="ea-entries-list" *ngIf="rows.length">
+    <div class="ea-entry" *ngFor="let row of rows; trackBy: trackRow" [class.ea-entry-open]="openRowID === row._id">
+      <button type="button" class="ea-entry-summary" (click)="toggleRow(row)" [attr.aria-expanded]="openRowID === row._id">
+        <div class="ea-entry-who">
+          <div class="ea-entry-name">{{voterName(row)}}</div>
+          <div class="ea-entry-meta">
+            <span *ngIf="phone(row)">{{phone(row)}}</span>
+            <span *ngIf="address(row)">{{address(row)}}</span>
+          </div>
+        </div>
+        <div class="ea-entry-when">
+          <div>{{volunteer(row)}}</div>
+          <div class="ea-entry-meta">
+            <span>{{row.creationDate | date:'MMM d, y, h:mm a'}}</span>
+            <span *ngIf="activity.activityType !== 'Petition'">{{row.pass | passLabel}}</span>
+          </div>
+        </div>
+        <div class="ea-entry-result">
+          <span class="ea-chip" [ngClass]="row.nonResponse ? 'ea-chip-pass' : 'ea-chip-active'" [title]="summary(row)">{{summary(row)}}</span>
+          <span class="ea-chip ea-chip-type" *ngIf="isEdited(row)" matTooltip="Edited {{row.editHistory.length}} time{{row.editHistory.length === 1 ? '' : 's'}}">Edited</span>
+        </div>
+        <mat-icon class="ea-entry-chevron">{{openRowID === row._id ? 'expand_less' : 'expand_more'}}</mat-icon>
+      </button>
+
+      <!-- EDITOR -->
+      <div class="ea-entry-editor" *ngIf="openRowID === row._id && draft">
+        <mat-button-toggle-group [(ngModel)]="draft.mode" aria-label="Response type" class="ea-entries-kind">
+          <mat-button-toggle value="survey" [disabled]="!survey">Survey response</mat-button-toggle>
+          <mat-button-toggle value="nonresponse" [disabled]="!nonResponseSet">Nonresponse</mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <ng-container *ngIf="draft.mode === 'survey'">
+          <div class="ea-muted ea-gap-top" *ngIf="!survey">Loading the survey…</div>
+          <div class="ea-entry-question" *ngFor="let question of draft.questions; let i = index">
+            <div class="ea-entry-question-text">
+              <span>{{i + 1}}. {{question.question}}</span>
+              <button mat-button class="ea-entry-clear" *ngIf="question.questionType === 'SINGLESELECT' && draft.answers[question.question]" (click)="clearAnswer(question)">Clear</button>
+            </div>
+            <ng-container [ngSwitch]="question.questionType">
+              <mat-radio-group *ngSwitchCase="'SINGLESELECT'" class="ea-entry-options" color="primary"
+                               [name]="'q' + i + '_' + row._id" [(ngModel)]="draft.answers[question.question]">
+                <mat-radio-button *ngFor="let option of question.responses" [value]="option.response">{{option.response}}</mat-radio-button>
+              </mat-radio-group>
+              <div *ngSwitchCase="'MULTISELECT'" class="ea-entry-options">
+                <mat-checkbox *ngFor="let option of question.responses" color="primary"
+                              [checked]="isChecked(question, option.response)"
+                              (change)="toggleOption(question, option.response, $event.checked)">{{option.response}}</mat-checkbox>
+              </div>
+              <mat-form-field *ngSwitchDefault appearance="outline" class="ea-field">
+                <mat-label>Answer</mat-label>
+                <textarea matInput rows="2" [name]="'q' + i + '_' + row._id" [(ngModel)]="draft.answers[question.question]"></textarea>
+              </mat-form-field>
+            </ng-container>
+          </div>
+          <div class="ea-error" *ngIf="survey && needsChoiceAnswer">Answer at least one multiple-choice question to save, or choose a nonresponse.</div>
+        </ng-container>
+
+        <ng-container *ngIf="draft.mode === 'nonresponse' && nonResponseSet">
+          <mat-radio-group class="ea-entry-options ea-gap-top" color="primary" [name]="'nr_' + row._id" [(ngModel)]="draft.nonResponse" aria-label="Nonresponse">
+            <mat-radio-button *ngFor="let nonResponse of nonResponseSet.nonResponses" [value]="nonResponse.nonResponse">{{nonResponse.nonResponse}}</mat-radio-button>
+          </mat-radio-group>
+        </ng-container>
+
+        <div class="ea-error" *ngIf="rowError" role="alert">{{rowError}}</div>
+
+        <div class="ea-entry-actions">
+          <button mat-button *ngIf="isEdited(row)" (click)="historyOpen = !historyOpen" [attr.aria-expanded]="historyOpen">
+            <mat-icon>history</mat-icon> History ({{row.editHistory.length}})
+          </button>
+          <span class="spacer"></span>
+          <button mat-button [disabled]="saving" (click)="closeEditor()">Cancel</button>
+          <button mat-raised-button color="primary" [disabled]="!canSave" (click)="save(row)">Save</button>
+        </div>
+        <mat-progress-bar mode="indeterminate" *ngIf="saving"></mat-progress-bar>
+
+        <div class="ea-entry-history" *ngIf="historyOpen && isEdited(row)">
+          <div class="ea-entry-history-item" *ngFor="let edit of history(row)">
+            <div class="ea-entry-meta">
+              <span>{{edit.date | date:'MMM d, y, h:mm a'}}</span>
+              <span>{{edit.editorName || 'Unknown user'}}</span>
+            </div>
+            <div>Before: <b>{{summary(edit.before)}}</b><span class="ea-muted" *ngIf="notesOf(edit.before)"> · Notes: {{notesOf(edit.before)}}</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <mat-paginator *ngIf="total > pageSize" [length]="total" [pageSize]="pageSize" [pageIndex]="page" [hidePageSize]="true" (page)="onPage($event)"></mat-paginator>
+</mat-dialog-content>
+
+<mat-dialog-actions class="ea-actions">
+  <span class="ea-unsaved" *ngIf="changed">Saved changes show in the report when this closes</span>
+  <span class="spacer"></span>
+  <button mat-button (click)="close()">Close</button>
+</mat-dialog-actions>

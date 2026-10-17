@@ -1,0 +1,184 @@
+.cs-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cs-title {
+  margin: 0 !important;
+  font-weight: 600;
+}
+
+.cs-subtitle {
+  margin-top: 2px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+// Filters sit under the results; the content above scrolls, so they stay in view
+.cs-filters {
+  margin: 12px 0 0;
+  padding: 12px 12px 0;
+  background: #f6f7f9;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 0 0 8px 8px;
+}
+
+.cs-type-toggle {
+  flex: 0 0 auto;
+  // Line up with the outline date field, which reserves space above for its label
+  margin-top: 6px;
+  margin-bottom: 12px;
+}
+
+.cs-filter-fields {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0 12px;
+}
+
+.cs-field {
+  flex: 1 1 200px;
+  max-width: 280px;
+}
+
+.cs-field-date {
+  flex-basis: 260px;
+  max-width: 320px;
+}
+
+.cs-filter-actions {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  padding-top: 8px;
+}
+
+.cs-content {
+  max-height: 70vh;
+}
+
+.cs-tab {
+  padding: 16px 2px 8px;
+}
+
+.cs-picker {
+  width: 100%;
+  max-width: 420px;
+}
+
+// KPI tiles: label, then value; text stays in ink colors
+.cs-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.cs-tile {
+  padding: 12px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.cs-tile-label {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.cs-tile-value {
+  margin-top: 4px;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.cs-table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.cs-section-title {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.cs-toolbar-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 16px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.55);
+
+  mat-icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+    margin-bottom: 8px;
+    opacity: 0.6;
+  }
+
+  p {
+    margin: 0;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 700px) {
+  .cs-type-toggle {
+    flex-basis: 100%;
+    flex-wrap: wrap;
+  }
+
+  .cs-field,
+  .cs-field-date {
+    max-width: none;
+    flex-basis: 100%;
+  }
+
+  .cs-tile-value {
+    font-size: 22px;
+  }
+}
+
+// Phones: header + results + stacked filters are taller than the screen, so the whole
+// dialog scrolls as one, capped to the visible area (dvh accounts for the address bar)
+@media (max-width: 600px) {
+  :host {
+    display: block;
+    max-height: calc(100vh - 48px);
+    max-height: calc(100dvh - 48px);
+    overflow-y: auto;
+  }
+
+  .cs-content {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .cs-field,
+  .cs-field-date {
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .cs-filter-actions {
+    margin-left: 0;
+    width: 100%;
+  }
+}

@@ -1,0 +1,138 @@
+// Register page: a centered card that fills the width on phones (same look as the login dialog)
+
+:host {
+  display: block;
+}
+
+.rg-page {
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px;
+  box-sizing: border-box;
+}
+
+.rg-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 440px;
+  padding: 24px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+}
+
+.rg-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.rg-logo {
+  width: 100%;
+  max-width: 260px;
+  height: auto;
+}
+
+.rg-title {
+  margin: 8px 0 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.rg-subtitle {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+}
+
+.rg-form {
+  display: flex;
+  flex-direction: column;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+// First and last name side by side when there is room
+.rg-names {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 12px;
+}
+
+.rg-banner {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #fdecea;
+  color: #b71c1c;
+  font-size: 14px;
+
+  mat-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+
+  span {
+    flex: 1;
+    min-width: 160px;
+  }
+
+  button {
+    margin: -6px 0 -6px auto;
+  }
+}
+
+.rg-progress {
+  margin-bottom: 8px;
+  border-radius: 2px;
+}
+
+.rg-submit {
+  width: 100%;
+  height: 44px;
+  font-size: 15px;
+}
+
+.rg-card button mat-icon {
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.rg-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+}
+
+@media (max-width: 480px) {
+  .rg-page {
+    padding: 12px;
+  }
+
+  .rg-card {
+    padding: 16px;
+  }
+
+  .rg-names {
+    grid-template-columns: 1fr;
+  }
+}

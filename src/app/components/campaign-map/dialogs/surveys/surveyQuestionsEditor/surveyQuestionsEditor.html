@@ -1,0 +1,102 @@
+<div class="sv-section-header">
+  <span class="sv-section-title">Questions</span>
+  <span class="sv-section-sub">Asked in this order. Drag to reorder.</span>
+</div>
+
+<!-- Question cards -->
+<div class="sv-questions" cdkDropList (cdkDropListDropped)="dropQuestion($event)" *ngIf="questions.length">
+  <div class="sv-question" *ngFor="let q of questions; let i = index; let first = first; let last = last; trackBy: trackQuestion" cdkDrag>
+    <div class="sv-question-header">
+      <mat-icon class="sv-handle" cdkDragHandle matTooltip="Drag to reorder">drag_indicator</mat-icon>
+      <span class="sv-number">{{i + 1}}</span>
+
+      <mat-form-field appearance="outline" class="sv-question-text">
+        <mat-label>Question</mat-label>
+        <input matInput [(ngModel)]="q.question" autocomplete="off" [readonly]="questionLocked(q)">
+        <mat-icon matSuffix *ngIf="questionLocked(q)" class="sv-lock" [matTooltip]="'Has ' + answersLabel(questionAnswers(q)) + '. The wording can\'t change, or past results would drop out of summaries and group filters.'">lock</mat-icon>
+        <mat-hint class="sv-error" *ngIf="questionError(i)">{{questionError(i)}}</mat-hint>
+        <mat-hint *ngIf="!questionError(i) && q.originalText && q.question.trim() !== q.originalText">Renamed from "{{q.originalText}}"</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="sv-question-type">
+        <mat-label>Type</mat-label>
+        <mat-select [(ngModel)]="q.questionType">
+          <mat-option *ngFor="let key of typeKeys" [value]="key" [disabled]="typeOptionDisabled(q, key)">{{types[key].label}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="sv-question-actions">
+        <button mat-icon-button [disabled]="first" matTooltip="Move up" (click)="moveQuestion(i, -1)"><mat-icon>arrow_upward</mat-icon></button>
+        <button mat-icon-button [disabled]="last" matTooltip="Move down" (click)="moveQuestion(i, 1)"><mat-icon>arrow_downward</mat-icon></button>
+        <span [matTooltip]="questionLocked(q) ? 'Has ' + answersLabel(questionAnswers(q)) + ', so it can\'t be removed' : 'Remove question'">
+          <button mat-icon-button color="warn" [disabled]="questionLocked(q)" (click)="removeQuestion(i)"><mat-icon>delete</mat-icon></button>
+        </span>
+      </div>
+    </div>
+
+    <div class="sv-question-body">
+      <p class="sv-type-hint">
+        {{types[q.questionType]?.hint}}
+        <span class="sv-answers" *ngIf="questionLocked(q)"> · {{answersLabel(questionAnswers(q))}} recorded</span>
+      </p>
+
+      <!-- Responses for choice questions -->
+      <ng-container *ngIf="isChoice(q)">
+        <div class="sv-response" *ngFor="let r of q.responses; let j = index; let rFirst = first; let rLast = last; trackBy: trackByIndex">
+          <mat-icon class="sv-response-icon">{{q.questionType === 'SINGLESELECT' ? 'radio_button_unchecked' : 'check_box_outline_blank'}}</mat-icon>
+          <mat-form-field appearance="outline" class="sv-response-text">
+            <input matInput [(ngModel)]="r.response" [attr.aria-label]="'Response ' + (j + 1)" autocomplete="off" [readonly]="responseLocked(q, r)">
+            <span matSuffix class="sv-response-count" *ngIf="responseLocked(q, r)" [matTooltip]="'Has ' + answersLabel(responseAnswers(q, r)) + '. The wording can\'t change.'"><mat-icon inline>lock</mat-icon> {{responseAnswers(q, r) | number}}</span>
+            <mat-hint class="sv-error" *ngIf="responseError(q, j)">{{responseError(q, j)}}</mat-hint>
+            <mat-hint *ngIf="!responseError(q, j) && r.originalText && r.response.trim() !== r.originalText">Renamed from "{{r.originalText}}"</mat-hint>
+          </mat-form-field>
+          <button mat-icon-button [disabled]="rFirst" matTooltip="Move up" (click)="moveResponse(q, j, -1)"><mat-icon>arrow_upward</mat-icon></button>
+          <button mat-icon-button [disabled]="rLast" matTooltip="Move down" (click)="moveResponse(q, j, 1)"><mat-icon>arrow_downward</mat-icon></button>
+          <span [matTooltip]="responseLocked(q, r) ? 'Has ' + answersLabel(responseAnswers(q, r)) + ', so it can\'t be removed' : 'Remove response'">
+            <button mat-icon-button color="warn" [disabled]="responseLocked(q, r)" (click)="removeResponse(q, j)"><mat-icon>close</mat-icon></button>
+          </span>
+        </div>
+
+        <div class="sv-add-response">
+          <mat-form-field appearance="outline" class="sv-response-text">
+            <mat-label>Add a response</mat-label>
+            <input matInput [(ngModel)]="q.newResponse" (ngModelChange)="q.newResponseError = ''" (keyup.enter)="addResponse(q)" autocomplete="off">
+            <mat-hint class="sv-error" *ngIf="q.newResponseError">{{q.newResponseError}}</mat-hint>
+          </mat-form-field>
+          <button mat-stroked-button color="primary" class="sv-add-response-button" (click)="addResponse(q)"><mat-icon>add</mat-icon> Add</button>
+        </div>
+      </ng-container>
+
+      <!-- Organizations -->
+      <mat-form-field appearance="outline" class="sv-orgs" *ngIf="campaignOrgs.length > 1">
+        <mat-label>Only show to</mat-label>
+        <mat-select multiple [(ngModel)]="q.orgIDs" placeholder="Everyone">
+          <mat-option *ngFor="let org of campaignOrgs" [value]="org._id">{{org.name}}</mat-option>
+        </mat-select>
+        <mat-hint *ngIf="!questionLocked(q)">Leave empty to show this question to every organization.</mat-hint>
+        <mat-hint *ngIf="questionLocked(q)">Limiting this also hides its past results from other organizations' summaries.</mat-hint>
+      </mat-form-field>
+    </div>
+  </div>
+</div>
+
+<div class="sv-empty" *ngIf="!questions.length">No questions yet. Add the first one below.</div>
+
+<!-- Add a question -->
+<div class="sv-add">
+  <div class="sv-add-fields">
+    <mat-form-field appearance="outline" class="sv-question-type">
+      <mat-label>Type</mat-label>
+      <mat-select [(ngModel)]="newQuestionType">
+        <mat-option *ngFor="let key of typeKeys" [value]="key">{{types[key].label}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="sv-add-text">
+      <mat-label>New question</mat-label>
+      <input matInput [(ngModel)]="newQuestion" (ngModelChange)="newQuestionError = ''" (keyup.enter)="addQuestion()" placeholder="e.g. Who do you plan to vote for?" autocomplete="off">
+      <mat-hint class="sv-error" *ngIf="newQuestionError">{{newQuestionError}}</mat-hint>
+    </mat-form-field>
+    <button mat-stroked-button color="primary" class="sv-add-button" (click)="addQuestion()"><mat-icon>add</mat-icon> Add question</button>
+  </div>
+  <div class="sv-type-hint">{{types[newQuestionType]?.hint}}</div>
+</div>

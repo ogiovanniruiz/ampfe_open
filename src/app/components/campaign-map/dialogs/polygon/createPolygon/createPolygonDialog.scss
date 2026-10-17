@@ -1,0 +1,85 @@
+// Shares the ge-* styles in src/app/styles/dialog-common.scss; these are polygon-only.
+// Used by both the create and edit polygon dialogs.
+
+.cp-map {
+  height: 320px;
+  margin-top: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.cp-stale {
+  color: #b26a00;
+}
+
+.cp-tiles-stale .ge-tile-value {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.cp-group {
+  margin-top: 12px;
+}
+
+// Edit: groups and activities using the polygon
+.cp-usage-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.cp-usage-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.8);
+
+  mat-icon {
+    flex-shrink: 0;
+    color: rgba(0, 0, 0, 0.45);
+  }
+}
+
+.cp-usage-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Edit: group name with its create button beside it (stacked on phones)
+.cp-group-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.cp-group-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.cp-group-button {
+  flex-shrink: 0;
+  margin-top: 10px;
+}
+
+@media (max-width: 600px) {
+  .cp-map {
+    height: 260px;
+  }
+
+  .cp-group-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .cp-group-button {
+    margin: 0 0 8px;
+  }
+}

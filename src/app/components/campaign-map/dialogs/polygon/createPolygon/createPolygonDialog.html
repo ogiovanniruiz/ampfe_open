@@ -1,0 +1,107 @@
+<div class="ge-header">
+  <div class="ge-heading">
+    <h2 mat-dialog-title class="ge-title">Create polygon</h2>
+    <div class="ge-subtitle">
+      <span class="ge-chip ge-chip-groupby">{{sourceLabel}}</span>
+      <span class="ge-chip ge-chip-wide" *ngIf="createdPolygon">Polygon saved</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="saving" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ge-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="ge-content">
+
+  <!-- DETAILS -->
+  <section class="ge-section">
+    <mat-form-field appearance="outline" class="ge-name">
+      <mat-label>Polygon name</mat-label>
+      <input matInput [(ngModel)]="name" (ngModelChange)="onNameChange()" [readonly]="!!createdPolygon" required autocomplete="off">
+      <mat-hint class="ge-error" *ngIf="nameError">{{nameError}}</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="ge-name">
+      <mat-label>Description (optional)</mat-label>
+      <textarea matInput rows="2" [(ngModel)]="description" [readonly]="!!createdPolygon"></textarea>
+    </mat-form-field>
+  </section>
+
+  <!-- PREVIEW + ESTIMATE -->
+  <section class="ge-section">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Who's inside</span>
+      <span class="ge-section-sub cp-stale" *ngIf="estimateStale">Rule set changed. Refresh to update.</span>
+      <span class="spacer"></span>
+      <button mat-stroked-button color="primary" [disabled]="busy" (click)="getEstimate()">
+        <mat-icon>{{estimateResults ? 'refresh' : 'calculate'}}</mat-icon> {{estimateResults ? 'Refresh' : 'Get estimate'}}
+      </button>
+    </div>
+
+    <mat-form-field appearance="outline" class="ge-name">
+      <mat-label>Campaign-wide Rule set</mat-label>
+      <mat-select [(ngModel)]="ruleSetID" (selectionChange)="onRuleSetChange()" [disabled]="loadingGroups">
+        <mat-option [value]="everyone">Everyone (no filters)</mat-option>
+        <mat-option *ngFor="let group of campaignGroups" [value]="group._id">{{group.name}}</mat-option>
+      </mat-select>
+      <mat-hint>{{loadingGroups ? 'Loading campaign-wide rule sets…' : 'Campaign-wide groups whose filters apply inside this polygon.'}}</mat-hint>
+    </mat-form-field>
+
+    <div class="ge-tiles" [class.ge-tiles-loading]="estimating" [class.cp-tiles-stale]="estimateStale">
+      <div class="ge-tile">
+        <div class="ge-tile-label">Households</div>
+        <div class="ge-tile-value">{{estimateResults ? (estimateResults.totalHHs | number) : '—'}}</div>
+      </div>
+      <div class="ge-tile">
+        <div class="ge-tile-label">Residents</div>
+        <div class="ge-tile-value">{{estimateResults ? (estimateResults.totalResidents | number) : '—'}}</div>
+      </div>
+      <div class="ge-tile">
+        <div class="ge-tile-label">Phones</div>
+        <div class="ge-tile-value">{{estimateResults ? (estimateResults.totalPhones | number) : '—'}}</div>
+      </div>
+      <div class="ge-tile" matTooltip="Phones minus landlines and numbers that failed before. This is about how many residents a textbank will get.">
+        <div class="ge-tile-label">Textable</div>
+        <div class="ge-tile-value">{{estimateResults?.totalTextable != null ? (estimateResults.totalTextable | number) : '—'}}</div>
+      </div>
+      <div class="ge-tiles-spinner" *ngIf="estimating"><mat-spinner diameter="28"></mat-spinner></div>
+    </div>
+
+    <div class="cp-map" leaflet
+         [leafletOptions]="options"
+         (leafletMapReady)="onMapReady($event)">
+    </div>
+  </section>
+
+  <!-- GROUP -->
+  <section class="ge-section">
+    <div class="ge-toggle">
+      <mat-slide-toggle color="primary" [(ngModel)]="createGroupToo" [disabled]="saving || (!!createdPolygon && createGroupToo)">Also create a group for this polygon</mat-slide-toggle>
+    </div>
+    <div class="cp-group" *ngIf="createGroupToo">
+      <mat-form-field appearance="outline" class="ge-name">
+        <mat-label>Group name</mat-label>
+        <input matInput [(ngModel)]="groupName" (ngModelChange)="onGroupNameChange()" (keyup.enter)="create()" required autocomplete="off">
+        <mat-hint class="ge-error" *ngIf="groupNameError">{{groupNameError}}</mat-hint>
+      </mat-form-field>
+      <div class="ge-note">
+        <mat-icon inline>info</mat-icon>
+        <span>Targets {{ruleSetID === everyone ? 'everyone' : 'the “' + ruleSetName + '” filters'}} inside this polygon.</span>
+      </div>
+    </div>
+  </section>
+</mat-dialog-content>
+
+<mat-progress-bar *ngIf="saving" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-actions class="ge-actions">
+  <span class="spacer"></span>
+  <button mat-button [disabled]="saving" (click)="close()">{{createdPolygon ? 'Close' : 'Cancel'}}</button>
+  <button mat-raised-button color="primary" [disabled]="!canCreate" (click)="create()">{{createLabel}}</button>
+</mat-dialog-actions>

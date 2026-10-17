@@ -1,0 +1,90 @@
+<div class="ge-header">
+  <div class="ge-heading">
+    <h2 class="ge-title">Text {{residentName || 'this person'}}</h2>
+    <div class="ge-subtitle"><span class="ge-subtitle-name">{{activity?.name}}</span></div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="sending" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ge-banner" *ngIf="message" role="alert">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{message}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="message = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="st-content">
+  <!-- TO / FROM -->
+  <section class="ge-section">
+    <form (ngSubmit)="sendSingularText()">
+      <mat-form-field appearance="outline" class="tt-field">
+        <mat-label>Send to</mat-label>
+        <span matPrefix class="tt-prefix">+1&nbsp;</span>
+        <input matInput type="tel" inputmode="tel" name="phone" [formControl]="phone" placeholder="(909) 555-1234" [readonly]="sent" required>
+        <mat-hint *ngIf="!residentPhones.length">No number on file. Enter one to text.</mat-hint>
+        <mat-error *ngIf="phone.hasError('required')">Enter a phone number.</mat-error>
+        <mat-error *ngIf="phone.hasError('phone')">Enter a 10-digit US phone number.</mat-error>
+      </mat-form-field>
+    </form>
+
+    <div class="st-phones" *ngIf="residentPhones.length > 1 && !sent">
+      <button type="button" class="st-phone" *ngFor="let residentPhone of residentPhones"
+              [class.st-phone-selected]="isSelectedPhone(residentPhone.number)" (click)="usePhone(residentPhone.number)">
+        {{formatPhone(residentPhone.number)}}<span class="st-phone-type" *ngIf="residentPhone.type">{{residentPhone.type | lowercase}}</span>
+      </button>
+    </div>
+
+    <div class="tt-from" *ngIf="activityPhonenumber">
+      <mat-icon inline>sim_card</mat-icon>
+      <span class="tt-from-label">From</span>
+      <span class="tt-from-number">{{formatPhone(activityPhonenumber)}}</span>
+    </div>
+    <div class="tt-notice tt-notice-warning" *ngIf="!activityPhonenumber">
+      <mat-icon inline>warning_amber</mat-icon>
+      <span>This activity has no texting number, so texts can't be sent.</span>
+    </div>
+  </section>
+
+  <!-- MESSAGE -->
+  <section class="ge-section">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Message</span>
+    </div>
+
+    <mat-form-field appearance="outline" class="tt-field" *ngIf="initTextMsgs.length > 1 && !sent">
+      <mat-label>Opening message</mat-label>
+      <mat-select [value]="selectedInitTextMsg" (selectionChange)="selectMessage($event.value)">
+        <mat-option *ngFor="let initTextMsg of initTextMsgs" [value]="initTextMsg">{{optionLabel(initTextMsg)}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="tt-preview">
+      <ng-container *ngIf="hasContent; else noContent">
+        <ng-container *ngIf="sendImage && imageUrl">
+          <img class="tt-image" [src]="imageUrl" alt="Attached image" *ngIf="!imageFailed" (error)="imageFailed = true">
+          <div class="tt-image-fallback" *ngIf="imageFailed"><mat-icon inline>image</mat-icon> Image attached</div>
+        </ng-container>
+        <div class="tt-bubble" *ngIf="previewText">{{previewText}}</div>
+      </ng-container>
+      <ng-template #noContent>
+        <div class="tt-empty">This activity has no opening message to send.</div>
+      </ng-template>
+    </div>
+  </section>
+
+  <div class="tt-notice tt-notice-success" *ngIf="sent" role="status">
+    <mat-icon inline>check_circle</mat-icon>
+    <span>Sent to {{sentTo}}. Replies show up in the textbank.</span>
+  </div>
+</div>
+
+<mat-progress-bar *ngIf="sending" mode="indeterminate"></mat-progress-bar>
+
+<div class="ge-actions st-actions">
+  <span class="spacer"></span>
+  <button mat-button [disabled]="sending" (click)="close()">{{sent ? 'Done' : 'Cancel'}}</button>
+  <button mat-raised-button color="primary" *ngIf="!sent" [disabled]="!canSend" (click)="sendSingularText()">
+    <mat-icon>send</mat-icon> {{sending ? 'Sending…' : 'Send text'}}
+  </button>
+</div>

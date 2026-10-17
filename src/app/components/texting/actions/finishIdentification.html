@@ -1,0 +1,81 @@
+<div class="ge-header">
+  <div class="ge-heading">
+    <h2 class="ge-title">Finish identification</h2>
+    <div class="ge-subtitle">
+      <span class="ge-subtitle-name" *ngIf="personName">{{personName}}</span>
+      <span *ngIf="personName && activity?.name"> · </span>
+      <span>{{activity?.name}}</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="submitingResponse" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ge-banner" *ngIf="errorMessage" role="alert">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="fi-content">
+  <!-- Survey -->
+  <section class="ge-section" *ngIf="visibleQuestions.length">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Survey</span>
+      <span class="ge-section-sub">Record what they told you, then submit.</span>
+    </div>
+
+    <div class="hh-question" *ngFor="let item of visibleQuestions">
+      <div class="hh-question-text">
+        <span class="hh-question-number">{{item.number}}</span>
+        <span>{{item.question.question}}</span>
+      </div>
+
+      <ng-container [ngSwitch]="item.question.questionType">
+        <mat-radio-group *ngSwitchCase="'SINGLESELECT'" class="hh-options" color="primary" [name]="'q' + item.index"
+                         [(ngModel)]="answers[item.index]" (ngModelChange)="needsResponses = false">
+          <mat-radio-button *ngFor="let option of item.question.responses" [value]="option.response">{{option.response}}</mat-radio-button>
+        </mat-radio-group>
+
+        <div *ngSwitchCase="'MULTISELECT'" class="hh-options">
+          <mat-checkbox *ngFor="let option of item.question.responses" color="primary"
+                        [checked]="isChecked(item.index, option.response)"
+                        (change)="toggleOption(item.index, option.response, $event.checked)">{{option.response}}</mat-checkbox>
+        </div>
+
+        <mat-form-field *ngSwitchCase="'NOTES'" appearance="outline" class="hh-notes">
+          <mat-label>Answer</mat-label>
+          <textarea matInput rows="2" [name]="'q' + item.index" [(ngModel)]="answers[item.index]"></textarea>
+        </mat-form-field>
+      </ng-container>
+    </div>
+
+    <div class="hh-needs" *ngIf="needsResponses">Answer at least one multiple-choice question to submit, or choose a non-response below.</div>
+  </section>
+
+  <!-- Non-responses -->
+  <section class="ge-section" *ngIf="nonResponseSet?.nonResponses?.length">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Couldn't identify them?</span>
+      <span class="ge-section-sub">Choosing one finishes the conversation without survey answers.</span>
+    </div>
+    <div class="hh-answer-buttons">
+      <button mat-stroked-button *ngFor="let nonResponse of nonResponseSet.nonResponses" [disabled]="submitingResponse"
+              (click)="submitNonResponse(nonResponse.nonResponse, nonResponse.nonResponseType)">{{nonResponse.nonResponse}}</button>
+    </div>
+  </section>
+</div>
+
+<mat-progress-bar *ngIf="submitingResponse" mode="indeterminate"></mat-progress-bar>
+
+<div class="ge-actions fi-actions">
+  <button mat-stroked-button color="primary" *ngIf="optinOption" [disabled]="submitingResponse" (click)="openOptinFormBottomSheet()">
+    <mat-icon>how_to_reg</mat-icon> Opt in
+  </button>
+  <span class="spacer"></span>
+  <button mat-button [disabled]="submitingResponse" (click)="close()">Cancel</button>
+  <button mat-raised-button color="primary" [disabled]="submitingResponse" (click)="submitSurveyResponse()">
+    <mat-icon>check</mat-icon> Submit
+  </button>
+</div>

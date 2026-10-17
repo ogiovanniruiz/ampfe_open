@@ -1,0 +1,247 @@
+<div class="ea-header">
+  <div class="ea-heading">
+    <h2 mat-dialog-title class="ea-title">Edit activity</h2>
+    <div class="ea-subtitle">
+      <span class="ea-subtitle-name">{{activity.name}}</span>
+      <span class="ea-chip ea-chip-type" *ngIf="activityType">{{activityType}}</span>
+      <span class="ea-chip" [ngClass]="activity.active ? 'ea-chip-active' : 'ea-chip-inactive'">{{activity.active ? 'Active' : 'Inactive'}}</span>
+      <span class="ea-chip ea-chip-pass" *ngIf="canReset && activity.passes != null">{{activity.passes | passLabel}}</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button [matTooltip]="'Copy activity ID: ' + activityID" (click)="copy(activityID, 'Activity ID')"><mat-icon>content_copy</mat-icon></button>
+  <button mat-icon-button matTooltip="Close" [disabled]="saving" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
+<div class="ea-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-button *ngIf="loadFailed" (click)="load()">Retry</button>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="ea-content">
+  <mat-stepper orientation="vertical" class="ea-stepper" *ngIf="!loading && !loadFailed">
+    <mat-step>
+      <ng-template matStepLabel>
+        <span class="ea-step-title">Basic info</span>
+        <span class="ea-step-summary">{{name || activity.name}}</span>
+      </ng-template>
+      <mat-form-field appearance="outline" class="ea-field">
+        <mat-label>Activity name</mat-label>
+        <input matInput [(ngModel)]="name" (ngModelChange)="nameError = ''" [disabled]="loading" maxlength="25" required autocomplete="off">
+        <mat-hint class="ea-error" *ngIf="nameError">{{nameError}}</mat-hint>
+        <mat-hint align="end">{{name.length}}/25</mat-hint>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="ea-field">
+        <mat-label>Description</mat-label>
+        <textarea matInput [(ngModel)]="description" [disabled]="loading" cdkTextareaAutosize cdkAutosizeMinRows="2" cdkAutosizeMaxRows="6"></textarea>
+      </mat-form-field>
+      <div class="ea-toggle" *ngIf="activityType && activityType !== 'Texting'">
+        <mat-slide-toggle color="primary" [(ngModel)]="enableTexting" [disabled]="loading">Enable texting</mat-slide-toggle>
+        <span class="ea-muted">Volunteers can also text contacts from this {{activityType | lowercase}} activity.</span>
+      </div>
+      <div class="ea-toggle" *ngIf="activityType && activityType !== 'Petition'">
+        <mat-slide-toggle color="primary" [(ngModel)]="optinOption" [disabled]="loading">Offer opt-in to the community list</mat-slide-toggle>
+        <span class="ea-muted">Volunteers get an opt-in form to add the person to your organization's community list.</span>
+      </div>
+      <div class="ea-muted" *ngIf="activity.idBy">ID by <b>{{activity.idBy === 'HOUSEHOLD' ? 'Household' : 'Individual'}}</b></div>
+      <div class="ea-step-actions"><button mat-button color="primary" matStepperNext>Next</button></div>
+    </mat-step>
+
+    <mat-step>
+      <ng-template matStepLabel>
+        <span class="ea-step-title">Survey, group and nonresponse set</span>
+        <span class="ea-step-summary">{{surveyName}}</span>
+      </ng-template>
+      <dl class="ea-facts">
+        <div><dt>Survey</dt><dd>{{surveyName || '…'}}</dd></div>
+        <div *ngIf="activityType !== 'Petition'"><dt>Group</dt><dd>{{groupName || '…'}}</dd></div>
+        <div *ngIf="activityType !== 'Petition'"><dt>Nonresponse set</dt><dd>{{nonResponseSetName || '…'}}</dd></div>
+      </dl>
+      <div class="ea-step-actions"><button mat-button color="primary" matStepperNext>Next</button></div>
+    </mat-step>
+
+    <mat-step *ngIf="textingOn" [hasError]="!!textingError" [errorMessage]="textingError">
+      <ng-template matStepLabel>
+        <span class="ea-step-title">Texting details</span>
+        <span class="ea-step-summary">{{textingSummary}}</span>
+      </ng-template>
+      <div class="ea-row">
+        <mat-form-field appearance="outline" class="ea-field">
+          <mat-label>Texting operation</mat-label>
+          <mat-select [(ngModel)]="textingCampaignID" (selectionChange)="onTextingOperationChange($event)">
+            <mat-option *ngFor="let textingOperation of textingOperations" [value]="textingOperation.id">{{textingOperation.name}}{{textingOperation.state === 'active' ? '' : ' (inactive)'}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="ea-field">
+          <mat-label>{{loadingAvailableTextingNumbers ? 'Loading numbers…' : 'Texting number'}}</mat-label>
+          <mat-select [(ngModel)]="activityPhonenumber" [disabled]="!textingCampaignID || loadingAvailableTextingNumbers || !availableTextingNumbers.length">
+            <mat-option *ngFor="let availableTextingNumber of availableTextingNumbers" [value]="availableTextingNumber">{{availableTextingNumber}}</mat-option>
+          </mat-select>
+          <mat-hint class="ea-error" *ngIf="textingCampaignID && !loadingAvailableTextingNumbers && !availableTextingNumbers.length">No available numbers for this operation.</mat-hint>
+          <mat-hint *ngIf="!textingCampaignID">Choose an operation first</mat-hint>
+        </mat-form-field>
+      </div>
+      <mat-progress-bar mode="indeterminate" *ngIf="loadingAvailableTextingNumbers"></mat-progress-bar>
+
+      <mat-form-field appearance="outline" class="ea-field" *ngIf="textingTemplates.length > 0">
+        <mat-label>Load from a texting template</mat-label>
+        <mat-select (selectionChange)="onTextingTemplateChange($event)">
+          <mat-option *ngFor="let textingTemplate of textingTemplates" [value]="textingTemplate">{{textingTemplate.name}}</mat-option>
+        </mat-select>
+        <mat-hint>Replaces the messages and quick responses below</mat-hint>
+      </mat-form-field>
+
+      <app-text-messages-editor [initTextMsgs]="initTextMsgs" [quickResponses]="quickResponses"
+                                [showQuickResponses]="activityType === 'Texting'" [showDefaultSelect]="activityType === 'Texting'"
+                                [(defaultInitTextMsg)]="defaultInitTextMsg"></app-text-messages-editor>
+      <div class="ea-step-actions"><button mat-button color="primary" matStepperNext>Next</button></div>
+    </mat-step>
+
+    <mat-step *ngIf="activityType === 'Petition'">
+      <ng-template matStepLabel>
+        <span class="ea-step-title">Petition details</span>
+        <span class="ea-step-summary">{{petitionSummary}}</span>
+      </ng-template>
+      <div class="ea-toggle">
+        <mat-slide-toggle color="primary" [(ngModel)]="petition.checkVoterfile">Check voter file</mat-slide-toggle>
+        <span class="ea-muted">Match signers to voter records by name with phone, email or zip.</span>
+      </div>
+      <div class="ea-toggle">
+        <div class="ea-toggle-pair">
+          <mat-slide-toggle color="primary" [(ngModel)]="petition.includeAddress" (ngModelChange)="setPetitionInclude('address', $event)">Include address</mat-slide-toggle>
+          <mat-checkbox color="primary" [(ngModel)]="petition.requireAddress" [disabled]="!petition.includeAddress">Required</mat-checkbox>
+        </div>
+        <span class="ea-muted">Street address and city. Zip is always asked.</span>
+      </div>
+      <div class="ea-toggle">
+        <div class="ea-toggle-pair">
+          <mat-slide-toggle color="primary" [(ngModel)]="petition.includeEmail" (ngModelChange)="setPetitionInclude('email', $event)">Include email</mat-slide-toggle>
+          <mat-checkbox color="primary" [(ngModel)]="petition.requireEmail" [disabled]="!petition.includeEmail">Required</mat-checkbox>
+        </div>
+        <span class="ea-muted">{{petition.requireEmail ? 'Signers must enter an email address.' : 'Signers can enter an email address.'}}</span>
+      </div>
+      <div class="ea-step-actions"><button mat-button color="primary" matStepperNext>Next</button></div>
+    </mat-step>
+
+    <mat-step *ngIf="activityType === 'Phonebank'">
+      <ng-template matStepLabel>
+        <span class="ea-step-title">Phonebank script and patch-through</span>
+        <span class="ea-step-summary">{{scriptLink ? 'Script linked' : 'No script link'}}</span>
+      </ng-template>
+      <div class="ea-row">
+        <mat-form-field appearance="outline" class="ea-field ea-field-wide">
+          <mat-label>Script link</mat-label>
+          <input matInput [(ngModel)]="scriptLink" type="url" autocomplete="off">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="ea-field">
+          <mat-label>Patch-through number</mat-label>
+          <input matInput [(ngModel)]="patchThroughNumber" type="tel" maxlength="12" autocomplete="off">
+        </mat-form-field>
+      </div>
+      <div class="ea-step-actions"><button mat-button color="primary" matStepperNext>Next</button></div>
+    </mat-step>
+
+    <mat-step>
+      <ng-template matStepLabel>
+        <span class="ea-step-title">Users and organizations</span>
+        <span class="ea-step-summary">{{accessSummary}}</span>
+      </ng-template>
+      <div class="ea-row">
+        <mat-form-field appearance="outline" class="ea-field">
+          <mat-label>Users</mat-label>
+          <mat-select [(ngModel)]="selectedUserIDs" multiple>
+            <mat-option *ngFor="let user of users" [value]="user._id">{{user.name?.fullName}}</mat-option>
+          </mat-select>
+          <mat-hint>{{selectedUserIDs.length ? selectedUserIDs.length + ' added' : 'Only the creator'}}</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="ea-field">
+          <mat-label>Organizations</mat-label>
+          <mat-select [(ngModel)]="selectedOrgIDs" multiple>
+            <mat-option *ngFor="let org of campaignOrgs" [value]="org._id">{{org.name}}</mat-option>
+          </mat-select>
+          <mat-hint>{{selectedOrgIDs.length ? selectedOrgIDs.length + ' added' : 'Only the creating organization'}}</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <div class="ea-link">
+        <div class="ea-link-text">
+          <div class="ea-choice-label">Volunteer sign-up link</div>
+          <div class="ea-muted">New volunteers who open it join this activity.</div>
+        </div>
+        <button mat-stroked-button color="primary" [disabled]="generatingLink" (click)="generateNewUserLink()">
+          <mat-icon>link</mat-icon> {{userURL ? 'New link' : 'Get link'}}
+        </button>
+      </div>
+      <div class="ea-url" *ngIf="userURL">
+        <span class="ea-url-text">{{userURL}}</span>
+        <button mat-icon-button matTooltip="Copy link" (click)="copy(userURL, 'Link')"><mat-icon>content_copy</mat-icon></button>
+      </div>
+      <div class="ea-step-actions"><button mat-button color="primary" matStepperNext>Next</button></div>
+    </mat-step>
+
+    <mat-step *ngIf="survey?.questions?.length">
+      <ng-template matStepLabel>
+        <span class="ea-step-title">Hide survey questions</span>
+        <span class="ea-step-summary">{{questionsToHide.length ? questionsToHide.length + ' hidden' : 'All questions shown'}}</span>
+      </ng-template>
+      <div class="ea-muted ea-gap-bottom">Checked questions aren't shown to volunteers in this activity.</div>
+      <div class="ea-error ea-gap-bottom" *ngIf="hiddenQuestionsError" role="alert">{{hiddenQuestionsError}}</div>
+      <div class="ea-muted ea-gap-bottom" *ngIf="surveyChoiceWarning">{{surveyChoiceWarning}}</div>
+      <div class="ea-questions">
+        <mat-checkbox *ngFor="let question of survey.questions" color="primary"
+                      [checked]="questionsToHide.includes(question.question)"
+                      (change)="toggleHiddenQuestion(question.question)">{{question.question}}</mat-checkbox>
+      </div>
+      <div class="ea-step-actions"><button mat-button color="primary" matStepperNext>Next</button></div>
+    </mat-step>
+
+    <mat-step *ngIf="orgTags.length">
+      <ng-template matStepLabel>
+        <span class="ea-step-title">Hide tags</span>
+        <span class="ea-step-summary">{{hiddenOrgTagCount ? hiddenOrgTagCount + ' hidden' : 'All tags shown'}}</span>
+      </ng-template>
+      <div class="ea-muted ea-gap-bottom">Checked tags aren't offered to volunteers in this activity.</div>
+      <div class="ea-questions">
+        <mat-checkbox *ngFor="let tag of orgTags" color="primary"
+                      [checked]="tagsToHide.includes(tag)"
+                      (change)="toggleHiddenTag(tag)">{{tag}}</mat-checkbox>
+      </div>
+      <div class="ea-step-actions"><button mat-button color="primary" matStepperNext>Next</button></div>
+    </mat-step>
+
+    <mat-step>
+      <ng-template matStepLabel>
+        <span class="ea-step-title">Reset or deactivate</span>
+        <span class="ea-step-summary">{{activity.active ? 'Active' : 'Inactive'}}<ng-container *ngIf="canReset"> · {{activity.passes | passLabel}}</ng-container></span>
+      </ng-template>
+      <section class="ea-section ea-status">
+              <div class="ea-status-text">
+                <div class="ea-muted" *ngIf="activity.active">Active. Volunteers can work on it.</div>
+                <div class="ea-muted" *ngIf="!activity.active">Inactive. Hidden from volunteers until it's reactivated.</div>
+              </div>
+              <div class="ea-status-actions">
+                <button mat-stroked-button *ngIf="canReset" [disabled]="busy" (click)="resetActivity()"><mat-icon>restart_alt</mat-icon> Reset Activity</button>
+                <button mat-stroked-button color="warn" *ngIf="activity.active" [disabled]="busy" (click)="deactivate()"><mat-icon>block</mat-icon> Deactivate</button>
+                <button mat-stroked-button color="warn" *ngIf="dev && !activity.active" [disabled]="busy" (click)="deleteActivity()"><mat-icon>delete_forever</mat-icon> Delete</button>
+              </div>
+            </section>
+    </mat-step>
+  </mat-stepper>
+
+  <div class="ea-loading" *ngIf="loading">Loading activity…</div>
+</mat-dialog-content>
+
+<mat-progress-bar *ngIf="saving || resetting" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-actions class="ea-actions">
+  <span class="ea-unsaved" [class.ea-error]="!!validationError" *ngIf="hasChanges && !saving">{{validationError || 'Unsaved changes'}}</span>
+  <span class="spacer"></span>
+  <button mat-button [disabled]="saving" (click)="close()">{{hasChanges ? 'Cancel' : 'Close'}}</button>
+  <button mat-stroked-button color="accent" *ngIf="activityType === 'Texting'" [disabled]="busy || loadFailed" (click)="cloneActivity()">Clone</button>
+  <button mat-raised-button color="primary" [disabled]="busy || !hasChanges || !!validationError" (click)="save()">Save changes</button>
+</mat-dialog-actions>

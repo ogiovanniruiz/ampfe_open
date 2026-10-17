@@ -1,0 +1,29 @@
+<div class="st-meta">{{rowCount | number}} {{rowCount === 1 ? 'row' : 'rows'}}</div>
+
+<div class="st-scroll">
+  <table mat-table [dataSource]="dataSource" matSort class="st-table">
+
+    <ng-container *ngFor="let header of headers; let first = first; trackBy: trackHeader" [matColumnDef]="header" [sticky]="first">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header [matTooltip]="header" [matTooltipShowDelay]="400"
+          [class.st-label-col]="first" [class.st-num]="!first">
+        <span class="st-header-text">{{header}}</span>
+      </th>
+      <td mat-cell *matCellDef="let row" [class.st-label-col]="first" [class.st-num]="!first && isNumeric(row[header])">
+        {{first ? row[header] : format(row[header])}}
+      </td>
+    </ng-container>
+
+    <!-- Pinned totals row: a second sticky header row so sorting never moves it -->
+    <ng-container *ngFor="let header of headers; let first = first; trackBy: trackHeader" [matColumnDef]="'total__' + header" [sticky]="first">
+      <th mat-header-cell *matHeaderCellDef class="st-total" [class.st-label-col]="first" [class.st-num]="!first && isNumeric($safeNavigationMigration(totals?.[header]))">
+        {{first ? 'Totals' : format($safeNavigationMigration(totals?.[header]))}}
+      </th>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="headers; sticky: true"></tr>
+    <ng-container *ngIf="totals">
+      <tr mat-header-row *matHeaderRowDef="totalColumns; sticky: true" class="st-total-row"></tr>
+    </ng-container>
+    <tr mat-row *matRowDef="let row; columns: headers;"></tr>
+  </table>
+</div>

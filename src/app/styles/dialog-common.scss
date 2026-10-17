@@ -1,0 +1,299 @@
+// Shared dialog/card styles (ge-*), included through styleUrls by the components that use them
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.ge-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ge-heading {
+  min-width: 0;
+}
+
+.ge-title {
+  margin: 0 !important;
+  font-weight: 600;
+  // Material's dialog title has flex-shrink: 0, so in the flex .ge-header long titles overflowed instead of wrapping
+  flex-shrink: 1;
+  min-width: 0;
+  // Names without spaces wrap too
+  overflow-wrap: anywhere;
+}
+
+.ge-subtitle {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.ge-subtitle-name {
+  overflow-wrap: anywhere;
+}
+
+.ge-chip {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.ge-chip-groupby {
+  background: rgba(0, 0, 0, 0.07);
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.ge-chip-wide {
+  background: rgba(63, 81, 181, 0.12);
+  color: #3f51b5;
+}
+
+.ge-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 4px 4px 4px 12px;
+  border-radius: 8px;
+  background: #fdecea;
+  color: #b71c1c;
+  font-size: 14px;
+
+  // A long message would otherwise squeeze the icon and clip it (mat-icon hides its overflow)
+  mat-icon {
+    flex: none;
+  }
+}
+
+.mat-mdc-dialog-content.ge-content {
+  max-height: 70vh;
+  padding-top: 8px;
+}
+
+.ge-readonly {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(255, 152, 0, 0.12);
+  color: #6d4100;
+  font-size: 13px;
+
+  // flex: none keeps a long message from squeezing and clipping the icon
+  mat-icon {
+    flex: none;
+    margin-top: 2px;
+  }
+}
+
+.ge-section {
+  margin-bottom: 20px;
+}
+
+.ge-section-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-bottom: 8px;
+}
+
+.ge-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.ge-section-sub {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.ge-name {
+  width: 100%;
+}
+
+.ge-error {
+  color: #c62828;
+}
+
+.ge-toggle {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.ge-help {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+// Filters
+.ge-filters {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.ge-filter-group {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.ge-filter-group-title {
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.ge-filter {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px 12px;
+  padding: 4px 0;
+}
+
+.ge-filter-label {
+  flex: 0 0 180px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.8);
+  padding-top: 2px;
+}
+
+.ge-filter-values {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ge-value {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.8);
+  overflow-wrap: anywhere;
+}
+
+.ge-more {
+  padding: 2px 8px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  color: #3f51b5;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(63, 81, 181, 0.08);
+  }
+}
+
+.ge-empty {
+  padding: 16px;
+  text-align: center;
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 13px;
+}
+
+.ge-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+// Estimate tiles
+.ge-tiles {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ge-tiles-loading .ge-tile {
+  opacity: 0.4;
+}
+
+.ge-tile {
+  padding: 10px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.ge-tile-label {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.ge-tile-value {
+  margin-top: 2px;
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.ge-tiles-spinner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ge-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ge-unsaved {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+@media (max-width: 600px) {
+  .ge-filter {
+    flex-direction: column;
+  }
+
+  .ge-filter-label {
+    flex-basis: auto;
+  }
+
+  .ge-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ge-tile-value {
+    font-size: 18px;
+  }
+}

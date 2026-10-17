@@ -1,0 +1,28 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel"  (click)="return();"><mat-icon>close</mat-icon></button>
+
+<h1 mat-dialog-title class="block-title"><b>Create Alert</b></h1>
+<mat-dialog-content>
+  <!-- TODO: The 'tickInterval' property no longer exists -->
+  <mat-slider class="dialog-element-long" color="warn" [disabled]="false" [max]="max" [min]="min" [step]="step" #ngSlider><input matSliderThumb [(ngModel)]="radius" (change)="getNumResponders()" #ngSliderThumb="matSliderThumb" /></mat-slider>
+  <mat-form-field class="example-margin example-width" appearance="fill">
+    <mat-label>Alert Radius</mat-label>
+    <input matInput type="number" [(ngModel)]="radius">
+  </mat-form-field>
+  <mat-form-field class="dialog-element-long" >
+    <mat-label>Text Message To Send</mat-label>
+    <textarea matInput placeholder="Text Message to Send Out" #textMessage></textarea>
+  </mat-form-field>
+
+  Responders Available: {{numResponders}}<br>
+
+  <mat-form-field style="margin:.3em; width:30%; min-width:300px"> 
+    <mat-select placeholder="Audience" #audience multiple>
+      <mat-option value="legal" >Legal</mat-option>
+      <mat-option value="staff">Staff</mat-option>
+    </mat-select>
+  </mat-form-field >
+    <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
+</mat-dialog-content>
+<mat-dialog-actions  >
+    <button mat-raised-button class="dialog-element-long" color="warn" (click)="createAlert()">SEND ALERT</button>
+</mat-dialog-actions>

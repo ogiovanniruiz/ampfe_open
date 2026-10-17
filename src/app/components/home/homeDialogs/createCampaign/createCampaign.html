@@ -1,0 +1,128 @@
+<div class="ec-header">
+  <div class="ec-heading">
+    <h2 mat-dialog-title class="ec-title">Create campaign</h2>
+    <div class="ec-subtitle">Your organization will be the creator.</div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="creating" (click)="closeDialog()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ec-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="ec-content">
+
+  <!-- DETAILS -->
+  <section class="ec-section">
+    <div class="ec-section-title">Details</div>
+    <mat-form-field appearance="outline" class="ec-field">
+      <mat-label>Campaign name</mat-label>
+      <input matInput [(ngModel)]="name" (ngModelChange)="nameError = ''" required autocomplete="off">
+      <mat-hint class="ec-error" *ngIf="nameError">{{nameError}}</mat-hint>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="ec-field">
+      <mat-label>Description</mat-label>
+      <textarea matInput [(ngModel)]="description" cdkTextareaAutosize cdkAutosizeMinRows="2" cdkAutosizeMaxRows="6"></textarea>
+    </mat-form-field>
+  </section>
+
+  <!-- DATA MANAGERS -->
+  <section class="ec-section">
+    <div class="ec-section-title">Data managers</div>
+    <mat-form-field appearance="outline" class="ec-field">
+      <mat-label>{{loadingAdmins ? 'Loading administrators…' : 'Data managers'}}</mat-label>
+      <mat-select [(ngModel)]="dataManagerIDs" multiple>
+        <mat-option *ngFor="let user of managerOptions" [value]="user._id">
+          <b>{{user.name?.fullName || user.loginEmail}}</b> <span class="ec-muted">{{user.loginEmail}}</span>
+        </mat-option>
+      </mat-select>
+      <mat-hint>Can edit the campaign, its permissions and billing. {{dataManagerIDs.length}} selected.</mat-hint>
+    </mat-form-field>
+  </section>
+
+  <!-- DISTRICT AND ELECTION -->
+  <section class="ec-section">
+    <div class="ec-section-title">District and election</div>
+
+    <div class="ec-row">
+      <mat-form-field appearance="outline" class="ec-field">
+        <mat-label>District type</mat-label>
+        <mat-select [(ngModel)]="districtType" (selectionChange)="onDistrictTypeChange()">
+          <mat-option *ngFor="let type of districtTypes" [value]="type.name">{{type.label}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="ec-field ec-field-wide">
+        <mat-label>{{loadingDistricts ? 'Loading districts…' : 'Districts'}}</mat-label>
+        <mat-select [(ngModel)]="boundaryIDs" multiple [disabled]="!districtType || loadingDistricts">
+          <div class="ec-select-search">
+            <input [(ngModel)]="districtSearch" (keydown)="$event.stopPropagation()" placeholder="Search districts" autocomplete="off">
+          </div>
+          <mat-option *ngFor="let district of filteredDistricts" [value]="district.properties.identifier">
+            {{district.properties.name | uppercase}}
+          </mat-option>
+          <div class="ec-select-empty" *ngIf="!filteredDistricts.length && !loadingDistricts">No districts match.</div>
+        </mat-select>
+        <mat-hint>{{!districtType ? 'Choose a district type first' : boundaryIDs.length ? boundaryIDs.length + ' selected' : 'Choose one or more'}}</mat-hint>
+      </mat-form-field>
+    </div>
+    <mat-progress-bar mode="indeterminate" *ngIf="loadingDistricts"></mat-progress-bar>
+
+    <div class="ec-row">
+      <mat-form-field appearance="outline" class="ec-field">
+        <mat-label>Election type</mat-label>
+        <mat-select [(ngModel)]="electionType">
+          <mat-option *ngFor="let type of electionTypes" [value]="type">{{type}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="ec-field">
+        <mat-label>Election year</mat-label>
+        <mat-select [(ngModel)]="electionYear">
+          <mat-option *ngFor="let year of electionYears" [value]="year">{{year}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="ec-choice">
+      <div class="ec-choice-text">
+        <div class="ec-choice-label">Restrict geographic grouping</div>
+        <div class="ec-muted">Organizations can't draw overlapping polygons.</div>
+      </div>
+      <mat-button-toggle-group [(ngModel)]="geographical" aria-label="Restrict geographic grouping">
+        <mat-button-toggle [value]="false">No</mat-button-toggle>
+        <mat-button-toggle [value]="true">Yes</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+    <div class="ec-choice">
+      <div class="ec-choice-text">
+        <div class="ec-choice-label">Calling funded by</div>
+      </div>
+      <mat-button-toggle-group [(ngModel)]="fundedByCreatorOrg" aria-label="Calling funded by">
+        <mat-button-toggle [value]="true">Creator org</mat-button-toggle>
+        <mat-button-toggle [value]="false">Each org</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+    <div class="ec-choice">
+      <div class="ec-choice-text">
+        <div class="ec-choice-label">Texting funded by</div>
+      </div>
+      <mat-button-toggle-group [(ngModel)]="textingFundedByCreatorOrg" aria-label="Texting funded by">
+        <mat-button-toggle [value]="true">Creator org</mat-button-toggle>
+        <mat-button-toggle [value]="false">Each org</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+  </section>
+</mat-dialog-content>
+
+<mat-progress-bar *ngIf="creating" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-actions class="ec-actions">
+  <span class="ec-unsaved" *ngIf="hasInput && validationError && !creating">{{validationError}}</span>
+  <span class="spacer"></span>
+  <button mat-button [disabled]="creating" (click)="closeDialog()">Cancel</button>
+  <button mat-raised-button color="primary" [disabled]="creating || !!validationError" (click)="createCampaign()">Create campaign</button>
+</mat-dialog-actions>

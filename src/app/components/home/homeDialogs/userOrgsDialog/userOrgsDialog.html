@@ -1,0 +1,92 @@
+<div class="og-header">
+  <div class="og-heading">
+    <h2 mat-dialog-title class="og-title">My organizations</h2>
+    <div class="og-subtitle">{{dev ? 'All organizations (developer)' : 'Choose which organization to work in'}}</div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="!!switchingID" (click)="closeDialog()"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-progress-bar mode="indeterminate" *ngIf="loading || switchingID"></mat-progress-bar>
+
+<div class="og-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-button *ngIf="loadFailed" (click)="getUserOrganizations()">Retry</button>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-form-field appearance="outline" class="og-search" *ngIf="showSearch">
+  <mat-icon matPrefix>search</mat-icon>
+  <input matInput [(ngModel)]="search" placeholder="Search by name, description or ID" autocomplete="off">
+  <button mat-icon-button matSuffix *ngIf="search" matTooltip="Clear" (click)="search = ''"><mat-icon>close</mat-icon></button>
+</mat-form-field>
+
+<mat-dialog-content class="og-content">
+  <mat-tab-group mat-stretch-tabs animationDuration="0ms" [class.uo-single-tab]="!dev">
+
+    <mat-tab>
+      <ng-template matTabLabel>Active ({{activeOrgs.length}})</ng-template>
+      <div class="og-tab">
+        <div class="og-list" *ngIf="filteredActive.length">
+          <ng-container *ngFor="let org of filteredActive; trackBy: trackOrg">
+            <ng-container *ngTemplateOutlet="row; context: {$implicit: org}"></ng-container>
+          </ng-container>
+        </div>
+        <div class="og-empty" *ngIf="!loading && !loadFailed && !filteredActive.length">
+          <mat-icon>{{search ? 'search_off' : 'domain_add'}}</mat-icon>
+          <p *ngIf="search">No organizations match "{{search}}".</p>
+          <p *ngIf="!search">You're not in any active organization yet. Request to join one below.</p>
+        </div>
+      </div>
+    </mat-tab>
+
+    <mat-tab *ngIf="dev">
+      <ng-template matTabLabel>Inactive ({{inactiveOrgs.length}})</ng-template>
+      <div class="og-tab">
+        <div class="og-list" *ngIf="filteredInactive.length">
+          <ng-container *ngFor="let org of filteredInactive; trackBy: trackOrg">
+            <ng-container *ngTemplateOutlet="row; context: {$implicit: org}"></ng-container>
+          </ng-container>
+        </div>
+        <div class="og-empty" *ngIf="!loading && !loadFailed && !filteredInactive.length">
+          <mat-icon>{{search ? 'search_off' : 'inventory_2'}}</mat-icon>
+          <p>{{search ? 'No inactive organizations match "' + search + '".' : 'No inactive organizations.'}}</p>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</mat-dialog-content>
+
+<mat-dialog-actions class="uo-actions">
+  <button mat-stroked-button color="primary" class="uo-request" [disabled]="!!switchingID" (click)="openRequestOrganizationDialog()">
+    <mat-icon>group_add</mat-icon> Request to join an organization
+  </button>
+  <span class="spacer"></span>
+  <button mat-button [disabled]="!!switchingID" (click)="closeDialog()">Close</button>
+</mat-dialog-actions>
+
+<ng-template #row let-org>
+  <div class="og-row uo-row" role="button" tabindex="0" [class.uo-row-current]="isHome(org)" [class.og-row-archived]="!org.active"
+       [class.uo-row-busy]="!!switchingID" [attr.aria-disabled]="!!switchingID"
+       (click)="enterOrganization(org)" (keydown.enter)="enterOrganization(org)" (keydown.space)="$event.preventDefault(); enterOrganization(org)"
+       [attr.aria-label]="(isHome(org) ? 'Current organization: ' : 'Switch to ') + org.name">
+    <mat-icon class="uo-icon">{{isHome(org) ? 'home' : org.active ? 'domain' : 'block'}}</mat-icon>
+    <div class="og-row-text">
+      <div class="og-name">
+        <span class="og-name-text">{{org.name}}</span>
+        <span class="og-chip uo-chip-current" *ngIf="isHome(org)">Current</span>
+        <span class="og-chip og-chip-groupby" *ngIf="levelLabel(org)">{{levelLabel(org)}}</span>
+        <span class="og-chip og-chip-wide" *ngIf="org.subscription && org.subscription !== 'FREE'">{{org.subscription | titlecase}}</span>
+      </div>
+      <div class="og-preview" *ngIf="org.description">{{org.description}}</div>
+      <div class="og-meta">{{org.memberCount}} {{org.memberCount === 1 ? 'team member' : 'team members'}}</div>
+    </div>
+    <div class="og-row-actions">
+      <mat-spinner diameter="20" *ngIf="switchingID === org._id"></mat-spinner>
+      <span class="uo-enter" *ngIf="switchingID !== org._id && !isHome(org)"><span class="uo-enter-label">Switch</span><mat-icon class="uo-chevron">chevron_right</mat-icon></span>
+      <button mat-icon-button *ngIf="dev" [matTooltip]="'Copy ID: ' + org._id" (click)="copyID(org, $event)" (keydown.enter)="$event.stopPropagation()"><mat-icon>content_copy</mat-icon></button>
+    </div>
+  </div>
+</ng-template>

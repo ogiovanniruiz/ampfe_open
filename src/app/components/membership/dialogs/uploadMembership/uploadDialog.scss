@@ -1,0 +1,264 @@
+$brand: #193155;
+
+.mat-mdc-dialog-content.ud-content {
+  padding-top: 4px;
+  padding-bottom: 8px;
+}
+
+.ud-section-label {
+  margin: 16px 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.ud-section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.ud-hint {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+// File picker
+.ud-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 16px;
+  border: 2px dashed rgba(25, 49, 85, 0.3);
+  border-radius: 8px;
+  background: rgba(25, 49, 85, 0.02);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover, &.drag-over {
+    border-color: $brand;
+    background: rgba(25, 49, 85, 0.06);
+  }
+}
+
+.ud-dropzone-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: $brand;
+  opacity: 0.8;
+}
+
+.ud-dropzone-text {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.ud-file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 8px 10px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+
+  &.drag-over {
+    border-color: $brand;
+    background: rgba(25, 49, 85, 0.06);
+  }
+}
+
+.ud-file-icon {
+  flex: 0 0 auto;
+  color: $brand;
+}
+
+.ud-file-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.ud-file-name {
+  font-weight: 500;
+}
+
+// Details: two columns on desktop, one on phones
+.ud-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0 16px;
+
+  mat-form-field {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+.ud-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: #fff8e1;
+  color: #6d4c00;
+  font-size: 13px;
+
+  mat-icon {
+    flex: 0 0 auto;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
+  }
+}
+
+// Column mapping
+.ud-mapping {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 8px 16px;
+}
+
+.ud-map-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 4px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-left: 3px solid rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+
+  &.mapped {
+    border-left-color: $brand;
+  }
+}
+
+.ud-map-source {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.ud-map-label {
+  display: none;
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.ud-map-header {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 13px;
+}
+
+.ud-map-arrow {
+  flex: 0 0 auto;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: rgba(0, 0, 0, 0.35);
+}
+
+.ud-map-target {
+  flex: 1 1 0;
+  min-width: 0;
+
+}
+
+// Options
+.ud-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 8px 16px;
+}
+
+.ud-option .ud-hint {
+  margin: 2px 0 0 32px;
+}
+
+.ud-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: #fdecea;
+  color: #b71c1c;
+  font-size: 13px;
+
+  mat-icon {
+    flex: 0 0 auto;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.ud-actions {
+  gap: 8px;
+}
+
+@media (max-width: 767px) {
+  .ud-desktop-only {
+    display: none;
+  }
+
+  .ud-dropzone {
+    padding: 20px 12px;
+  }
+
+  .ud-mapping {
+    grid-template-columns: 1fr;
+  }
+
+  // Stack each mapping as a small card: column name above the field
+  .ud-map-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 8px 12px 4px;
+  }
+
+  .ud-map-label {
+    display: block;
+  }
+
+  .ud-map-arrow {
+    display: none;
+  }
+
+  .ud-map-target {
+    width: 100%;
+  }
+
+  // Upload on top, full width
+  .ud-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+
+    button {
+      width: 100%;
+      margin: 0 !important;
+    }
+
+    .spacer {
+      display: none;
+    }
+  }
+}
+
+.ud-tag-hint {
+  display: block;
+  margin-top: 8px;
+}

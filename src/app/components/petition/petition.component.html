@@ -1,0 +1,187 @@
+<main class="rg-page">
+  <section class="rg-card pt-card">
+
+    <!-- HEADER -->
+    <div class="pt-header-top">
+      <!-- The org's logo; a spinner while it loads, the petition icon when there is none -->
+      <ng-container *ngIf="{logo: orgLogo$ | async} as org">
+        <div class="pt-icon" *ngIf="org.logo === undefined" aria-label="Loading logo"><mat-spinner diameter="22"></mat-spinner></div>
+        <img class="pt-org-logo" *ngIf="org.logo" [src]="org.logo" alt="">
+        <div class="pt-icon" *ngIf="org.logo === null"><mat-icon>assignment</mat-icon></div>
+      </ng-container>
+      <div class="pt-heading">
+        <h1 class="rg-title">{{activity?.name || 'Petition'}}</h1>
+        <p class="rg-subtitle" *ngIf="activity?.description">{{activity.description}}</p>
+      </div>
+      <span class="ge-chip ge-chip-groupby" *ngIf="signaturesCount">{{signaturesCount}} saved</span>
+    </div>
+
+    <div class="ge-banner" *ngIf="loadError" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{loadError}}</span>
+      <span class="spacer"></span>
+      <button mat-button (click)="retryLoad()">Retry</button>
+    </div>
+
+    <mat-progress-bar *ngIf="!activity && !loadError" mode="indeterminate"></mat-progress-bar>
+
+    <form class="rg-form" [formGroup]="form" (ngSubmit)="save()" *ngIf="activity">
+
+      <!-- SIGNER -->
+      <div class="pt-section-title">Signer</div>
+      <div class="pt-grid pt-names">
+        <mat-form-field appearance="outline">
+          <mat-label>First name</mat-label>
+          <input matInput formControlName="firstName" autocomplete="off" required>
+          <mat-error>Enter a first name.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Middle name</mat-label>
+          <input matInput formControlName="middleName" autocomplete="off">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Last name</mat-label>
+          <input matInput formControlName="lastName" autocomplete="off" required>
+          <mat-error>Enter a last name.</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="pt-grid pt-contact">
+        <mat-form-field appearance="outline">
+          <mat-label>Phone</mat-label>
+          <span matPrefix class="pt-prefix">+1&nbsp;</span>
+          <input matInput type="tel" inputmode="tel" formControlName="phone" placeholder="(909) 555-1234" autocomplete="off" required>
+          <mat-error *ngIf="form.get('phone').hasError('required')">Enter a phone number.</mat-error>
+          <mat-error *ngIf="form.get('phone').hasError('phone')">Enter a 10-digit US phone number.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" *ngIf="showEmail">
+          <mat-label>{{emailRequired ? 'Email' : 'Email (optional)'}}</mat-label>
+          <input matInput type="email" formControlName="email" autocomplete="off" [required]="emailRequired">
+          <mat-hint *ngIf="form.value.optinEmail && !requireEmail">Required for email consent.</mat-hint>
+          <mat-error *ngIf="form.get('email').hasError('required')">Enter an email.</mat-error>
+          <mat-error *ngIf="form.get('email').hasError('email')">Enter a valid email address.</mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- CONSENT -->
+      <div class="pt-consents">
+        <div class="pt-consent" [class.pt-consent-checked]="form.value.optinTexting">
+          <mat-checkbox color="primary" formControlName="optinTexting">
+            <span class="pt-consent-title">Opt in to texting</span>
+            <span class="pt-consent-help">They agreed to receive texts{{orgName ? ' from ' + orgName : ''}}.<ng-container *ngIf="enableTexting"> Required to text them.</ng-container></span>
+          </mat-checkbox>
+        </div>
+        <div class="pt-consent" [class.pt-consent-checked]="form.value.optinEmail">
+          <mat-checkbox color="primary" formControlName="optinEmail">
+            <span class="pt-consent-title">Opt in to email</span>
+            <span class="pt-consent-help">They agreed to receive emails{{orgName ? ' from ' + orgName : ''}}.</span>
+          </mat-checkbox>
+        </div>
+      </div>
+
+      <!-- TAGS -->
+      <tag-picker class="pt-tags" *ngIf="pickerTags.length" label="Add a tag (optional)"
+                  [tags]="form.value.tags" [orgTags]="pickerTags" [definitions]="tagDefinitions"
+                  (tagsChange)="form.patchValue({tags: $event})"></tag-picker>
+
+      <div class="hh-extras pt-text" *ngIf="enableTexting">
+        <!-- Tooltips don't fire on disabled buttons, so the wrapper carries it -->
+        <span [matTooltip]="textFromFormHint">
+          <button mat-stroked-button color="primary" type="button" [disabled]="!canTextFromForm" (click)="textFromForm()">
+            <mat-icon>sms</mat-icon> Send Text
+          </button>
+        </span>
+      </div>
+
+      <!-- ADDRESS -->
+      <div class="pt-section-title">{{includeAddress ? 'Address' : 'Location'}}</div>
+      <div class="pt-grid pt-address" *ngIf="includeAddress; else zipOnly">
+        <mat-form-field appearance="outline" class="pt-address-line">
+          <mat-label>{{requireAddress ? 'Street address' : 'Street address (optional)'}}</mat-label>
+          <input matInput formControlName="addressLine" [matAutocomplete]="addressAuto" placeholder="Start typing to search" autocomplete="off" [required]="requireAddress">
+          <mat-spinner matSuffix diameter="18" *ngIf="resolvingAddress"></mat-spinner>
+          <!-- Options hold the street text (form values stay strings); the pick fills city and zip -->
+          <mat-autocomplete #addressAuto="matAutocomplete">
+            <mat-option *ngFor="let suggestion of addressSuggestions" [value]="suggestion.text.split(',')[0]"
+                        (onSelectionChange)="$event.isUserInput && pickAddress(suggestion)">{{suggestion.text}}</mat-option>
+          </mat-autocomplete>
+          <mat-hint>{{addressSearch.available ? 'Pick a suggestion to fill in the city and zip.' : 'Type the street address.'}}</mat-hint>
+          <mat-error *ngIf="form.get('addressLine').hasError('required')">Enter a street address.</mat-error>
+          <mat-error *ngIf="form.get('addressLine').hasError('partner')">Enter the street address for this city.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{requireAddress ? 'City' : 'City (optional)'}}</mat-label>
+          <input matInput formControlName="city" autocomplete="off" [required]="requireAddress">
+          <mat-error *ngIf="form.get('city').hasError('required')">Enter a city.</mat-error>
+          <mat-error *ngIf="form.get('city').hasError('partner')">Enter the city for this address.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Zip code</mat-label>
+          <input matInput inputmode="numeric" formControlName="zip" maxlength="10" autocomplete="off" required>
+          <mat-error>Enter a 5-digit zip code.</mat-error>
+        </mat-form-field>
+      </div>
+      <ng-template #zipOnly>
+        <div class="pt-grid pt-zip-only">
+          <mat-form-field appearance="outline">
+            <mat-label>Zip code</mat-label>
+            <input matInput inputmode="numeric" formControlName="zip" maxlength="10" autocomplete="off" required>
+            <mat-error>Enter a 5-digit zip code.</mat-error>
+          </mat-form-field>
+        </div>
+      </ng-template>
+
+      <!-- QUESTIONS -->
+      <ng-container *ngIf="visibleQuestions.length">
+        <div class="pt-section-title">Questions</div>
+        <div class="pt-questions">
+          <div class="hh-question" *ngFor="let item of visibleQuestions">
+            <div class="hh-question-text">
+              <span class="hh-question-number">{{item.number}}</span>
+              <span>{{item.question.question}}</span>
+            </div>
+
+            <ng-container [ngSwitch]="item.question.questionType">
+              <mat-radio-group *ngSwitchCase="'SINGLESELECT'" class="hh-options" color="primary"
+                               [ngModelOptions]="{standalone: true}"
+                               [(ngModel)]="answers[item.index]" (ngModelChange)="needsResponses = false">
+                <mat-radio-button *ngFor="let option of item.question.responses" [value]="option.response">{{option.response}}</mat-radio-button>
+              </mat-radio-group>
+
+              <div *ngSwitchCase="'MULTISELECT'" class="hh-options">
+                <mat-checkbox *ngFor="let option of item.question.responses" color="primary"
+                              [checked]="isChecked(item.index, option.response)"
+                              (change)="toggleOption(item.index, option.response, $event.checked)">{{option.response}}</mat-checkbox>
+              </div>
+
+              <mat-form-field *ngSwitchCase="'NOTES'" appearance="outline" class="hh-notes">
+                <mat-label>Answer</mat-label>
+                <textarea matInput rows="2" [ngModelOptions]="{standalone: true}" [(ngModel)]="answers[item.index]"></textarea>
+              </mat-form-field>
+            </ng-container>
+          </div>
+        </div>
+        <div class="hh-needs" *ngIf="needsResponses">Answer at least one multiple-choice question to save.</div>
+      </ng-container>
+
+      <div class="rg-banner" *ngIf="message" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{message}}</span>
+      </div>
+
+      <mat-progress-bar *ngIf="saving" mode="indeterminate" class="rg-progress"></mat-progress-bar>
+
+      <button mat-raised-button color="primary" type="submit" class="rg-submit" [disabled]="saving || !survey">
+        <mat-icon>{{pendingMember ? 'refresh' : 'draw'}}</mat-icon>
+        {{saving ? 'Saving…' : (pendingMember ? 'Retry saving answers' : 'Save signature')}}
+      </button>
+    </form>
+
+    <div class="pt-saved" *ngIf="savedName" role="status">
+      <mat-icon inline>check_circle</mat-icon>
+      <span>Signature saved for {{savedName}}.<ng-container *ngIf="lastSavedTexted"> · Text sent</ng-container></span>
+      <span class="spacer"></span>
+      <button mat-button color="primary" type="button" *ngIf="enableTexting && lastSavedMember && lastSavedTextingConsent && !lastSavedTexted" (click)="openSMSDialog(lastSavedMember, 'saved')"><mat-icon>sms</mat-icon> Send Text</button>
+    </div>
+  </section>
+</main>

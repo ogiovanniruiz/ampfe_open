@@ -1,0 +1,61 @@
+<div class="sd-header">
+  <h2 mat-dialog-title class="sd-title">Find a voter</h2>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" (click)="cancel()"><mat-icon>close</mat-icon></button>
+</div>
+<p class="sd-hint">Searches voters inside this campaign's districts.</p>
+
+<mat-dialog-content class="sd-content">
+  <div class="sd-row">
+    <mat-form-field appearance="outline" class="sd-field">
+      <mat-label>First name (optional)</mat-label>
+      <input matInput [(ngModel)]="firstName" autocomplete="off" (keyup.enter)="search()">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="sd-field">
+      <mat-label>Last name</mat-label>
+      <input matInput [(ngModel)]="lastName" autocomplete="off" required (keyup.enter)="search()">
+    </mat-form-field>
+  </div>
+
+  <div class="sd-banner" *ngIf="errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{errorMessage}}</span>
+  </div>
+
+  <ng-container *ngIf="results && !searching">
+    <div class="sd-empty" *ngIf="!results.length">
+      <mat-icon>person_search</mat-icon>
+      <p>No voters named "{{searchedName}}" in this campaign.</p>
+    </div>
+
+    <ng-container *ngIf="results.length">
+      <p class="sd-count">
+        {{hasMore ? 'Showing the first ' + results.length + ' matches. Add a first name to narrow it down.' : results.length + (results.length === 1 ? ' voter found' : ' voters found')}}
+      </p>
+      <div class="sd-results">
+        <div class="sd-result" *ngFor="let voter of results; trackBy: trackVoter">
+          <div class="sd-result-text">
+            <div class="sd-result-name">{{fullName(voter)}}</div>
+            <div class="sd-result-address">{{addressLine(voter) || 'No address on file'}}</div>
+            <div class="sd-chips">
+              <span class="sd-chip" *ngIf="voter.resident?.party">{{voter.resident.party}}</span>
+              <span class="sd-chip" *ngIf="voter.resident?.age">Age {{voter.resident.age}}</span>
+              <span class="sd-chip" *ngIf="voter.resident?.voterID">Voter ID {{voter.resident.voterID}}</span>
+            </div>
+          </div>
+          <button mat-stroked-button color="primary" *ngIf="hasLocation(voter)" (click)="showOnMap(voter)">
+            <mat-icon>place</mat-icon> Show on map
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+</mat-dialog-content>
+
+<mat-dialog-actions class="sd-actions" align="end">
+  <span class="spacer"></span>
+  <button mat-raised-button color="primary" [disabled]="searching" (click)="search()">
+    <mat-spinner *ngIf="searching" diameter="16" class="sd-button-spinner"></mat-spinner>
+    <mat-icon *ngIf="!searching">search</mat-icon> Search
+  </button>
+</mat-dialog-actions>

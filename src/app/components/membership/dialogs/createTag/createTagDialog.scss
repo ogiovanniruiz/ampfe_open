@@ -1,0 +1,190 @@
+// Values, swatches and preview; the rest comes from the shared dialog styles (ge-*, bt-*)
+
+.ct-type {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  mat-button-toggle {
+    flex: 1 1 auto;
+  }
+}
+
+.ct-range {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  mat-form-field {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.ct-range-to {
+  padding-bottom: 20px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.ct-word-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+
+  button {
+    margin-top: 10px;
+  }
+}
+
+.ct-word-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.ct-problem {
+  color: #c62828;
+  font-size: 13px;
+}
+
+.ct-base-label {
+  margin-bottom: 6px;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 13px;
+}
+
+.ct-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ct-swatch {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+
+  &.selected {
+    border-color: rgba(0, 0, 0, 0.87);
+    box-shadow: inset 0 0 0 2px #fff;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1e6fd9;
+    outline-offset: 2px;
+  }
+}
+
+// A swatch-sized button that opens the browser's color picker
+.ct-custom {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+  color: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  input[type="color"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+}
+
+.ct-menu-swatches {
+  max-width: 220px;
+  margin: 0;
+  padding: 8px 12px;
+}
+
+.ct-value {
+  gap: 10px;
+
+  // The word takes the free space so the move/remove buttons line up on the right
+  .bt-label {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.ct-dot {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+}
+
+.ct-reset {
+  min-width: 0;
+  padding: 0 6px;
+  font-size: 12px;
+  line-height: 28px;
+}
+
+.ct-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ct-chip {
+  max-width: 100%;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Editing: words can be renamed in place
+.ct-renamable {
+  cursor: text;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.3);
+
+  &:focus-visible {
+    outline: 2px solid #1e6fd9;
+    outline-offset: 2px;
+  }
+}
+
+.ct-rename {
+  flex: 1;
+  min-width: 0;
+}
+
+.ct-confirm {
+  display: flex;
+  gap: 10px;
+  margin: 8px 0 4px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(239, 108, 0, 0.1);
+  color: #8a4b00;
+  font-size: 14px;
+
+  mat-icon {
+    flex-shrink: 0;
+  }
+}

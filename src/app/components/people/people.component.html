@@ -1,0 +1,95 @@
+<header>
+    <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+</header>
+<section style="margin-top: 2%">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>Voter Search</mat-card-title>
+
+          </mat-card-header>
+
+          <mat-card-actions >
+            <section  >
+
+                <section  >
+                    <mat-form-field >
+                        <mat-label>First Name</mat-label>
+                        <input matInput #firstName>
+                    </mat-form-field>
+                    <mat-form-field >
+                        <mat-label>Last Name</mat-label>
+                        <input matInput #lastName>
+                    </mat-form-field>
+
+                </section>
+
+                <section >
+                    <mat-form-field >
+                        <mat-label>Street Number</mat-label>
+                        <input matInput #streetNum>
+                    </mat-form-field>
+                    <mat-form-field >
+                        <mat-label>Street Name</mat-label>
+                        <input matInput #streetName>
+                    </mat-form-field>
+                    <mat-form-field >
+                        <mat-label>City</mat-label>
+                        <input matInput #city>
+                    </mat-form-field>
+                    <mat-form-field >
+                        <mat-label>Zip</mat-label>
+                        <input matInput #zip>
+                    </mat-form-field>
+
+                </section>
+
+
+            </section>
+            <span class="spacer"></span>
+            <button mat-stroked-button color='primary' (click)='searchPerson()'>Search</button>
+            <button mat-stroked-button color="accent" (click)="firstName.value='';
+            lastName.value='';
+            streetNum.value='';
+            streetName.value='';
+            city.value='';
+            zip.value='';">CLEAR</button>
+          </mat-card-actions>
+          <mat-card-content>
+            <mat-error *ngIf="displayUserMsg">{{userMessage}}</mat-error> 
+            <mat-error *ngIf="errorMessage"><b>{{errorMessage}}</b></mat-error>
+            <mat-paginator #paginator [pageSize]="pageSize" [pageSizeOptions]="[10, 15, 50, 100, totalSize]" [length]="totalSize" [pageIndex]="currentPage" (page)="pageEvent = handlePage($event)" ></mat-paginator>
+            <table matSort (matSortChange)="sortData($event)" *ngIf='showResults'>
+                <tr>
+                  <th mat-sort-header="firstName">First Name</th>
+                  <th mat-sort-header="middleName">Middle Name</th>
+                  <th mat-sort-header="lastName">Last Name</th>
+                  <th mat-sort-header="phoneNumber">Phone Number</th>
+                  <th mat-sort-header="email">Email</th>
+                  <th mat-sort-header="city">City</th>
+                  <th mat-sort-header="zip">Zip</th>
+                </tr>
+                <tr *ngFor="let person of sortedMembers; let i = index">
+                    <td>{{person.resident.name.firstName}}</td>
+                    <td>{{person.resident.name.middleName}}</td>
+                    <td>{{person.resident.name.lastName}}</td>
+                    <td>{{person.resident.phones[0] ? person.resident.phones[0].number : ''}}</td>
+                    <td>{{person.resident.email ? person.resident.email: ''}}</td>
+                    <td>{{person.address.city}}</td>
+                    <td>{{person.address.zip}}</td>
+                    <td><button mat-button color="accent" (click)="openDetailsDialog(person)">SHOW DETAILS</button></td>
+                    <mat-divider></mat-divider>
+                </tr>
+              </table>
+
+          </mat-card-content>
+
+    </mat-card>
+
+
+
+</section>
+<body style="margin-top: 2%">
+</body>
+
+
+

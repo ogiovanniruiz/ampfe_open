@@ -1,0 +1,267 @@
+// Page layout and call controls. Residents, survey and answer buttons share the canvass
+// household dialog's hh-* styles; banners and chips come from the ge-* dialog styles.
+
+.pb-page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 16px 16px 32px;
+}
+
+.pb-card {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.pb-status-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.pb-org-logo {
+  flex-shrink: 0;
+  width: auto;
+  height: 40px;
+  max-width: 120px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.pb-org-logo-loading {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.pb-status-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.pb-activity {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.pb-caller {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 13px;
+}
+
+// Call state pill
+.pb-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+}
+
+.pb-pill-ready {
+  background: rgba(0, 0, 0, 0.07);
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.pb-pill-connecting {
+  background: rgba(255, 152, 0, 0.15);
+  color: #8a5300;
+}
+
+.pb-pill-incall {
+  background: rgba(46, 125, 50, 0.12);
+  color: #2e7d32;
+
+  &::before {
+    animation: pb-pulse 1.2s ease-in-out infinite;
+  }
+}
+
+.pb-pill-ringing {
+  background: rgba(25, 118, 210, 0.12);
+  color: #0d47a1;
+
+  &::before {
+    animation: pb-pulse 0.8s ease-in-out infinite;
+  }
+}
+
+// Someone just answered: a brief, hard-to-miss highlight
+.pb-pill-flash {
+  animation: pb-answered 0.5s ease-in-out 4;
+}
+
+@keyframes pb-answered {
+  0%, 100% { transform: scale(1); box-shadow: none; }
+  50% { transform: scale(1.12); box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.25); }
+}
+
+.pb-pill-done {
+  background: rgba(25, 49, 85, 0.1);
+  color: #193155;
+}
+
+@keyframes pb-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.pb-status-card .ge-banner,
+.pb-notice {
+  margin: 10px 0 0;
+}
+
+.pb-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(255, 152, 0, 0.12);
+  color: #6d4100;
+  font-size: 13px;
+
+  // A long notice would otherwise squeeze the icon and clip it (mat-icon hides its overflow)
+  mat-icon {
+    flex: none;
+  }
+}
+
+// Household
+.pb-address {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.pb-address-sub {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 13px;
+}
+
+.pb-household-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+
+  a,
+  button {
+    flex: 1 1 160px;
+  }
+
+  mat-icon {
+    margin-right: 4px;
+  }
+}
+
+// Call controls inside a resident
+.pb-call {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.pb-call-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  button {
+    flex: 1 1 160px;
+    height: 44px;
+    font-size: 15px;
+
+    mat-icon {
+      margin-right: 6px;
+    }
+  }
+}
+
+.pb-call-button.mat-mdc-raised-button:not([disabled]) {
+  background: #2e7d32;
+  color: #fff;
+}
+
+.pb-no-phone {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(0, 0, 0, 0.55);
+  font-size: 13px;
+}
+
+.pb-hint {
+  margin: 4px 0 0;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 13px;
+}
+
+// End of the list
+.pb-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 16px;
+  text-align: center;
+
+  mat-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 48px;
+    color: #2e7d32;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0 0 8px;
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+@media (max-width: 600px) {
+  .pb-page {
+    padding: 12px 12px 24px;
+  }
+
+  .pb-card {
+    padding: 12px;
+  }
+}

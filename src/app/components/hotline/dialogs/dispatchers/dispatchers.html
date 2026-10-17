@@ -1,0 +1,58 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel"  (click)="return();"><mat-icon>close</mat-icon></button>
+
+<h1 mat-dialog-title class="block-title"><b>Dispatchers</b></h1>
+<mat-dialog-content>
+  <table style="margin:auto;" mat-table [dataSource]="dispatchers" class="mat-elevation-z8">
+              
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> NAME </th>
+      <td mat-cell *matCellDef="let element"> {{element.name.fullName}} </td>
+    </ng-container>
+  
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef> EMAIL </th>
+      <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+    </ng-container>
+  
+
+    <ng-container matColumnDef="phonenumber">
+      <th mat-header-cell *matHeaderCellDef> PHONE NUMBER </th>
+      <td mat-cell *matCellDef="let element"> {{element.phonenumber}} </td>
+    </ng-container>
+  
+
+    <ng-container matColumnDef="active_call">
+      <th mat-header-cell *matHeaderCellDef> IN ACTIVE CALL </th>
+      <td mat-cell *matCellDef="let element"> {{element.in_active_call}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="on_duty">
+        <th mat-header-cell *matHeaderCellDef> ON DUTY </th>
+        <td mat-cell *matCellDef="let element">
+
+          <mat-slide-toggle style="margin: 10px" [checked]="element.on_duty" (click)="toggleOnDuty(!toggle.checked, element.userID)" #toggle></mat-slide-toggle>
+        </td>
+    </ng-container>
+
+    <ng-container matColumnDef="edit_dispatcher">
+      <th mat-header-cell *matHeaderCellDef> EDIT DISPATCHER </th>
+      <td mat-cell *matCellDef="let element"> <button mat-icon-button (click)="openEditDispatcherDialog(element)"><mat-icon>edit</mat-icon></button> </td>
+
+    </ng-container>
+  
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+</mat-dialog-content>
+<mat-dialog-actions  >
+
+  <mat-form-field class="dialog-element-long"> 
+    <mat-select placeholder="Create New Dispatcher" #newDispatcher>
+        <mat-option *ngFor="let user of users" value="user._id" (click)="createNewDispatcher(user)" [disabled]="dispatcherIDs.includes(user._id)">{{user.name.firstName}} {{user.name.lastName}} {{user.loginEmail}}</mat-option>
+
+    </mat-select>
+</mat-form-field >
+
+
+</mat-dialog-actions>

@@ -1,0 +1,34 @@
+<div class="tp-list" *ngIf="tags?.length">
+  <div class="tp-row" *ngFor="let tag of tags; let i = index; trackBy: trackTag">
+    <span class="tp-dot" [style.background]="colorOf(tag)"></span>
+    <span class="tp-label" [title]="tag.label">{{tag.label}}</span>
+
+    <mat-form-field *ngIf="definitionFor(tag.label)?.values?.length" appearance="outline" class="tp-value compact-field" subscriptSizing="dynamic">
+      <mat-label>Value</mat-label>
+      <mat-select [value]="tag.value || ''" (selectionChange)="setValue(i, $event.value)">
+        <mat-select-trigger>
+          <span class="tag-chip" [style.background]="colorOf(tag)" [style.color]="textOn(colorOf(tag))">{{tag.value || 'No value'}}</span>
+        </mat-select-trigger>
+        <mat-option value="">No value</mat-option>
+        <mat-option *ngFor="let option of definitionFor(tag.label).values" [value]="option.value">
+          <span class="tp-dot" [style.background]="option.color"></span> {{option.value}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-icon-button type="button" matTooltip="Remove tag" (click)="remove(i)"><mat-icon>close</mat-icon></button>
+  </div>
+</div>
+
+<mat-form-field appearance="outline" class="tp-add">
+  <mat-label>{{label}}</mat-label>
+  <mat-icon matPrefix>sell</mat-icon>
+  <input matInput [(ngModel)]="search" [ngModelOptions]="{standalone: true}" [matAutocomplete]="tagAuto" autocomplete="off">
+  <mat-autocomplete #tagAuto="matAutocomplete" (optionSelected)="add($event.option.value)">
+    <mat-option *ngFor="let option of options" [value]="option">
+      <span class="tp-dot" [style.background]="definitionFor(option) ? (definitionFor(option).values[0]?.color || definitionFor(option).color) : '#e0e0e0'"></span>
+      {{option}}<span class="tp-hint" *ngIf="definitionFor(option)?.values?.length"> · {{definitionFor(option).values.length}} values</span>
+    </mat-option>
+  </mat-autocomplete>
+  <mat-hint *ngIf="!options.length && !search">All of the organization's tags are added.</mat-hint>
+</mat-form-field>

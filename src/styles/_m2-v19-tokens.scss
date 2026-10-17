@@ -1,0 +1,525 @@
+// Generated during the Angular 20 upgrade (2026-10-14). Material 20 rebuilt its M2 theme on the new
+// color system, which shifted many token values (disabled text, labels, slide toggles, state layers...).
+// These declarations put back the values production had on Material 19, under the v20 token names and
+// at the same selectors Material 20 uses, so the app looks the same. Loaded right after
+// mat.all-component-themes in styles.scss; our own overrides there come after it and still win.
+
+.mat-accent {
+  --mat-option-focus-state-layer-color: rgba(0, 0, 0, .04);
+  --mat-option-selected-state-layer-color: rgba(0, 0, 0, .04);
+  --mat-pseudo-checkbox-full-disabled-selected-icon-color: #b0b0b0;
+  --mat-pseudo-checkbox-full-disabled-unselected-icon-color: #b0b0b0;
+  --mat-pseudo-checkbox-minimal-disabled-selected-checkmark-color: #b0b0b0;
+  --mat-slider-focus-state-layer-color: rgba(224, 178, 116, .2);
+  --mat-slider-hover-state-layer-color: rgba(224, 178, 116, .05);
+}
+.mat-accent .mdc-list-item__end {
+  --mat-radio-checked-ripple-color: var(--mat-sys-primary);
+  --mat-radio-disabled-selected-icon-color: black;
+  --mat-radio-disabled-unselected-icon-color: black;
+  --mat-radio-label-text-color: var(--mat-sys-on-surface);
+  --mat-radio-ripple-color: var(--mat-sys-on-surface);
+  --mat-radio-unselected-focus-icon-color: #212121;
+  --mat-radio-unselected-hover-icon-color: #212121;
+  --mat-radio-unselected-pressed-icon-color: rgba(0, 0, 0, .54);
+}
+.mat-accent .mdc-list-item__start {
+  --mat-radio-checked-ripple-color: var(--mat-sys-primary);
+  --mat-radio-disabled-selected-icon-color: black;
+  --mat-radio-disabled-unselected-icon-color: black;
+  --mat-radio-label-text-color: var(--mat-sys-on-surface);
+  --mat-radio-ripple-color: var(--mat-sys-on-surface);
+  --mat-radio-unselected-focus-icon-color: #212121;
+  --mat-radio-unselected-hover-icon-color: #212121;
+  --mat-radio-unselected-pressed-icon-color: rgba(0, 0, 0, .54);
+}
+.mat-datepicker-content.mat-accent {
+  --mat-datepicker-calendar-date-disabled-state-text-color: rgba(0, 0, 0, .38);
+  --mat-datepicker-calendar-date-focus-state-background-color: rgba(224, 178, 116, .3);
+  --mat-datepicker-calendar-date-hover-state-background-color: rgba(224, 178, 116, .3);
+  --mat-datepicker-calendar-date-in-comparison-range-state-background-color: rgba(249, 171, 0, .2);
+  --mat-datepicker-calendar-date-preview-state-outline-color: rgba(0, 0, 0, .24);
+  --mat-datepicker-calendar-date-selected-disabled-state-background-color: rgba(224, 178, 116, .4);
+  --mat-datepicker-calendar-date-today-disabled-state-outline-color: rgba(0, 0, 0, .18);
+  --mat-datepicker-calendar-date-today-outline-color: rgba(0, 0, 0, .38);
+  --mat-datepicker-calendar-period-button-text-color: black;
+  --mat-datepicker-range-input-disabled-state-separator-color: rgba(0, 0, 0, .38);
+  --mat-datepicker-range-input-disabled-state-text-color: rgba(0, 0, 0, .38);
+  --mat-datepicker-toggle-active-state-icon-color: #193155;
+}
+.mat-datepicker-content.mat-warn {
+  --mat-datepicker-calendar-date-disabled-state-text-color: rgba(0, 0, 0, .38);
+  --mat-datepicker-calendar-date-focus-state-background-color: rgba(173, 29, 46, .3);
+  --mat-datepicker-calendar-date-hover-state-background-color: rgba(173, 29, 46, .3);
+  --mat-datepicker-calendar-date-in-comparison-range-state-background-color: rgba(249, 171, 0, .2);
+  --mat-datepicker-calendar-date-preview-state-outline-color: rgba(0, 0, 0, .24);
+  --mat-datepicker-calendar-date-selected-disabled-state-background-color: rgba(173, 29, 46, .4);
+  --mat-datepicker-calendar-date-today-disabled-state-outline-color: rgba(0, 0, 0, .18);
+  --mat-datepicker-calendar-date-today-outline-color: rgba(0, 0, 0, .38);
+  --mat-datepicker-calendar-period-button-text-color: black;
+  --mat-datepicker-range-input-disabled-state-separator-color: rgba(0, 0, 0, .38);
+  --mat-datepicker-range-input-disabled-state-text-color: rgba(0, 0, 0, .38);
+  --mat-datepicker-toggle-active-state-icon-color: #193155;
+}
+.mat-datepicker-toggle-active.mat-accent {
+  --mat-datepicker-calendar-date-disabled-state-text-color: rgba(0, 0, 0, .38);
+  --mat-datepicker-calendar-date-focus-state-background-color: rgba(25, 49, 85, .3);
+  --mat-datepicker-calendar-date-hover-state-background-color: rgba(25, 49, 85, .3);
+  --mat-datepicker-calendar-date-in-comparison-range-state-background-color: rgba(249, 171, 0, .2);
+  --mat-datepicker-calendar-date-in-range-state-background-color: rgba(25, 49, 85, .2);
+  --mat-datepicker-calendar-date-preview-state-outline-color: rgba(0, 0, 0, .24);
+  --mat-datepicker-calendar-date-selected-disabled-state-background-color: rgba(25, 49, 85, .4);
+  --mat-datepicker-calendar-date-selected-state-background-color: #193155;
+  --mat-datepicker-calendar-date-today-disabled-state-outline-color: rgba(0, 0, 0, .18);
+  --mat-datepicker-calendar-date-today-outline-color: rgba(0, 0, 0, .38);
+  --mat-datepicker-calendar-period-button-text-color: black;
+  --mat-datepicker-range-input-disabled-state-separator-color: rgba(0, 0, 0, .38);
+  --mat-datepicker-range-input-disabled-state-text-color: rgba(0, 0, 0, .38);
+}
+.mat-datepicker-toggle-active.mat-warn {
+  --mat-datepicker-calendar-date-disabled-state-text-color: rgba(0, 0, 0, .38);
+  --mat-datepicker-calendar-date-focus-state-background-color: rgba(25, 49, 85, .3);
+  --mat-datepicker-calendar-date-hover-state-background-color: rgba(25, 49, 85, .3);
+  --mat-datepicker-calendar-date-in-comparison-range-state-background-color: rgba(249, 171, 0, .2);
+  --mat-datepicker-calendar-date-in-range-state-background-color: rgba(25, 49, 85, .2);
+  --mat-datepicker-calendar-date-preview-state-outline-color: rgba(0, 0, 0, .24);
+  --mat-datepicker-calendar-date-selected-disabled-state-background-color: rgba(25, 49, 85, .4);
+  --mat-datepicker-calendar-date-selected-state-background-color: #193155;
+  --mat-datepicker-calendar-date-today-disabled-state-outline-color: rgba(0, 0, 0, .18);
+  --mat-datepicker-calendar-date-today-outline-color: rgba(0, 0, 0, .38);
+  --mat-datepicker-calendar-period-button-text-color: black;
+  --mat-datepicker-range-input-disabled-state-separator-color: rgba(0, 0, 0, .38);
+  --mat-datepicker-range-input-disabled-state-text-color: rgba(0, 0, 0, .38);
+}
+.mat-mdc-button.mat-accent {
+  --mat-button-text-ripple-color: rgba(224, 178, 116, .1);
+}
+.mat-mdc-button.mat-primary {
+  --mat-button-text-ripple-color: rgba(25, 49, 85, .1);
+}
+.mat-mdc-button.mat-warn {
+  --mat-button-text-ripple-color: rgba(173, 29, 46, .1);
+}
+.mat-mdc-checkbox.mat-primary {
+  --mat-checkbox-disabled-selected-icon-color: rgba(0, 0, 0, .38);
+  --mat-checkbox-disabled-unselected-icon-color: rgba(0, 0, 0, .38);
+  --mat-checkbox-unselected-focus-icon-color: #212121;
+  --mat-checkbox-unselected-focus-state-layer-color: black;
+  --mat-checkbox-unselected-hover-icon-color: #212121;
+  --mat-checkbox-unselected-hover-state-layer-color: black;
+  --mat-checkbox-unselected-pressed-state-layer-color: black;
+}
+.mat-mdc-checkbox.mat-warn {
+  --mat-checkbox-disabled-selected-icon-color: rgba(0, 0, 0, .38);
+  --mat-checkbox-disabled-unselected-icon-color: rgba(0, 0, 0, .38);
+  --mat-checkbox-unselected-focus-icon-color: #212121;
+  --mat-checkbox-unselected-focus-state-layer-color: black;
+  --mat-checkbox-unselected-hover-icon-color: #212121;
+  --mat-checkbox-unselected-hover-state-layer-color: black;
+  --mat-checkbox-unselected-pressed-state-layer-color: black;
+}
+.mat-mdc-fab.mat-accent {
+  --mat-fab-ripple-color: rgba(255, 255, 255, .1);
+  --mat-fab-small-container-color: white;
+  --mat-fab-small-foreground-color: black;
+  --mat-fab-small-ripple-color: rgba(0, 0, 0, .1);
+  --mat-fab-small-state-layer-color: black;
+}
+.mat-mdc-fab.mat-primary {
+  --mat-fab-ripple-color: rgba(255, 255, 255, .1);
+  --mat-fab-small-container-color: white;
+  --mat-fab-small-foreground-color: black;
+  --mat-fab-small-ripple-color: rgba(0, 0, 0, .1);
+  --mat-fab-small-state-layer-color: black;
+}
+.mat-mdc-fab.mat-warn {
+  --mat-fab-ripple-color: rgba(255, 255, 255, .1);
+  --mat-fab-small-container-color: white;
+  --mat-fab-small-foreground-color: black;
+  --mat-fab-small-ripple-color: rgba(0, 0, 0, .1);
+  --mat-fab-small-state-layer-color: black;
+}
+.mat-mdc-form-field.mat-accent {
+  --mat-select-disabled-arrow-color: rgba(0, 0, 0, .38);
+  --mat-select-disabled-trigger-text-color: rgba(0, 0, 0, .38);
+  --mat-select-focused-arrow-color: rgba(224, 178, 116, .87);
+  --mat-select-invalid-arrow-color: rgba(173, 29, 46, .87);
+  --mat-select-placeholder-text-color: rgba(0, 0, 0, .6);
+}
+.mat-mdc-form-field.mat-warn {
+  --mat-select-disabled-arrow-color: rgba(0, 0, 0, .38);
+  --mat-select-disabled-trigger-text-color: rgba(0, 0, 0, .38);
+  --mat-select-focused-arrow-color: rgba(173, 29, 46, .87);
+  --mat-select-invalid-arrow-color: rgba(173, 29, 46, .87);
+  --mat-select-placeholder-text-color: rgba(0, 0, 0, .6);
+}
+.mat-mdc-icon-button.mat-accent {
+  --mat-icon-button-ripple-color: rgba(224, 178, 116, .1);
+}
+.mat-mdc-icon-button.mat-primary {
+  --mat-icon-button-ripple-color: rgba(25, 49, 85, .1);
+}
+.mat-mdc-icon-button.mat-warn {
+  --mat-icon-button-ripple-color: rgba(173, 29, 46, .1);
+}
+.mat-mdc-list-option {
+  --mat-checkbox-disabled-label-color: rgba(0, 0, 0, .38);
+  --mat-checkbox-disabled-selected-icon-color: rgba(0, 0, 0, .38);
+  --mat-checkbox-disabled-unselected-icon-color: rgba(0, 0, 0, .38);
+  --mat-checkbox-unselected-focus-icon-color: #212121;
+  --mat-checkbox-unselected-focus-state-layer-color: black;
+  --mat-checkbox-unselected-hover-icon-color: #212121;
+  --mat-checkbox-unselected-hover-state-layer-color: black;
+  --mat-checkbox-unselected-pressed-state-layer-color: black;
+}
+.mat-mdc-list-option.mat-accent {
+  --mat-checkbox-disabled-label-color: rgba(0, 0, 0, .38);
+  --mat-checkbox-disabled-selected-icon-color: rgba(0, 0, 0, .38);
+  --mat-checkbox-disabled-unselected-icon-color: rgba(0, 0, 0, .38);
+  --mat-checkbox-unselected-focus-icon-color: #212121;
+  --mat-checkbox-unselected-focus-state-layer-color: black;
+  --mat-checkbox-unselected-hover-icon-color: #212121;
+  --mat-checkbox-unselected-hover-state-layer-color: black;
+  --mat-checkbox-unselected-pressed-state-layer-color: black;
+}
+.mat-mdc-list-option.mat-warn {
+  --mat-checkbox-disabled-label-color: rgba(0, 0, 0, .38);
+  --mat-checkbox-disabled-selected-icon-color: rgba(0, 0, 0, .38);
+  --mat-checkbox-disabled-unselected-icon-color: rgba(0, 0, 0, .38);
+  --mat-checkbox-unselected-focus-icon-color: #212121;
+  --mat-checkbox-unselected-focus-state-layer-color: black;
+  --mat-checkbox-unselected-hover-icon-color: #212121;
+  --mat-checkbox-unselected-hover-state-layer-color: black;
+  --mat-checkbox-unselected-pressed-state-layer-color: black;
+}
+.mat-mdc-mini-fab.mat-accent {
+  --mat-fab-container-color: white;
+  --mat-fab-foreground-color: black;
+  --mat-fab-ripple-color: rgba(0, 0, 0, .1);
+  --mat-fab-small-ripple-color: rgba(255, 255, 255, .1);
+  --mat-fab-state-layer-color: black;
+}
+.mat-mdc-mini-fab.mat-primary {
+  --mat-fab-container-color: white;
+  --mat-fab-foreground-color: black;
+  --mat-fab-ripple-color: rgba(0, 0, 0, .1);
+  --mat-fab-small-ripple-color: rgba(255, 255, 255, .1);
+  --mat-fab-state-layer-color: black;
+}
+.mat-mdc-mini-fab.mat-warn {
+  --mat-fab-container-color: white;
+  --mat-fab-foreground-color: black;
+  --mat-fab-ripple-color: rgba(0, 0, 0, .1);
+  --mat-fab-small-ripple-color: rgba(255, 255, 255, .1);
+  --mat-fab-state-layer-color: black;
+}
+.mat-mdc-outlined-button.mat-accent {
+  --mat-button-outlined-ripple-color: rgba(224, 178, 116, .1);
+}
+.mat-mdc-outlined-button.mat-primary {
+  --mat-button-outlined-ripple-color: rgba(25, 49, 85, .1);
+}
+.mat-mdc-outlined-button.mat-warn {
+  --mat-button-outlined-ripple-color: rgba(173, 29, 46, .1);
+}
+.mat-mdc-radio-button.mat-accent {
+  --mat-radio-disabled-label-color: rgba(0, 0, 0, .38);
+  --mat-radio-disabled-selected-icon-color: black;
+  --mat-radio-disabled-unselected-icon-color: black;
+  --mat-radio-ripple-color: black;
+  --mat-radio-unselected-focus-icon-color: #212121;
+  --mat-radio-unselected-hover-icon-color: #212121;
+  --mat-radio-unselected-pressed-icon-color: rgba(0, 0, 0, .54);
+}
+.mat-mdc-radio-button.mat-primary {
+  --mat-radio-disabled-label-color: rgba(0, 0, 0, .38);
+  --mat-radio-disabled-selected-icon-color: black;
+  --mat-radio-disabled-unselected-icon-color: black;
+  --mat-radio-ripple-color: black;
+  --mat-radio-unselected-focus-icon-color: #212121;
+  --mat-radio-unselected-hover-icon-color: #212121;
+  --mat-radio-unselected-pressed-icon-color: rgba(0, 0, 0, .54);
+}
+.mat-mdc-radio-button.mat-warn {
+  --mat-radio-disabled-label-color: rgba(0, 0, 0, .38);
+  --mat-radio-disabled-selected-icon-color: black;
+  --mat-radio-disabled-unselected-icon-color: black;
+  --mat-radio-ripple-color: black;
+  --mat-radio-unselected-focus-icon-color: #212121;
+  --mat-radio-unselected-hover-icon-color: #212121;
+  --mat-radio-unselected-pressed-icon-color: rgba(0, 0, 0, .54);
+}
+.mat-mdc-raised-button.mat-accent {
+  --mat-button-protected-ripple-color: rgba(255, 255, 255, .1);
+}
+.mat-mdc-raised-button.mat-primary {
+  --mat-button-protected-ripple-color: rgba(255, 255, 255, .1);
+}
+.mat-mdc-raised-button.mat-warn {
+  --mat-button-protected-ripple-color: rgba(255, 255, 255, .1);
+}
+.mat-mdc-slide-toggle.mat-accent {
+  --mat-slide-toggle-selected-focus-handle-color: #a8743c;
+  --mat-slide-toggle-selected-hover-handle-color: #a8743c;
+  --mat-slide-toggle-selected-pressed-handle-color: #a8743c;
+}
+.mat-mdc-slide-toggle.mat-warn {
+  --mat-slide-toggle-selected-focus-handle-color: #6e0c19;
+  --mat-slide-toggle-selected-hover-handle-color: #6e0c19;
+  --mat-slide-toggle-selected-pressed-handle-color: #6e0c19;
+}
+.mat-mdc-standard-chip {
+  --mat-chip-disabled-label-text-color: #212121;
+  --mat-chip-elevated-container-color: rgb(224.4, 224.4, 224.4);
+  --mat-chip-elevated-disabled-container-color: rgb(224.4, 224.4, 224.4);
+  --mat-chip-elevated-selected-container-color: rgb(224.4, 224.4, 224.4);
+  --mat-chip-flat-disabled-selected-container-color: rgb(224.4, 224.4, 224.4);
+  --mat-chip-focus-state-layer-color: black;
+  --mat-chip-hover-state-layer-color: black;
+  --mat-chip-label-text-color: #212121;
+  --mat-chip-selected-disabled-trailing-icon-color: #212121;
+  --mat-chip-selected-focus-state-layer-color: black;
+  --mat-chip-selected-hover-state-layer-color: black;
+  --mat-chip-selected-label-text-color: #212121;
+  --mat-chip-selected-trailing-icon-color: #212121;
+  --mat-chip-with-icon-disabled-icon-color: #212121;
+  --mat-chip-with-icon-icon-color: #212121;
+  --mat-chip-with-icon-selected-icon-color: #212121;
+  --mat-chip-with-trailing-icon-disabled-trailing-icon-color: #212121;
+  --mat-chip-with-trailing-icon-trailing-icon-color: #212121;
+}
+.mat-mdc-standard-chip.mat-mdc-chip-highlighted.mat-accent {
+  --mat-chip-focus-state-layer-color: black;
+  --mat-chip-hover-state-layer-color: black;
+  --mat-chip-selected-focus-state-layer-color: black;
+  --mat-chip-selected-hover-state-layer-color: black;
+}
+.mat-mdc-standard-chip.mat-mdc-chip-highlighted.mat-primary {
+  --mat-chip-focus-state-layer-color: black;
+  --mat-chip-hover-state-layer-color: black;
+  --mat-chip-selected-focus-state-layer-color: black;
+  --mat-chip-selected-hover-state-layer-color: black;
+}
+.mat-mdc-standard-chip.mat-mdc-chip-highlighted.mat-warn {
+  --mat-chip-focus-state-layer-color: black;
+  --mat-chip-hover-state-layer-color: black;
+  --mat-chip-selected-focus-state-layer-color: black;
+  --mat-chip-selected-hover-state-layer-color: black;
+}
+.mat-mdc-standard-chip.mat-mdc-chip-selected.mat-accent {
+  --mat-chip-focus-state-layer-color: black;
+  --mat-chip-hover-state-layer-color: black;
+  --mat-chip-selected-focus-state-layer-color: black;
+  --mat-chip-selected-hover-state-layer-color: black;
+}
+.mat-mdc-standard-chip.mat-mdc-chip-selected.mat-primary {
+  --mat-chip-focus-state-layer-color: black;
+  --mat-chip-hover-state-layer-color: black;
+  --mat-chip-selected-focus-state-layer-color: black;
+  --mat-chip-selected-hover-state-layer-color: black;
+}
+.mat-mdc-standard-chip.mat-mdc-chip-selected.mat-warn {
+  --mat-chip-focus-state-layer-color: black;
+  --mat-chip-hover-state-layer-color: black;
+  --mat-chip-selected-focus-state-layer-color: black;
+  --mat-chip-selected-hover-state-layer-color: black;
+}
+.mat-mdc-tab-group {
+  --mat-tab-disabled-ripple-color: rgba(0, 0, 0, .38);
+  --mat-tab-pagination-icon-color: black;
+}
+.mat-mdc-tab-group.mat-accent {
+  --mat-tab-disabled-ripple-color: rgba(0, 0, 0, .38);
+  --mat-tab-inactive-focus-label-text-color: rgba(0, 0, 0, .6);
+  --mat-tab-inactive-hover-label-text-color: rgba(0, 0, 0, .6);
+  --mat-tab-inactive-label-text-color: rgba(0, 0, 0, .6);
+  --mat-tab-pagination-icon-color: black;
+}
+.mat-mdc-tab-group.mat-warn {
+  --mat-tab-disabled-ripple-color: rgba(0, 0, 0, .38);
+  --mat-tab-inactive-focus-label-text-color: rgba(0, 0, 0, .6);
+  --mat-tab-inactive-hover-label-text-color: rgba(0, 0, 0, .6);
+  --mat-tab-inactive-label-text-color: rgba(0, 0, 0, .6);
+  --mat-tab-pagination-icon-color: black;
+}
+.mat-mdc-tab-nav-bar {
+  --mat-tab-disabled-ripple-color: rgba(0, 0, 0, .38);
+  --mat-tab-pagination-icon-color: black;
+}
+.mat-mdc-tab-nav-bar.mat-accent {
+  --mat-tab-disabled-ripple-color: rgba(0, 0, 0, .38);
+  --mat-tab-inactive-focus-label-text-color: rgba(0, 0, 0, .6);
+  --mat-tab-inactive-hover-label-text-color: rgba(0, 0, 0, .6);
+  --mat-tab-inactive-label-text-color: rgba(0, 0, 0, .6);
+  --mat-tab-pagination-icon-color: black;
+}
+.mat-mdc-tab-nav-bar.mat-warn {
+  --mat-tab-disabled-ripple-color: rgba(0, 0, 0, .38);
+  --mat-tab-inactive-focus-label-text-color: rgba(0, 0, 0, .6);
+  --mat-tab-inactive-hover-label-text-color: rgba(0, 0, 0, .6);
+  --mat-tab-inactive-label-text-color: rgba(0, 0, 0, .6);
+  --mat-tab-pagination-icon-color: black;
+}
+.mat-mdc-unelevated-button.mat-accent {
+  --mat-button-filled-ripple-color: rgba(255, 255, 255, .1);
+}
+.mat-mdc-unelevated-button.mat-primary {
+  --mat-button-filled-ripple-color: rgba(255, 255, 255, .1);
+}
+.mat-mdc-unelevated-button.mat-warn {
+  --mat-button-filled-ripple-color: rgba(255, 255, 255, .1);
+}
+.mat-primary {
+  --mat-pseudo-checkbox-full-disabled-selected-icon-color: #b0b0b0;
+  --mat-pseudo-checkbox-full-disabled-unselected-icon-color: #b0b0b0;
+  --mat-pseudo-checkbox-minimal-disabled-selected-checkmark-color: #b0b0b0;
+}
+.mat-warn {
+  --mat-option-focus-state-layer-color: rgba(0, 0, 0, .04);
+  --mat-option-selected-state-layer-color: rgba(0, 0, 0, .04);
+  --mat-pseudo-checkbox-full-disabled-selected-icon-color: #b0b0b0;
+  --mat-pseudo-checkbox-full-disabled-unselected-icon-color: #b0b0b0;
+  --mat-pseudo-checkbox-minimal-disabled-selected-checkmark-color: #b0b0b0;
+  --mat-slider-focus-state-layer-color: rgba(173, 29, 46, .2);
+  --mat-slider-hover-state-layer-color: rgba(173, 29, 46, .05);
+}
+.mat-warn .mdc-list-item__end {
+  --mat-radio-checked-ripple-color: var(--mat-sys-primary);
+  --mat-radio-disabled-selected-icon-color: black;
+  --mat-radio-disabled-unselected-icon-color: black;
+  --mat-radio-label-text-color: var(--mat-sys-on-surface);
+  --mat-radio-ripple-color: var(--mat-sys-on-surface);
+  --mat-radio-unselected-focus-icon-color: #212121;
+  --mat-radio-unselected-hover-icon-color: #212121;
+  --mat-radio-unselected-pressed-icon-color: rgba(0, 0, 0, .54);
+}
+.mat-warn .mdc-list-item__start {
+  --mat-radio-checked-ripple-color: var(--mat-sys-primary);
+  --mat-radio-disabled-selected-icon-color: black;
+  --mat-radio-disabled-unselected-icon-color: black;
+  --mat-radio-label-text-color: var(--mat-sys-on-surface);
+  --mat-radio-ripple-color: var(--mat-sys-on-surface);
+  --mat-radio-unselected-focus-icon-color: #212121;
+  --mat-radio-unselected-hover-icon-color: #212121;
+  --mat-radio-unselected-pressed-icon-color: rgba(0, 0, 0, .54);
+}
+.mdc-list-item__end {
+  --mat-radio-checked-ripple-color: var(--mat-sys-primary);
+  --mat-radio-disabled-selected-icon-color: black;
+  --mat-radio-disabled-unselected-icon-color: black;
+  --mat-radio-label-text-color: var(--mat-sys-on-surface);
+  --mat-radio-ripple-color: var(--mat-sys-on-surface);
+  --mat-radio-unselected-focus-icon-color: #212121;
+  --mat-radio-unselected-hover-icon-color: #212121;
+  --mat-radio-unselected-pressed-icon-color: rgba(0, 0, 0, .54);
+}
+.mdc-list-item__start {
+  --mat-radio-checked-ripple-color: var(--mat-sys-primary);
+  --mat-radio-disabled-selected-icon-color: black;
+  --mat-radio-disabled-unselected-icon-color: black;
+  --mat-radio-label-text-color: var(--mat-sys-on-surface);
+  --mat-radio-ripple-color: var(--mat-sys-on-surface);
+  --mat-radio-unselected-focus-icon-color: #212121;
+  --mat-radio-unselected-hover-icon-color: #212121;
+  --mat-radio-unselected-pressed-icon-color: rgba(0, 0, 0, .54);
+}
+html {
+  --mat-badge-disabled-state-background-color: #b9b9b9;
+  --mat-badge-disabled-state-text-color: rgba(0, 0, 0, .38);
+  --mat-button-filled-disabled-container-color: rgba(0, 0, 0, .12);
+  --mat-button-filled-disabled-state-layer-color: black;
+  --mat-button-outlined-disabled-state-layer-color: black;
+  --mat-button-protected-disabled-container-color: rgba(0, 0, 0, .12);
+  --mat-button-protected-disabled-state-layer-color: black;
+  --mat-button-text-disabled-state-layer-color: black;
+  --mat-button-toggle-disabled-selected-state-background-color: #bdbdbd;
+  --mat-button-toggle-disabled-selected-state-text-color: rgba(0, 0, 0, .87);
+  --mat-button-toggle-disabled-state-text-color: rgba(0, 0, 0, .26);
+  --mat-button-toggle-divider-color: rgb(224.4, 224.4, 224.4);
+  --mat-button-toggle-legacy-disabled-selected-state-background-color: #bdbdbd;
+  --mat-button-toggle-legacy-disabled-state-background-color: #eeeeee;
+  --mat-button-toggle-legacy-disabled-state-text-color: rgba(0, 0, 0, .26);
+  --mat-button-toggle-legacy-selected-state-background-color: #e0e0e0;
+  --mat-button-toggle-legacy-selected-state-text-color: rgba(0, 0, 0, .54);
+  --mat-button-toggle-legacy-state-layer-color: rgba(0, 0, 0, .12);
+  --mat-button-toggle-legacy-text-color: rgba(0, 0, 0, .38);
+  --mat-button-toggle-selected-state-background-color: #e0e0e0;
+  --mat-button-toggle-state-layer-color: black;
+  --mat-checkbox-selected-focus-state-layer-opacity: .16;
+  --mat-checkbox-selected-pressed-state-layer-opacity: .16;
+  --mat-checkbox-unselected-focus-state-layer-opacity: .16;
+  --mat-checkbox-unselected-pressed-state-layer-opacity: .16;
+  --mat-dialog-supporting-text-color: rgba(0, 0, 0, .6);
+  --mat-expansion-header-disabled-state-text-color: rgba(0, 0, 0, .26);
+  --mat-expansion-header-focus-state-layer-color: rgba(0, 0, 0, .04);
+  --mat-fab-disabled-state-container-color: rgba(0, 0, 0, .12);
+  --mat-fab-disabled-state-foreground-color: rgba(0, 0, 0, .38);
+  --mat-fab-disabled-state-layer-color: black;
+  --mat-fab-small-disabled-state-container-color: rgba(0, 0, 0, .12);
+  --mat-fab-small-disabled-state-foreground-color: rgba(0, 0, 0, .38);
+  --mat-fab-small-disabled-state-layer-color: black;
+  --mat-form-field-disabled-input-text-placeholder-color: rgba(0, 0, 0, .38);
+  --mat-form-field-disabled-select-arrow-color: rgba(0, 0, 0, .38);
+  --mat-form-field-filled-disabled-active-indicator-color: rgba(0, 0, 0, .06);
+  --mat-form-field-filled-disabled-input-text-color: rgba(0, 0, 0, .38);
+  --mat-form-field-filled-disabled-label-text-color: rgba(0, 0, 0, .38);
+  --mat-form-field-filled-input-text-placeholder-color: rgba(0, 0, 0, .6);
+  --mat-form-field-focus-state-layer-opacity: .08;
+  --mat-form-field-outlined-disabled-input-text-color: rgba(0, 0, 0, .38);
+  --mat-form-field-outlined-disabled-label-text-color: rgba(0, 0, 0, .38);
+  --mat-form-field-outlined-disabled-outline-color: rgba(0, 0, 0, .06);
+  --mat-form-field-outlined-hover-label-text-color: rgba(0, 0, 0, .6);
+  --mat-form-field-outlined-input-text-placeholder-color: rgba(0, 0, 0, .6);
+  --mat-form-field-outlined-label-text-color: rgba(0, 0, 0, .6);
+  --mat-icon-button-disabled-state-layer-color: black;
+  --mat-list-list-item-disabled-label-text-color: black;
+  --mat-list-list-item-disabled-leading-icon-color: black;
+  --mat-list-list-item-disabled-trailing-icon-color: black;
+  --mat-list-list-item-focus-state-layer-color: black;
+  --mat-list-list-item-hover-leading-icon-color: rgba(0, 0, 0, .38);
+  --mat-list-list-item-hover-state-layer-color: black;
+  --mat-list-list-item-hover-trailing-icon-color: rgba(0, 0, 0, .38);
+  --mat-list-list-item-leading-icon-color: rgba(0, 0, 0, .38);
+  --mat-list-list-item-selected-trailing-icon-color: rgba(0, 0, 0, .38);
+  --mat-list-list-item-trailing-icon-color: rgba(0, 0, 0, .38);
+  --mat-list-list-item-trailing-supporting-text-color: rgba(0, 0, 0, .38);
+  --mat-menu-item-focus-state-layer-color: rgba(0, 0, 0, .04);
+  --mat-option-focus-state-layer-color: rgba(0, 0, 0, .04);
+  --mat-option-selected-state-layer-color: rgba(0, 0, 0, .04);
+  --mat-paginator-disabled-icon-color: rgba(0, 0, 0, .12);
+  --mat-pseudo-checkbox-full-disabled-selected-icon-color: #b0b0b0;
+  --mat-pseudo-checkbox-full-disabled-unselected-icon-color: #b0b0b0;
+  --mat-pseudo-checkbox-minimal-disabled-selected-checkmark-color: #b0b0b0;
+  --mat-slide-toggle-disabled-label-text-color: rgba(0, 0, 0, .38);
+  --mat-slide-toggle-disabled-selected-handle-color: #424242;
+  --mat-slide-toggle-disabled-selected-track-color: #424242;
+  --mat-slide-toggle-disabled-unselected-handle-color: #424242;
+  --mat-slide-toggle-disabled-unselected-icon-color: #fff;
+  --mat-slide-toggle-disabled-unselected-track-color: #424242;
+  --mat-slide-toggle-selected-pressed-state-layer-opacity: .1;
+  --mat-slide-toggle-unselected-focus-state-layer-color: #424242;
+  --mat-slide-toggle-unselected-hover-state-layer-color: #424242;
+  --mat-slide-toggle-unselected-hover-state-layer-opacity: .04;
+  --mat-slide-toggle-unselected-icon-color: #fff;
+  --mat-slide-toggle-unselected-pressed-state-layer-color: #424242;
+  --mat-slider-disabled-active-track-color: #000;
+  --mat-slider-disabled-handle-color: #000;
+  --mat-slider-disabled-inactive-track-color: #000;
+  --mat-slider-focus-state-layer-color: rgba(25, 49, 85, .2);
+  --mat-slider-hover-state-layer-color: rgba(25, 49, 85, .05);
+  --mat-slider-label-container-color: #000;
+  --mat-slider-value-indicator-opacity: .6;
+  --mat-slider-with-overlap-handle-outline-color: #fff;
+  --mat-slider-with-tick-marks-disabled-container-color: #000;
+  --mat-sort-arrow-color: rgb(117.3, 117.3, 117.3);
+  --mat-stepper-header-focus-state-layer-color: rgba(0, 0, 0, .04);
+  --mat-stepper-header-focus-state-layer-shape: var(--mat-sys-corner-medium);
+  --mat-stepper-header-hover-state-layer-shape: var(--mat-sys-corner-medium);
+  --mat-tooltip-container-color: #616161;
+}
+
+// v19 named these --mdc-snackbar-*, which Material's rename doesn't map to --mat-snack-bar-*
+html {
+  --mat-snack-bar-container-color: #333333;
+  --mat-snack-bar-supporting-text-color: rgba(255, 255, 255, .87);
+}

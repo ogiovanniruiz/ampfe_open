@@ -1,0 +1,117 @@
+<div class="ge-header">
+  <div class="ge-heading">
+    <h2 mat-dialog-title class="ge-title">Tag lists</h2>
+    <div class="ge-subtitle">Add a tag to every member in the lists you pick.</div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="saving" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ge-banner" *ngIf="errorMessage" role="alert">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-progress-bar *ngIf="saving" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-content class="ge-content">
+
+  <!-- RESULT -->
+  <div class="bt-done" *ngIf="result; else picker" role="status">
+    <mat-icon>check_circle</mat-icon>
+    <span *ngIf="result.tagged > 0">
+      Tagged {{result.tagged}} {{result.tagged === 1 ? 'member' : 'members'}} with “{{result.tag}}<ng-container *ngIf="result.value"> · {{result.value}}</ng-container>”.
+      <ng-container *ngIf="result.matched > result.tagged">{{result.matched - result.tagged}} already had it.</ng-container>
+    </span>
+    <span *ngIf="result.tagged === 0 && result.matched > 0">Everyone in these lists already had “{{result.tag}}”.</span>
+    <span *ngIf="result.matched === 0">These lists have no members. <ng-container *ngIf="result.created">The tag “{{result.tag}}” was created.</ng-container></span>
+  </div>
+
+  <ng-template #picker>
+    <!-- TAG -->
+    <section class="ge-section">
+      <mat-form-field appearance="outline" class="bt-tag">
+        <mat-label>Tag</mat-label>
+        <mat-icon matPrefix>sell</mat-icon>
+        <input matInput [(ngModel)]="tag" [matAutocomplete]="tagAuto" placeholder="New or existing tag" autocomplete="off" required>
+        <mat-autocomplete #tagAuto="matAutocomplete">
+          <mat-option *ngFor="let option of tagSuggestions" [value]="option">{{option}}</mat-option>
+        </mat-autocomplete>
+        <mat-hint *ngIf="tagName && existingTag">Existing tag</mat-hint>
+        <mat-hint *ngIf="tagName && !existingTag" class="bt-hint-new">New tag — it will be created</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="bt-tag bt-value-field" *ngIf="definition?.values?.length">
+        <mat-label>Value</mat-label>
+        <mat-select [(ngModel)]="value">
+          <mat-select-trigger>
+            <ng-container *ngIf="value; else noValue"><span class="bt-value-dot" [style.background]="selectedValueColor"></span> {{value}}</ng-container>
+            <ng-template #noValue>No value</ng-template>
+          </mat-select-trigger>
+          <mat-option value="">No value</mat-option>
+          <mat-option *ngFor="let option of definition.values" [value]="option.value">
+            <span class="bt-value-dot" [style.background]="option.color"></span> {{option.value}}
+          </mat-option>
+        </mat-select>
+        <mat-hint>Replaces a member's earlier value for {{definition.label}}</mat-hint>
+      </mat-form-field>
+    </section>
+
+    <!-- LISTS -->
+    <section class="ge-section">
+      <div class="ge-section-header">
+        <span class="ge-section-title">Lists</span>
+        <span class="ge-section-sub">Members in more than one list are tagged once.</span>
+      </div>
+
+      <mat-form-field appearance="outline" class="bt-filter" *ngIf="totalLists > 6">
+        <mat-label>Filter lists</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput [(ngModel)]="filter" autocomplete="off">
+        <button mat-icon-button matSuffix *ngIf="filter" matTooltip="Clear" (click)="filter = ''"><mat-icon>close</mat-icon></button>
+      </mat-form-field>
+
+      <ng-container *ngFor="let group of groups">
+        <div class="bt-section" *ngIf="visible(group).length">
+          <div class="ge-section-header">
+            <span class="ge-section-title">{{group.label}}</span>
+            <span class="bt-count" *ngIf="selectedCount(group)">{{selectedCount(group)}} selected</span>
+            <span class="spacer"></span>
+            <button mat-button color="primary" type="button" (click)="toggleAll(group)">
+              {{allSelected(group) ? 'Clear' : 'Select all'}}
+            </button>
+          </div>
+          <div class="bt-options">
+            <div class="bt-option" *ngFor="let item of visible(group); trackBy: trackItem">
+              <mat-checkbox color="primary" [checked]="isSelected(group, item)" [disabled]="isOwnTag(group, item)"
+                            (change)="setSelected(group, item, $event.checked)">
+                <span class="bt-label" [title]="item.label">{{item.label}}</span>
+              </mat-checkbox>
+              <span class="bt-note" *ngIf="isOwnTag(group, item)">Already tagged</span>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <div class="bt-empty" *ngIf="!totalLists">There are no lists yet.</div>
+      <div class="bt-empty" *ngIf="totalLists && !anyVisible">No lists match “{{filter}}”.</div>
+    </section>
+  </ng-template>
+</mat-dialog-content>
+
+<mat-dialog-actions class="ge-actions">
+  <ng-container *ngIf="!result; else doneActions">
+    <span class="bt-selected">{{selectedTotal}} {{selectedTotal === 1 ? 'list' : 'lists'}} selected</span>
+    <span class="spacer"></span>
+    <button mat-button [disabled]="saving" (click)="close()">Cancel</button>
+    <button mat-raised-button color="primary" [disabled]="!canApply" (click)="apply()">
+      <mat-icon>new_label</mat-icon> {{saving ? 'Tagging…' : 'Tag members'}}
+    </button>
+  </ng-container>
+  <ng-template #doneActions>
+    <span class="spacer"></span>
+    <button mat-raised-button color="primary" (click)="close()">Done</button>
+  </ng-template>
+</mat-dialog-actions>

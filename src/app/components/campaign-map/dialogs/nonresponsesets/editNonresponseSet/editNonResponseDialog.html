@@ -1,0 +1,58 @@
+<div class="nr-header">
+  <div class="nr-heading">
+    <h2 mat-dialog-title class="nr-title">Edit non-response set</h2>
+    <div class="nr-subtitle">{{nonResponseSet.name}}</div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button [matTooltip]="'Copy set ID: ' + nonResponseSet._id" (click)="copyID()"><mat-icon>content_copy</mat-icon></button>
+  <button mat-icon-button matTooltip="Close" (click)="closeDialog();"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="nr-content">
+  <mat-form-field appearance="outline" class="nr-name">
+    <mat-label>Set name</mat-label>
+    <input matInput [(ngModel)]="name" required autocomplete="off">
+  </mat-form-field>
+
+  <div class="nr-toggle">
+    <mat-slide-toggle color="primary" [checked]="loadedInCampaign" (change)="setLoaded($event.checked)">Use in this campaign</mat-slide-toggle>
+    <span class="nr-toggle-help">Volunteers in this campaign's activities can use this set.</span>
+  </div>
+
+  <div class="nr-loading" *ngIf="loadingUsage">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <p>Checking which responses have been recorded…</p>
+  </div>
+
+  <div class="nr-banner" *ngIf="usageFailed">
+    <mat-icon>error_outline</mat-icon>
+    <span>Couldn't check which responses have been recorded, so editing is paused to protect your reports.</span>
+    <span class="spacer"></span>
+    <button mat-button (click)="getUsage()">Retry</button>
+  </div>
+
+  <ng-container *ngIf="!loadingUsage && !usageFailed">
+    <div class="nr-lock-note" *ngIf="recordedCount > 0">
+      <mat-icon inline>lock</mat-icon>
+      <span><b>{{recordedCount | number}} {{recordedCount === 1 ? 'contact has' : 'contacts have'}} been recorded with this set.</b>
+        Responses that have been used are locked, so summaries, group filters and Do Not Contact rules keep matching past contacts.
+        You can still reorder them and add new ones. To fix a typo, add the corrected response.</span>
+    </div>
+
+    <app-nonresponse-editor [items]="nonResponses" [usage]="usage"></app-nonresponse-editor>
+  </ng-container>
+
+  <div class="nr-banner" *ngIf="errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{errorMessage}}</span>
+  </div>
+</mat-dialog-content>
+
+<mat-progress-bar *ngIf="saving" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-actions class="nr-actions">
+  <span class="nr-unsaved" *ngIf="hasChanges && !saving">Unsaved changes</span>
+  <span class="spacer"></span>
+  <button mat-button (click)="closeDialog()">Cancel</button>
+  <button mat-raised-button color="primary" [disabled]="saving || loadingUsage || usageFailed || !hasChanges" (click)="saveNonResponseSetChanges()">Save changes</button>
+</mat-dialog-actions>

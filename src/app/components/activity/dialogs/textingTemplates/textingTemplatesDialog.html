@@ -1,0 +1,90 @@
+<div class="ea-header">
+  <button mat-icon-button class="ea-back" *ngIf="view === 'editor'" matTooltip="Back to templates" [disabled]="saving" (click)="back()">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <div class="ea-heading">
+    <h2 mat-dialog-title class="ea-title">
+      <ng-container *ngIf="view === 'list'">Texting templates</ng-container>
+      <ng-container *ngIf="view === 'editor'">{{cloneOf ? 'Copy of "' + cloneOf + '"' : (isNew ? 'New template' : 'Edit template')}}</ng-container>
+    </h2>
+    <div class="ea-subtitle">
+      <ng-container *ngIf="view === 'list'">
+        <span class="ea-subtitle-name" *ngIf="campaignName">{{campaignName}}</span>
+        <span class="ea-chip ea-chip-type" *ngIf="!loading">{{templates.length}} {{templates.length === 1 ? 'template' : 'templates'}}</span>
+      </ng-container>
+      <ng-container *ngIf="view === 'editor'">
+        <span class="ea-subtitle-name">{{draft?.name?.trim() || 'Reusable messages and quick responses for texting activities'}}</span>
+      </ng-container>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="saving" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-progress-bar mode="indeterminate" *ngIf="loading && view === 'list'"></mat-progress-bar>
+
+<div class="ea-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-button *ngIf="loadFailed && view === 'list'" (click)="load()">Retry</button>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="ea-content">
+
+  <!-- LIST -->
+  <ng-container *ngIf="view === 'list'">
+    <div class="ea-loading" *ngIf="loading">Loading templates…</div>
+
+    <div class="ea-template-empty" *ngIf="!loading && !loadFailed && !templates.length">
+      <mat-icon>sms</mat-icon>
+      <div class="ea-template-empty-title">No templates yet</div>
+      <div class="ea-muted">Save initial messages and quick responses once, then load them into any texting activity.</div>
+      <button mat-raised-button color="primary" (click)="newTemplate()"><mat-icon>add</mat-icon> New template</button>
+    </div>
+
+    <div class="ea-template-list" *ngIf="templates.length">
+      <div class="ea-template-row" *ngFor="let template of templates" (click)="editTemplate(template)" tabindex="0" (keydown.enter)="editTemplate(template)">
+        <div class="ea-template-text">
+          <div class="ea-template-name">{{template.name}}</div>
+          <div class="ea-muted">{{templateSummary(template)}}</div>
+          <div class="ea-template-preview" *ngIf="firstPreview(template)">{{firstPreview(template)}}</div>
+        </div>
+        <button mat-icon-button matTooltip="Edit template" (click)="$event.stopPropagation(); editTemplate(template)"><mat-icon>edit</mat-icon></button>
+        <button mat-icon-button matTooltip="Duplicate template" [disabled]="saving" (click)="$event.stopPropagation(); cloneTemplate(template)"><mat-icon>content_copy</mat-icon></button>
+        <button mat-icon-button color="warn" matTooltip="Delete template" [disabled]="saving" (click)="$event.stopPropagation(); deleteTemplate(template)"><mat-icon>delete_outline</mat-icon></button>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- EDITOR -->
+  <ng-container *ngIf="view === 'editor' && draft">
+    <mat-form-field appearance="outline" class="ea-field">
+      <mat-label>Template name</mat-label>
+      <input matInput [(ngModel)]="draft.name" maxlength="200" required autocomplete="off">
+      <mat-hint align="end">{{draft.name.length}}/200</mat-hint>
+    </mat-form-field>
+
+    <app-text-messages-editor [initTextMsgs]="draft.initTextMsgs" [quickResponses]="draft.quickResponses"></app-text-messages-editor>
+  </ng-container>
+</mat-dialog-content>
+
+<mat-progress-bar *ngIf="saving" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-actions class="ea-actions">
+  <ng-container *ngIf="view === 'list'">
+    <span class="spacer"></span>
+    <button mat-button [disabled]="saving" (click)="close()">Close</button>
+    <button mat-raised-button color="primary" *ngIf="templates.length" [disabled]="loading || loadFailed" (click)="newTemplate()"><mat-icon>add</mat-icon> New template</button>
+  </ng-container>
+
+  <ng-container *ngIf="view === 'editor'">
+    <span class="ea-unsaved" [class.ea-error]="!!validationError" *ngIf="hasChanges && !saving">{{validationError || 'Unsaved changes'}}</span>
+    <span class="spacer"></span>
+    <button mat-stroked-button color="warn" *ngIf="!isNew && draft" [disabled]="saving" (click)="deleteTemplate(draft)">Delete</button>
+    <button mat-stroked-button *ngIf="!isNew && draft" [disabled]="saving" (click)="cloneTemplate(draft)"><mat-icon>content_copy</mat-icon> Duplicate</button>
+    <button mat-button [disabled]="saving" (click)="back()">{{hasChanges ? 'Cancel' : 'Back'}}</button>
+    <button mat-raised-button color="primary" [disabled]="saving || !hasChanges || !!validationError" (click)="save()">Save template</button>
+  </ng-container>
+</mat-dialog-actions>

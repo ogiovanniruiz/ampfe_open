@@ -1,0 +1,62 @@
+<div class="sv-header">
+  <div class="sv-heading">
+    <h2 mat-dialog-title class="sv-title">Edit survey</h2>
+    <div class="sv-subtitle">{{survey.name}}<ng-container *ngIf="survey.active === false"> · Archived</ng-container></div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button [matTooltip]="'Copy survey ID: ' + survey._id" (click)="copyID()"><mat-icon>content_copy</mat-icon></button>
+  <button mat-icon-button matTooltip="Close" (click)="closeDialog()"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="sv-content">
+  <mat-form-field appearance="outline" class="sv-name">
+    <mat-label>Survey name</mat-label>
+    <input matInput [(ngModel)]="name" required autocomplete="off">
+  </mat-form-field>
+
+  <div class="es-loading" *ngIf="loadingUsage">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <p>Checking which questions already have answers…</p>
+  </div>
+
+  <div class="sv-banner" *ngIf="usageFailed">
+    <mat-icon>error_outline</mat-icon>
+    <span>Couldn't check which questions already have answers, so editing is paused to protect your reports.</span>
+    <span class="spacer"></span>
+    <button mat-button (click)="getUsage()">Retry</button>
+  </div>
+
+  <ng-container *ngIf="!loadingUsage && !usageFailed">
+    <div class="es-note" *ngIf="answeredCount > 0">
+      <mat-icon inline>lock</mat-icon>
+      <span><b>{{answeredCount | number}} {{answeredCount === 1 ? 'person has' : 'people have'}} answered this survey.</b>
+        Questions and responses with answers are locked, so summaries, group filters and reports keep matching past results.
+        You can still reorder them, add new ones, and switch between single and multiple choice.</span>
+    </div>
+
+    <app-survey-questions-editor [questions]="questions" [campaignOrgs]="campaignOrgs" [usage]="usage"></app-survey-questions-editor>
+  </ng-container>
+
+  <!-- Settings -->
+  <div class="sv-optin">
+    <mat-slide-toggle color="primary" [checked]="loadedInCampaign" (change)="setLoaded($event.checked)">Use in this campaign</mat-slide-toggle>
+    <span class="sv-optin-help">Activities in this campaign can use this survey.</span>
+  </div>
+
+  <div class="sv-banner" *ngIf="errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{errorMessage}}</span>
+  </div>
+</mat-dialog-content>
+
+<mat-progress-bar *ngIf="saving" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-actions class="sv-actions">
+  <button mat-button color="warn" *ngIf="survey.active !== false" [disabled]="saving" (click)="archiveSurvey()">
+    <mat-icon>archive</mat-icon> Archive survey
+  </button>
+  <span class="sv-summary" *ngIf="!saving && (hasChanges || validationSummary)">{{validationSummary || 'Unsaved changes'}}</span>
+  <span class="spacer"></span>
+  <button mat-button (click)="closeDialog()">Cancel</button>
+  <button mat-raised-button color="primary" [disabled]="saving || loadingUsage || usageFailed || !hasChanges || !valid" (click)="saveSurveyChanges()">Save changes</button>
+</mat-dialog-actions>

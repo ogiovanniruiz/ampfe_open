@@ -1,0 +1,103 @@
+<div class="ea-header">
+  <div class="ea-heading">
+    <h2 mat-dialog-title class="ea-title">Text responses</h2>
+    <div class="ea-subtitle">
+      <span class="ea-subtitle-name">{{activity.name}}</span>
+      <span class="ea-chip ea-chip-type" *ngIf="!loading">{{records.length}} {{records.length === 1 ? 'conversation' : 'conversations'}}</span>
+      <span class="ea-chip ea-chip-awaiting" *ngIf="awaitingCount">{{awaitingCount}} awaiting reply</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Refresh" aria-label="Refresh" [disabled]="loading" (click)="load()"><mat-icon>refresh</mat-icon></button>
+  <button mat-icon-button matTooltip="Close" aria-label="Close" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
+<div class="ea-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-button *ngIf="loadFailed" (click)="load()">Retry</button>
+  <button mat-icon-button matTooltip="Dismiss" aria-label="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="ea-content ea-chat-content">
+
+  <div class="ea-template-empty" *ngIf="!loading && !loadFailed && !records.length">
+    <mat-icon>forum</mat-icon>
+    <div class="ea-template-empty-title">No text replies yet</div>
+    <div class="ea-muted">When people reply to texts sent during phonebank calls, their conversations show up here.</div>
+  </div>
+
+  <div class="ea-chat" *ngIf="records.length" [class.ea-chat-open]="!!selected">
+
+    <!-- CONVERSATION LIST -->
+    <div class="ea-chat-list">
+      <mat-button-toggle-group class="ea-chat-filter" [(ngModel)]="filter" aria-label="Filter conversations">
+        <mat-button-toggle value="all">All</mat-button-toggle>
+        <mat-button-toggle value="awaiting">Awaiting reply<span class="ea-count" *ngIf="awaitingCount">{{awaitingCount}}</span></mat-button-toggle>
+      </mat-button-toggle-group>
+
+      <div class="ea-empty" *ngIf="!visibleRecords.length">Every conversation has a reply.</div>
+
+      <button type="button" class="ea-chat-item" *ngFor="let record of visibleRecords"
+              [class.ea-chat-item-selected]="record._id === selected?._id" (click)="open(record)">
+        <span class="ea-chat-dot" *ngIf="awaitingReply(record)" matTooltip="Awaiting reply" aria-label="Awaiting reply"></span>
+        <span class="ea-chat-item-text">
+          <span class="ea-chat-item-top">
+            <span class="ea-chat-item-name">{{displayName(record)}}</span>
+            <span class="ea-chat-item-time" *ngIf="lastMessage(record)?.date">{{$safeNavigationMigration(lastMessage(record)?.date) | date:'MMM d, h:mm a'}}</span>
+          </span>
+          <span class="ea-chat-item-preview" [class.ea-chat-item-unread]="awaitingReply(record)">{{preview(record)}}</span>
+        </span>
+      </button>
+    </div>
+
+    <!-- CONVERSATION -->
+    <div class="ea-chat-pane">
+      <div class="ea-chat-placeholder" *ngIf="!selected">
+        <mat-icon>chat_bubble_outline</mat-icon>
+        <div class="ea-muted">Select a conversation</div>
+      </div>
+
+      <ng-container *ngIf="selected">
+        <div class="ea-chat-head">
+          <button mat-icon-button class="ea-chat-back" matTooltip="Back to conversations" aria-label="Back to conversations" (click)="backToList()"><mat-icon>arrow_back</mat-icon></button>
+          <div class="ea-chat-head-text">
+            <div class="ea-chat-head-name">{{displayName(selected)}}</div>
+            <div class="ea-muted">
+              <span *ngIf="phone(selected) && phone(selected) !== displayName(selected)">{{phone(selected)}}</span>
+              <span *ngIf="volunteerName(selected)"><span *ngIf="phone(selected) && phone(selected) !== displayName(selected)"> · </span>Texted by {{volunteerName(selected)}}</span>
+            </div>
+          </div>
+          <span class="ea-chip ea-chip-awaiting" *ngIf="awaitingReply(selected)">Awaiting reply</span>
+        </div>
+
+        <div class="ea-chat-thread" #thread>
+          <ng-container *ngFor="let message of messages(selected); let i = index">
+            <div class="ea-chat-sender" *ngIf="showSender(selected, i)" [class.ea-chat-sender-user]="message.origin === 'USER'">{{senderName(selected, message)}}</div>
+            <div class="ea-chat-row" [class.ea-chat-row-user]="message.origin === 'USER'">
+              <div class="ea-chat-bubble" [class.ea-chat-bubble-user]="message.origin === 'USER'" [class.ea-chat-bubble-failed]="failed(message)">{{message.msg || '(image)'}}</div>
+            </div>
+            <div class="ea-chat-meta" [class.ea-chat-meta-user]="message.origin === 'USER'" *ngIf="message.date || failed(message)">
+              <span class="ea-chat-failed" *ngIf="failed(message)"><mat-icon inline>error_outline</mat-icon> Not delivered · {{message.error}}</span>
+              <span *ngIf="message.date && !failed(message)">{{message.date | date:'MMM d, h:mm a'}}</span>
+            </div>
+          </ng-container>
+        </div>
+
+        <mat-progress-bar *ngIf="sending" mode="indeterminate"></mat-progress-bar>
+
+        <div class="ea-chat-composer">
+          <mat-form-field appearance="outline" class="ea-chat-input">
+            <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="5"
+                      [(ngModel)]="draft" (keydown)="onComposerKeydown($event)" [disabled]="sending"
+                      placeholder="Write a reply…" aria-label="Reply"></textarea>
+          </mat-form-field>
+          <button mat-mini-fab color="primary" matTooltip="Send" aria-label="Send reply" [disabled]="sending || !draft.trim()" (click)="send()"><mat-icon>send</mat-icon></button>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</mat-dialog-content>

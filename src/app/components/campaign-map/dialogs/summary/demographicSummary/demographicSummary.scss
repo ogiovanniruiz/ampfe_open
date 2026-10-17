@@ -1,0 +1,219 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.ds-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ds-heading {
+  min-width: 0;
+}
+
+.ds-title {
+  margin: 0 !important;
+  font-weight: 600;
+}
+
+.ds-subtitle {
+  margin-top: 2px;
+  font-size: 13px;
+  color: #52514e;
+}
+
+.ds-view-toggle mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+
+.ds-survey {
+  width: 100%;
+  max-width: 420px;
+  margin-top: 12px;
+}
+
+.ds-content {
+  padding-top: 8px !important;
+}
+
+.ds-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 4px 4px 4px 12px;
+  border-radius: 8px;
+  background: #fdecea;
+  color: #b71c1c;
+  font-size: 14px;
+}
+
+.ds-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 40px 16px;
+  text-align: center;
+  color: #52514e;
+
+  mat-icon {
+    font-size: 44px;
+    width: 44px;
+    height: 44px;
+    opacity: 0.6;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+// Stat tiles: label, value, sub-line; text stays in ink colors
+.ds-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.ds-tile {
+  padding: 12px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background: #fcfcfb;
+}
+
+.ds-tile-label {
+  font-size: 13px;
+  color: #52514e;
+}
+
+.ds-tile-value {
+  margin-top: 4px;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #0b0b0b;
+}
+
+.ds-tile-sub {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #52514e;
+}
+
+// Distribution cards
+.ds-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+.ds-card {
+  padding: 14px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background: #fcfcfb;
+}
+
+.ds-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0b0b0b;
+}
+
+.ds-card-subtitle {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #52514e;
+}
+
+.ds-card-empty {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: #52514e;
+}
+
+// Thin bars, rounded data-end, recessive track; hover target is the whole row
+.ds-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 4px;
+  margin: 0 -4px;
+  border-radius: 6px;
+  cursor: default;
+
+  &:first-of-type {
+    margin-top: 8px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: rgba(0, 0, 0, 0.04);
+    outline: none;
+  }
+}
+
+.ds-bar-label {
+  flex: 0 0 104px;
+  font-size: 13px;
+  color: #52514e;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-bar-track {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: #ecebe8;
+  overflow: hidden;
+}
+
+.ds-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 0 4px 4px 0;
+  transition: width 0.3s ease;
+}
+
+.ds-bar-value {
+  flex: 0 0 48px;
+  text-align: right;
+  font-size: 13px;
+  color: #0b0b0b;
+  font-variant-numeric: tabular-nums;
+}
+
+// Table view
+.ds-table {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  th, td {
+    padding: 6px 4px;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    text-align: left;
+  }
+
+  th {
+    font-size: 12px;
+    font-weight: 600;
+    color: #52514e;
+  }
+}
+
+.ds-num {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+}

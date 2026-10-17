@@ -1,0 +1,207 @@
+:host {
+  display: block;
+}
+
+.sv-section-header {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 4px 0 8px;
+}
+
+.sv-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.sv-section-sub {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.sv-error {
+  color: #c62828;
+}
+
+// Question cards
+.sv-questions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sv-question {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  background: #fff;
+  padding: 10px 10px 4px 6px;
+}
+
+.sv-question-header {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0 8px;
+}
+
+.sv-handle {
+  color: rgba(0, 0, 0, 0.4);
+  cursor: grab;
+  margin-top: 16px;
+}
+
+.sv-number {
+  flex: 0 0 28px;
+  height: 28px;
+  margin-top: 12px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #3f51b5;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.sv-question-text {
+  flex: 1 1 240px;
+}
+
+.sv-question-type {
+  flex: 0 1 180px;
+}
+
+.sv-question-actions {
+  display: flex;
+  margin-top: 4px;
+}
+
+.sv-question-body {
+  padding-left: 66px;
+}
+
+.sv-type-hint {
+  margin: -4px 0 8px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.sv-response,
+.sv-add-response {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.sv-response-icon {
+  margin-top: 16px;
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.sv-response-text {
+  flex: 1 1 auto;
+  max-width: 420px;
+}
+
+.sv-add-response {
+  padding-left: 24px;
+}
+
+.sv-add-response-button {
+  margin-top: 8px;
+}
+
+.sv-orgs {
+  width: 100%;
+  max-width: 444px;
+  margin-top: 4px;
+}
+
+// Drag preview and placeholder
+.cdk-drag-preview {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.35;
+}
+
+.cdk-drop-list-dragging .sv-question:not(.cdk-drag-placeholder) {
+  transition: transform 200ms ease;
+}
+
+.sv-lock {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.sv-answers {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.sv-response-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.55);
+  white-space: nowrap;
+  padding-right: 4px;
+}
+
+.sv-empty {
+  padding: 20px;
+  text-align: center;
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+// Add a question
+.sv-add {
+  margin-top: 16px;
+  padding: 12px 12px 4px;
+  background: #f6f7f9;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+
+  .sv-type-hint {
+    margin: 0 0 8px;
+  }
+}
+
+.sv-add-fields {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0 12px;
+}
+
+.sv-add-text {
+  flex: 1 1 260px;
+}
+
+.sv-add-button {
+  margin-top: 8px;
+}
+
+@media (max-width: 600px) {
+  .sv-question-body {
+    padding-left: 8px;
+  }
+
+  .sv-question-type {
+    flex-basis: 100%;
+  }
+}

@@ -1,0 +1,79 @@
+// Two columns of outline fields; one on phones
+.cm-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 12px;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.cm-full {
+  grid-column: 1 / -1;
+}
+
+// Confirms each save, since the form clears for the next person
+.cm-saved {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(46, 125, 50, 0.12);
+  color: #2e7d32;
+  font-size: 14px;
+}
+
+.cm-prefix {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+// Consent checkboxes, styled like the petition form's
+.cm-consents {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 4px 0 0;
+}
+
+.cm-consent {
+  padding: 10px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  ::ng-deep .mdc-form-field {
+    align-items: flex-start;
+  }
+  ::ng-deep .mdc-form-field > label,
+  ::ng-deep .mdc-form-field > .mat-internal-form-field-label {
+    white-space: normal;
+    padding-top: 10px;
+  }
+}
+
+.cm-consent-checked {
+  border-color: #193155;
+  background: rgba(25, 49, 85, 0.05);
+}
+
+.cm-consent-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.cm-consent-help {
+  display: block;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+@media (max-width: 599px) {
+  .cm-grid,
+  .cm-consents {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,34 @@
+table {
+    width: 75%;
+  }
+
+  .close-button{
+    float: right;
+    top:-24px;
+    right:-24px;
+  }
+
+  .person-image {
+    background-image: url('../../../assets/members.jpg');
+    background-size: cover;
+  }
+  
+  
+.user-image {
+    background-image: url('/favicon.ico');
+    background-size: cover;
+}
+
+.custom-snackbar {
+  background-color: #333 !important; /* Change to any color */
+  color: white !important;
+}
+
+.example-headers-align .mat-expansion-panel-header-description {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.example-headers-align .mat-mdc-form-field + .mat-mdc-form-field {
+  margin-left: 8px;
+}

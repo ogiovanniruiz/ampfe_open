@@ -1,0 +1,140 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.os-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.os-heading {
+  min-width: 0;
+}
+
+.os-title {
+  margin: 0 !important;
+  font-weight: 600;
+}
+
+.os-subtitle {
+  margin-top: 2px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.os-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 4px 4px 4px 12px;
+  border-radius: 8px;
+  background: #fdecea;
+  color: #b71c1c;
+  font-size: 14px;
+}
+
+.os-content {
+  max-height: 70vh;
+}
+
+.os-tab {
+  padding: 16px 2px 8px;
+}
+
+.os-list {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.os-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.02);
+  }
+}
+
+.os-row-archived .os-name {
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.os-row-text {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.os-name {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.os-preview {
+  margin-top: 2px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.65);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.os-meta {
+  margin-top: 2px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.os-chip {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.os-chip-campaign {
+  background: rgba(63, 81, 181, 0.12);
+  color: #3f51b5;
+}
+
+.os-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+.os-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 32px 16px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.55);
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    opacity: 0.6;
+  }
+
+  p {
+    margin: 0;
+    max-width: 420px;
+  }
+}

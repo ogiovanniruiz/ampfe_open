@@ -1,0 +1,24 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel"  (click)="return();"><mat-icon>close</mat-icon></button>
+
+<h1 mat-dialog-title class="block-title"><b>Create Dispatcher</b></h1>
+<mat-dialog-content>
+    <mat-form-field class="dialog-element-long"> 
+        <input matInput #firstName type="text" placeholder="First Name">
+    </mat-form-field >
+    <mat-form-field class="dialog-element-long"> 
+        <input matInput #lastName type="text" placeholder="Last Name">
+    </mat-form-field >
+    <mat-form-field style="margin:.3em;width:30%;min-width:300px"> 
+        <input matInput #phonenumber type="text" id="phone" placeholder="Phonenumber" maxlength="10">
+    </mat-form-field >
+    <mat-form-field style="margin:.3em;width:30%;min-width:300px"> 
+        <input matInput #email type="text" id="email" placeholder="Email">
+    </mat-form-field >
+</mat-dialog-content>
+<mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
+
+
+<mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="saveDispatcher()">CREATE DISPATCHER</button>
+
+</mat-dialog-actions>

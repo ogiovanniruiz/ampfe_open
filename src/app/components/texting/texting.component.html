@@ -1,0 +1,154 @@
+<mat-progress-bar *ngIf='!activityLoaded && !loadFailed' mode="indeterminate"></mat-progress-bar>
+
+<!-- The activity couldn't be loaded: say so, with a way forward, instead of loading forever -->
+<section class="tx-page" *ngIf="loadFailed && !activityLoaded">
+    <div class="tx-banner" role="alert">
+        <mat-icon>error_outline</mat-icon> {{loadFailed}}
+    </div>
+    <div class="tx-load-actions">
+        <button mat-raised-button color="primary" (click)="getActivity()"><mat-icon>refresh</mat-icon> Retry</button>
+        <a mat-button routerLink="/activity">Back to activities</a>
+    </div>
+</section>
+
+<section class="tx-page" *ngIf="activityLoaded">
+    <!-- Header -->
+    <div class="tx-header">
+        <div>
+            <div class="tx-activity">{{activity?.name}}</div>
+            <div class="tx-from" *ngIf="activityTextingNumber">Texting from <b>{{formatPhone(activityTextingNumber)}}</b></div>
+        </div>
+        <a class="tx-image-chip" *ngIf="sendImage && imageUrl" [href]="imageUrl" target="_blank" rel="noopener" matTooltip="An image is attached to the first text">
+            <mat-icon inline>image</mat-icon> Image attached
+        </a>
+    </div>
+
+    <div class="tx-banner" *ngIf="!activityTextingNumber">
+        <mat-icon>error_outline</mat-icon> No texting number is assigned to this activity. Ask an administrator to assign one before sending.
+    </div>
+    <div class="tx-banner" *ngIf="displayErrorMsg">
+        <mat-icon>error_outline</mat-icon> {{errorMessage}}
+    </div>
+
+    <mat-tab-group *ngIf='houseHoldsLoaded' mat-stretch-tabs animationDuration="0ms">
+
+        <!-- SEND -->
+        <mat-tab>
+            <ng-template matTabLabel>
+                <span [matBadge]="sendCounts.todo" [matBadgeHidden]="sendCounts.todo === 0" matBadgeOverlap="false">Send</span>
+            </ng-template>
+
+            <div class="tx-tab">
+                <div class="tx-summary">
+                    <span><b>{{sendCounts.todo}}</b> to send</span>
+                    <span><b>{{sendCounts.sent}}</b> sent</span>
+                    <span *ngIf="sendCounts.replied"><b>{{sendCounts.replied}}</b> replied</span>
+                    <span *ngIf="sendCounts.finished"><b>{{sendCounts.finished}}</b> already contacted</span>
+                </div>
+
+                <div class="tx-batch" *ngIf="sendingBatchTexts">
+                    <div class="tx-batch-label">Sending {{batchDone}} of {{batchTotal}}…</div>
+                    <mat-progress-bar mode="determinate" [value]="batchTotal ? (batchDone / batchTotal) * 100 : 0"></mat-progress-bar>
+                </div>
+
+                <div class="tx-preview" *ngIf="messagePreview">
+                    <button type="button" class="tx-preview-toggle" (click)="showPreview = !showPreview">
+                        <mat-icon inline>{{showPreview ? 'expand_less' : 'expand_more'}}</mat-icon>
+                        Message preview
+                    </button>
+                    <div class="tx-preview-bubble" *ngIf="showPreview">{{messagePreview}}</div>
+                </div>
+
+                <!-- People, grouped by household -->
+                <div class="tx-household" *ngFor="let houseHoldRecord of houseHoldRecords">
+                    <div class="tx-household-header">
+                        <mat-icon inline>home</mat-icon>
+                        <span class="tx-household-address">{{houseHoldRecord.household.fullAddress1 || 'No address'}}</span>
+                        <span class="tx-household-count" *ngIf="houseHoldRecord.household.residents.length > 1">{{houseHoldRecord.household.residents.length}} residents</span>
+                    </div>
+
+                    <div class="tx-person" *ngFor="let resident of houseHoldRecord.household.residents" [ngSwitch]="residentStatus(resident)">
+                        <div class="tx-person-text">
+                            <span class="tx-person-name">{{resident.name.firstName}} {{resident.name.lastName}}</span>
+                            <span class="tx-person-phone">{{lastFour(resident)}}</span>
+                        </div>
+
+                        <ng-container *ngSwitchCase="'todo'">
+                            <span class="tx-chip tx-chip-todo">To send</span>
+                            <button mat-icon-button color="primary" matTooltip="Send first text"
+                                    [disabled]="sendingText || sendingBatchTexts || !activityTextingNumber"
+                                    (click)="sendInitText(resident, houseHoldRecord.household, houseHoldRecord._id)"><mat-icon>send</mat-icon></button>
+                        </ng-container>
+                        <span *ngSwitchCase="'sent'" class="tx-chip tx-chip-sent"><mat-icon inline>check</mat-icon> Sent</span>
+                        <span *ngSwitchCase="'replied'" class="tx-chip tx-chip-replied"><mat-icon inline>chat</mat-icon> Replied</span>
+                        <span *ngSwitchCase="'finished'" class="tx-chip tx-chip-finished">Already contacted</span>
+                    </div>
+                </div>
+
+                <div class="tx-empty" *ngIf="houseHoldRecords.length === 0 && !houseHoldsNewLockCompleted">
+                    <mat-icon>forum</mat-icon>
+                    <p>No households loaded. Load some to start texting.</p>
+                </div>
+                <div class="tx-empty" *ngIf="houseHoldsNewLockCompleted && houseHoldRecords.length === 0">
+                    <mat-icon>task_alt</mat-icon>
+                    <p>Activity completed. No more people to contact.</p>
+                </div>
+
+                <mat-progress-bar *ngIf="(loadingHouseHolds && !houseHoldsNewLockCompleted) || sendingText" mode="indeterminate"></mat-progress-bar>
+            </div>
+
+            <!-- Actions stay reachable at the bottom of the tab -->
+            <div class="tx-actions">
+                <button mat-stroked-button color="primary" [disabled]="loadingHouseHolds || sendingBatchTexts || houseHoldsNewLockCompleted" (click)="lockNewHouseHolds()">
+                    <mat-icon>playlist_add</mat-icon> Load more households
+                </button>
+                <button mat-raised-button color="primary" *ngIf="!sendingBatchTexts" [disabled]="sendCounts.todo === 0 || sendingText || !activityTextingNumber" (click)="sendBatchTexting()">
+                    <mat-icon>send</mat-icon> Send all ({{sendCounts.todo}})
+                </button>
+                <button mat-raised-button color="warn" *ngIf="sendingBatchTexts" (click)="stopBatchTexting()">
+                    <mat-icon>stop</mat-icon> Stop
+                </button>
+            </div>
+        </mat-tab>
+
+        <!-- CONVERSATIONS -->
+        <mat-tab>
+            <ng-template matTabLabel>
+                <span [matBadge]="awaitingCount" [matBadgeHidden]="awaitingCount === 0" matBadgeColor="warn" matBadgeOverlap="false">Conversations ({{textReceivedContactRecords.length}})</span>
+            </ng-template>
+
+            <div class="tx-convos" [class.tx-convo-open]="!!selectedTextContactRecord">
+                <div class="tx-convo-list">
+                    <button type="button" class="tx-convo-item" *ngFor="let record of sortedConversations"
+                            [class.tx-convo-selected]="selectedTextContactRecord?._id === record._id"
+                            (click)="getConversation(record)">
+                        <span class="tx-convo-dot" [class.tx-convo-dot-on]="awaitingReply(record)"></span>
+                        <span class="tx-convo-text">
+                            <span class="tx-convo-name">{{record.person.resident.name.firstName}} {{record.person.resident.name.lastName}}</span>
+                            <span class="tx-convo-last">{{lastMessageText(record)}}</span>
+                        </span>
+                    </button>
+
+                    <div class="tx-empty" *ngIf="textReceivedContactRecords.length === 0">
+                        <mat-icon>chat_bubble_outline</mat-icon>
+                        <p>No replies yet. Conversations appear here when someone texts back.</p>
+                    </div>
+                </div>
+
+                <div class="tx-convo-pane">
+                    <conversation *ngIf="selectedTextContactRecord"
+                                  [selectedTextContactRecord]="selectedTextContactRecord"
+                                  (selectedTextContactRecordChange)="onConversationUpdated($event)"
+                                  [(activity)]="activity"
+                                  [(textReceivedContactRecords)]="textReceivedContactRecords"
+                                  (back)="closeConversation()"></conversation>
+
+                    <div class="tx-empty tx-pane-empty" *ngIf="!selectedTextContactRecord && textReceivedContactRecords.length">
+                        <mat-icon>chat</mat-icon>
+                        <p>Select a conversation.</p>
+                    </div>
+                </div>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</section>

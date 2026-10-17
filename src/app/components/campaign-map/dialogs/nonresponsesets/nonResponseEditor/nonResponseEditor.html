@@ -1,0 +1,75 @@
+<div class="nr-section-header">
+  <span class="nr-section-title">Responses</span>
+  <span class="nr-section-sub">Shown to volunteers in this order. Drag to reorder.</span>
+</div>
+
+<div class="nr-list" cdkDropList (cdkDropListDropped)="drop($event)" *ngIf="items.length">
+  <div class="nr-row" *ngFor="let nr of items; let i = index; let first = first; let last = last; trackBy: trackByIndex" cdkDrag>
+    <mat-icon class="nr-handle" cdkDragHandle matTooltip="Drag to reorder">drag_indicator</mat-icon>
+
+    <div class="nr-row-fields">
+      <mat-form-field appearance="outline" class="nr-row-text">
+        <input matInput [(ngModel)]="nr.nonResponse" [readonly]="locked(nr)" [attr.aria-label]="'Response ' + (i + 1)" autocomplete="off">
+        <span matSuffix class="nr-recorded" *ngIf="locked(nr)" [matTooltip]="lockTooltip(nr)"><mat-icon inline>lock</mat-icon> {{recordedCount(nr) | number}}</span>
+        <mat-hint class="nr-row-error" *ngIf="rowError(i)">{{rowError(i)}}</mat-hint>
+        <mat-hint *ngIf="!rowError(i) && nr.originalText && nr.nonResponse.trim() !== nr.originalText">Renamed from "{{nr.originalText}}"</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="nr-row-type" [matTooltip]="locked(nr) ? lockTooltip(nr) : ''">
+        <mat-select [(ngModel)]="nr.nonResponseType" [disabled]="locked(nr)" [attr.aria-label]="'Type of response ' + (i + 1)">
+          <mat-select-trigger>
+            <span class="nr-chip" [ngClass]="'nr-tone-' + (types[nr.nonResponseType]?.tone || 'neutral')">{{types[nr.nonResponseType]?.label || nr.nonResponseType}}</span>
+          </mat-select-trigger>
+          <mat-option *ngFor="let key of typeKeys" [value]="key">{{types[key].label}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="nr-row-actions">
+      <button mat-icon-button [disabled]="first" matTooltip="Move up" (click)="move(i, -1)"><mat-icon>arrow_upward</mat-icon></button>
+      <button mat-icon-button [disabled]="last" matTooltip="Move down" (click)="move(i, 1)"><mat-icon>arrow_downward</mat-icon></button>
+      <span [matTooltip]="locked(nr) ? lockTooltip(nr) : 'Remove'">
+        <button mat-icon-button color="warn" [disabled]="locked(nr)" [attr.aria-label]="'Remove ' + nr.nonResponse" (click)="remove(i)"><mat-icon>delete</mat-icon></button>
+      </span>
+    </div>
+  </div>
+</div>
+
+<div class="nr-empty" *ngIf="!items.length">No responses yet. Add one below{{showSuggestions ? ' or start from the suggestions' : ''}}.</div>
+
+<!-- Suggestions -->
+<div class="nr-suggestions" *ngIf="showSuggestions && availableSuggestions.length">
+  <div class="nr-suggestions-header">
+    <span class="nr-suggestions-title">Suggested</span>
+    <button mat-button color="primary" class="nr-link" (click)="addAllSuggestions()">Add all</button>
+  </div>
+  <div class="nr-suggestion-chips">
+    <button type="button" class="nr-suggestion" *ngFor="let s of availableSuggestions" (click)="addSuggestion(s)"
+            [matTooltip]="$safeNavigationMigration(types[s.nonResponseType]?.label) + ': ' + $safeNavigationMigration(types[s.nonResponseType]?.effect)" [matTooltipShowDelay]="400">
+      <mat-icon inline>add</mat-icon> {{s.nonResponse}}
+      <span class="nr-suggestion-type" [ngClass]="'nr-tone-' + $safeNavigationMigration(types[s.nonResponseType]?.tone)">{{types[s.nonResponseType]?.label}}</span>
+    </button>
+  </div>
+</div>
+
+<!-- Add -->
+<div class="nr-add">
+  <div class="nr-add-fields">
+    <mat-form-field appearance="outline" class="nr-add-type">
+      <mat-label>Type</mat-label>
+      <mat-select [(ngModel)]="newType">
+        <mat-option *ngFor="let key of typeKeys" [value]="key">{{types[key].label}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="nr-add-text">
+      <mat-label>New response</mat-label>
+      <input matInput [(ngModel)]="newText" (ngModelChange)="addError = ''" (keyup.enter)="add()" placeholder="e.g. Not home" autocomplete="off">
+      <mat-hint class="nr-row-error" *ngIf="addError">{{addError}}</mat-hint>
+    </mat-form-field>
+    <button mat-stroked-button color="primary" class="nr-add-button" (click)="add()"><mat-icon>add</mat-icon> Add</button>
+  </div>
+  <div class="nr-type-help" *ngIf="types[newType]" [ngClass]="'nr-help-' + types[newType].tone">
+    <mat-icon inline>{{types[newType].tone === 'neutral' ? 'info' : 'warning_amber'}}</mat-icon>
+    <span><b>{{types[newType].label}}:</b> {{types[newType].effect}}</span>
+  </div>
+</div>

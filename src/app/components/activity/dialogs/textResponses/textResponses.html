@@ -1,0 +1,15 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel"  (click)="return();"><mat-icon>close</mat-icon></button>
+<h2 mat-dialog-title class="block-title"><b>Text Responses to Calls Made </b></h2> 
+
+<mat-dialog-content>
+    <mat-list>
+        <mat-list-item lines="3" *ngFor="let orphanedText of orphanedTexts">
+            <mat-icon matListItemIcon>account_circle</mat-icon>
+            <span matListItemTitle>From: {{orphanedText.From}}</span>
+            <span matListItemLine>To: {{orphanedText.To}}</span>
+            <span matListItemLine>Message: {{orphanedText.Body}}</span>
+            <mat-divider></mat-divider>
+        </mat-list-item>
+    </mat-list>
+    <mat-error *ngIf="orphanedTexts.length === 0">No Text Messages from Calls</mat-error>
+</mat-dialog-content>

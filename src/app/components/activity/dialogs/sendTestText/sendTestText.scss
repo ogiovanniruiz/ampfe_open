@@ -1,0 +1,108 @@
+// Header, banner, sections and actions come from the shared ge-* dialog styles (src/app/styles/dialog-common.scss)
+
+.tt-field {
+  width: 100%;
+}
+
+.tt-prefix {
+  margin-right: 4px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.tt-from {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+
+  mat-icon {
+    color: rgba(0, 0, 0, 0.5);
+  }
+}
+
+.tt-from-label {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.tt-from-number {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.tt-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+
+  mat-icon {
+    flex-shrink: 0;
+  }
+}
+
+.tt-notice-warning {
+  background: rgba(255, 152, 0, 0.12);
+  color: #6d4100;
+}
+
+.tt-notice-success {
+  background: rgba(46, 125, 50, 0.1);
+  color: #1b5e20;
+  align-items: center;
+
+  button {
+    margin-left: auto;
+  }
+}
+
+// Chat-style preview of the text as it will arrive
+.tt-preview {
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.tt-bubble {
+  max-width: 85%;
+  margin-left: auto;
+  padding: 10px 12px;
+  border-radius: 16px 16px 4px 16px;
+  background: #193155;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.tt-image {
+  display: block;
+  max-width: 85%;
+  max-height: 220px;
+  margin: 0 0 6px auto;
+  border-radius: 12px;
+  object-fit: contain;
+  background: #fff;
+}
+
+.tt-image-fallback {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+}
+
+.tt-empty {
+  color: rgba(0, 0, 0, 0.55);
+  font-size: 13px;
+  text-align: center;
+}
+
+.tt-note {
+  margin-top: 8px;
+}
