@@ -1,0 +1,167 @@
+<div class="sd-header">
+  <h2 mat-dialog-title class="sd-title">Find a voter</h2>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" (click)="cancel()"><mat-icon>close</mat-icon></button>
+</div>
+<p class="sd-hint">Search this campaign's districts by name, address, voter ID, phone or email.</p>
+
+<mat-dialog-content class="sd-content">
+  <div class="sd-row">
+    <mat-form-field appearance="outline" class="sd-field">
+      <mat-label>First name</mat-label>
+      <input matInput [(ngModel)]="firstName" autocomplete="off" (keyup.enter)="search()">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="sd-field">
+      <mat-label>Last name</mat-label>
+      <input matInput [(ngModel)]="lastName" autocomplete="off" (keyup.enter)="search()">
+    </mat-form-field>
+  </div>
+
+  <div class="sd-row">
+    <mat-form-field appearance="outline" class="sd-field sd-field-short">
+      <mat-label>Street #</mat-label>
+      <input matInput [(ngModel)]="streetNum" autocomplete="off" (keyup.enter)="search()">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="sd-field">
+      <mat-label>Street name</mat-label>
+      <input matInput [(ngModel)]="streetName" autocomplete="off" placeholder="e.g. MAIN" (keyup.enter)="search()">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="sd-field">
+      <mat-label>City</mat-label>
+      <input matInput [(ngModel)]="city" autocomplete="off" (keyup.enter)="search()">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="sd-field sd-field-short">
+      <mat-label>ZIP</mat-label>
+      <input matInput [(ngModel)]="zip" autocomplete="off" inputmode="numeric" (keyup.enter)="search()">
+    </mat-form-field>
+  </div>
+
+  <button mat-button color="primary" class="sd-more-toggle" *ngIf="!moreOptionsUsed" (click)="showMoreOptions = !showMoreOptions">
+    <mat-icon>{{showMoreOptions ? 'expand_less' : 'expand_more'}}</mat-icon>
+    {{showMoreOptions ? 'Fewer search options' : 'More search options'}}
+  </button>
+
+  <ng-container *ngIf="showMoreOptions || moreOptionsUsed">
+    <div class="sd-row">
+      <mat-form-field appearance="outline" class="sd-field">
+        <mat-label>Voter ID</mat-label>
+        <input matInput [(ngModel)]="voterID" autocomplete="off" (keyup.enter)="search()">
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="sd-field">
+        <mat-label>Phone</mat-label>
+        <input matInput [(ngModel)]="phone" autocomplete="off" inputmode="tel" (keyup.enter)="search()">
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="sd-field">
+        <mat-label>Email</mat-label>
+        <input matInput [(ngModel)]="email" autocomplete="off" inputmode="email" (keyup.enter)="search()">
+      </mat-form-field>
+    </div>
+    <div class="sd-row">
+      <mat-form-field appearance="outline" class="sd-field">
+        <mat-label>Party</mat-label>
+        <mat-select [(ngModel)]="party">
+          <mat-option value="">Any party</mat-option>
+          <mat-option *ngFor="let p of parties" [value]="p">{{p}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="sd-field sd-field-short">
+        <mat-label>Age from</mat-label>
+        <input matInput type="number" min="0" [(ngModel)]="ageMin" (keyup.enter)="search()">
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="sd-field sd-field-short">
+        <mat-label>Age to</mat-label>
+        <input matInput type="number" min="0" [(ngModel)]="ageMax" (keyup.enter)="search()">
+      </mat-form-field>
+    </div>
+    <p class="sd-hint sd-options-hint">Party and age narrow a name, address, voter ID, phone or email search.</p>
+  </ng-container>
+
+  <div class="sd-banner" *ngIf="errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{errorMessage}}</span>
+  </div>
+
+  <ng-container *ngIf="results && !searching">
+    <div class="sd-empty" *ngIf="!results.length">
+      <mat-icon>person_search</mat-icon>
+      <p>No voters in this campaign match this search.</p>
+    </div>
+
+    <ng-container *ngIf="results.length">
+      <p class="sd-count">
+        {{hasMore ? 'Showing the first ' + results.length + ' matches. Add more details to narrow it down.' : results.length + (results.length === 1 ? ' voter found' : ' voters found')}}
+        Click a voter to see more.
+      </p>
+      <mat-accordion class="sd-results" displayMode="flat">
+        <mat-expansion-panel class="sd-result-panel" *ngFor="let voter of results; trackBy: trackVoter" [expanded]="results.length === 1">
+          <mat-expansion-panel-header class="sd-result-header" collapsedHeight="auto" expandedHeight="auto">
+            <div class="sd-result">
+              <div class="sd-result-text">
+                <div class="sd-result-name">{{fullName(voter)}}</div>
+                <div class="sd-result-address">{{addressLine(voter) || 'No address on file'}}</div>
+                <div class="sd-chips">
+                  <span class="sd-chip" *ngIf="voter.resident?.party">{{voter.resident.party}}</span>
+                  <span class="sd-chip" *ngIf="voter.resident?.age">Age {{voter.resident.age}}</span>
+                  <span class="sd-chip" *ngIf="voter.resident?.voterID">Voter ID {{voter.resident.voterID}}</span>
+                </div>
+              </div>
+              <button mat-stroked-button color="primary" *ngIf="hasLocation(voter)" (click)="showOnMap($event, voter)">
+                <mat-icon>place</mat-icon> Show on map
+              </button>
+            </div>
+          </mat-expansion-panel-header>
+
+          <ng-template matExpansionPanelContent>
+            <div class="sd-details" *ngIf="details(voter) as d">
+              <section class="sd-section">
+                <h3 class="sd-section-title"><mat-icon inline>contact_phone</mat-icon> Contact</h3>
+                <dl class="sd-facts" *ngIf="d.contact.length">
+                  <div class="sd-fact" *ngFor="let f of d.contact"><dt>{{f.label}}</dt><dd>{{f.value}}</dd></div>
+                </dl>
+                <p class="sd-none" *ngIf="!d.contact.length">Nothing on file</p>
+              </section>
+
+              <section class="sd-section">
+                <h3 class="sd-section-title"><mat-icon inline>person</mat-icon> Demographics</h3>
+                <dl class="sd-facts" *ngIf="d.demographics.length">
+                  <div class="sd-fact" *ngFor="let f of d.demographics"><dt>{{f.label}}</dt><dd>{{f.value}}</dd></div>
+                </dl>
+                <p class="sd-none" *ngIf="!d.demographics.length">Nothing on file</p>
+              </section>
+
+              <section class="sd-section">
+                <h3 class="sd-section-title"><mat-icon inline>how_to_vote</mat-icon> Voting</h3>
+                <dl class="sd-facts" *ngIf="d.voting.length">
+                  <div class="sd-fact" *ngFor="let f of d.voting"><dt>{{f.label}}</dt><dd>{{f.value}}</dd></div>
+                </dl>
+                <div class="sd-chips sd-history" *ngIf="d.voteHistory.length">
+                  <span class="sd-chip" *ngFor="let v of d.voteHistory" [class.sd-chip-voted]="v.voted" [class.sd-chip-missed]="!v.voted"
+                        [matTooltip]="v.voted ? 'Voted' : 'Did not vote'">
+                    {{v.year}} {{v.electionType}} {{v.voted ? '✓' : '✗'}}
+                  </span>
+                </div>
+                <p class="sd-none" *ngIf="!d.voting.length && !d.voteHistory.length">Nothing on file</p>
+              </section>
+
+              <section class="sd-section">
+                <h3 class="sd-section-title"><mat-icon inline>map</mat-icon> Districts</h3>
+                <dl class="sd-facts" *ngIf="d.districts.length">
+                  <div class="sd-fact" *ngFor="let f of d.districts"><dt>{{f.label}}</dt><dd>{{f.value}}</dd></div>
+                </dl>
+                <p class="sd-none" *ngIf="!d.districts.length">Nothing on file</p>
+              </section>
+            </div>
+          </ng-template>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </ng-container>
+  </ng-container>
+</mat-dialog-content>
+
+<mat-dialog-actions class="sd-actions" align="end">
+  <span class="spacer"></span>
+  <button mat-raised-button color="primary" [disabled]="searching" (click)="search()">
+    <mat-spinner *ngIf="searching" diameter="16" class="sd-button-spinner"></mat-spinner>
+    <mat-icon *ngIf="!searching">search</mat-icon> Search
+  </button>
+</mat-dialog-actions>

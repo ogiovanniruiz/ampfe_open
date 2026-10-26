@@ -1,0 +1,197 @@
+<div class="ec-header">
+  <div class="ec-heading">
+    <h2 mat-dialog-title class="ec-title">Edit campaign</h2>
+    <div class="ec-subtitle">
+      <span class="ec-subtitle-name">{{campaign.name}}</span>
+      <span class="ec-chip" [ngClass]="campaign.active ? 'ec-chip-active' : 'ec-chip-inactive'">{{campaign.active ? 'Active' : 'Inactive'}}</span>
+      <span class="ec-chip ec-chip-sleep" *ngIf="campaign.sleep">Sleeping</span>
+      <span class="ec-chip ec-chip-election" *ngIf="campaign.electionType">{{campaign.electionYear}} {{campaign.electionType}}</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button [matTooltip]="'Copy campaign ID: ' + campaign.campaignID" (click)="copyID()"><mat-icon>content_copy</mat-icon></button>
+  <button mat-icon-button matTooltip="Close" [disabled]="saving" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
+<div class="ec-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-button *ngIf="loadFailed" (click)="load()">Retry</button>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="ec-content">
+
+  <!-- DETAILS -->
+  <section class="ec-section">
+    <div class="ec-section-title">Details</div>
+    <mat-form-field appearance="outline" class="ec-field">
+      <mat-label>Campaign name</mat-label>
+      <input matInput [(ngModel)]="name" (ngModelChange)="nameError = ''" [disabled]="loading" required autocomplete="off">
+      <mat-hint class="ec-error" *ngIf="nameError">{{nameError}}</mat-hint>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="ec-field">
+      <mat-label>Description</mat-label>
+      <textarea matInput [(ngModel)]="description" [disabled]="loading" cdkTextareaAutosize cdkAutosizeMinRows="2" cdkAutosizeMaxRows="6"></textarea>
+    </mat-form-field>
+    <div class="ec-muted" *ngIf="creatorOrgName">Created by <b>{{creatorOrgName}}</b></div>
+  </section>
+
+  <!-- DISTRICT AND ELECTION -->
+  <section class="ec-section" *ngIf="!loading && !loadFailed">
+    <div class="ec-section-title">District and election</div>
+
+    <ng-container *ngIf="!districtEditable">
+      <div class="ec-lock">
+        <mat-icon inline>lock</mat-icon>
+        <span>Locked because this campaign has {{groupCount}} {{groupCount === 1 ? 'group' : 'groups'}}. Changing the district would change who's in them.</span>
+      </div>
+      <dl class="ec-facts">
+        <div><dt>District type</dt><dd>{{districtTypeLabel()}}</dd></div>
+        <div class="ec-fact-wide">
+          <dt>{{campaignBoundary.length === 1 ? 'District' : 'Districts'}}</dt>
+          <dd class="ec-district-chips">
+            <span class="ec-value" *ngFor="let bound of campaignBoundary">{{bound.properties.name | uppercase}}</span>
+            <span *ngIf="!campaignBoundary.length">—</span>
+          </dd>
+        </div>
+        <div><dt>Election</dt><dd>{{campaign.electionYear}} {{campaign.electionType}}</dd></div>
+        <div><dt>Restrict geographic grouping</dt><dd>{{campaign.geographical ? 'Yes' : 'No'}}</dd></div>
+        <div><dt>Calling funded by</dt><dd>{{fundedLabel(campaign.fundedByCreatorOrg)}}</dd></div>
+        <div><dt>Texting funded by</dt><dd>{{fundedLabel(campaign.textingFundedByCreatorOrg)}}</dd></div>
+      </dl>
+    </ng-container>
+
+    <ng-container *ngIf="districtEditable">
+      <div class="ec-dev" *ngIf="groupCount > 0">
+        <mat-icon inline>warning_amber</mat-icon>
+        <span>Editing as a developer. This campaign has {{groupCount}} {{groupCount === 1 ? 'group' : 'groups'}}; changing the district changes who's in them.</span>
+      </div>
+
+      <div class="ec-row">
+        <mat-form-field appearance="outline" class="ec-field">
+          <mat-label>District type</mat-label>
+          <mat-select [(ngModel)]="districtType" (selectionChange)="onDistrictTypeChange()">
+            <mat-option *ngFor="let type of districtTypes" [value]="type.name">{{type.label}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="ec-field ec-field-wide">
+          <mat-label>{{loadingDistricts ? 'Loading districts…' : 'Districts'}}</mat-label>
+          <mat-select [(ngModel)]="boundaryIDs" multiple [disabled]="!districtType || loadingDistricts">
+            <div class="ec-select-search">
+              <input [(ngModel)]="districtSearch" (keydown)="$event.stopPropagation()" placeholder="Search districts" autocomplete="off">
+            </div>
+            <mat-option *ngFor="let district of filteredDistricts" [value]="district.properties.identifier">
+              {{district.properties.name | uppercase}}
+            </mat-option>
+            <div class="ec-select-empty" *ngIf="!filteredDistricts.length && !loadingDistricts">No districts match.</div>
+          </mat-select>
+          <mat-hint>{{boundaryIDs.length ? boundaryIDs.length + ' selected' : 'Choose one or more'}}</mat-hint>
+        </mat-form-field>
+      </div>
+      <mat-progress-bar mode="indeterminate" *ngIf="loadingDistricts"></mat-progress-bar>
+
+      <div class="ec-row">
+        <mat-form-field appearance="outline" class="ec-field">
+          <mat-label>Election type</mat-label>
+          <mat-select [(ngModel)]="electionType">
+            <mat-option *ngFor="let type of electionTypes" [value]="type">{{type}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="ec-field">
+          <mat-label>Election year</mat-label>
+          <mat-select [(ngModel)]="electionYear">
+            <mat-option *ngFor="let year of electionYears" [value]="year">{{year}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="ec-choice">
+        <div class="ec-choice-text">
+          <div class="ec-choice-label">Restrict geographic grouping</div>
+          <div class="ec-muted">Organizations can't draw overlapping polygons.</div>
+        </div>
+        <mat-button-toggle-group [(ngModel)]="geographical" aria-label="Restrict geographic grouping">
+          <mat-button-toggle [value]="false">No</mat-button-toggle>
+          <mat-button-toggle [value]="true">Yes</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+      <div class="ec-choice">
+        <div class="ec-choice-text">
+          <div class="ec-choice-label">Calling funded by</div>
+        </div>
+        <mat-button-toggle-group [(ngModel)]="fundedByCreatorOrg" aria-label="Calling funded by">
+          <mat-button-toggle [value]="true">Creator org</mat-button-toggle>
+          <mat-button-toggle [value]="false">Each org</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+      <div class="ec-choice">
+        <div class="ec-choice-text">
+          <div class="ec-choice-label">Texting funded by</div>
+        </div>
+        <mat-button-toggle-group [(ngModel)]="textingFundedByCreatorOrg" aria-label="Texting funded by">
+          <mat-button-toggle [value]="true">Creator org</mat-button-toggle>
+          <mat-button-toggle [value]="false">Each org</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+    </ng-container>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="ec-section" *ngIf="!loadFailed">
+    <div class="ec-section-title">Map and volunteer settings</div>
+    <div class="ec-toggle">
+      <mat-slide-toggle color="primary" [(ngModel)]="sleep" [disabled]="loading">Sleep mode</mat-slide-toggle>
+      <span class="ec-muted">Disables the Phonebank, Canvass, Texting and Petition buttons on the home page without deactivating the campaign.</span>
+    </div>
+    <div class="ec-toggle">
+      <mat-slide-toggle color="primary" [(ngModel)]="showNearestPollingLocations" [disabled]="loading">Show nearest voting centers</mat-slide-toggle>
+      <span class="ec-muted">Volunteers see the closest voting and drop-off locations for each household.</span>
+    </div>
+    <div class="ec-toggle">
+      <mat-slide-toggle color="primary" [(ngModel)]="showPartisan" [disabled]="loading">Show partisan data</mat-slide-toggle>
+      <span class="ec-muted">Volunteers see party, segment and ideology score.</span>
+    </div>
+  </section>
+
+  <!-- ALREADY VOTED -->
+  <section class="ec-section ec-status" *ngIf="!loading && !loadFailed && campaign.active">
+    <div class="ec-status-text">
+      <div class="ec-section-title">Already voted</div>
+      <div class="ec-muted">Takes voters marked as already voted out of every active phonebank, canvass and texting activity in this campaign.</div>
+      <div class="ec-muted" *ngIf="alreadyVotedProgress">{{alreadyVotedProgress}}</div>
+    </div>
+    <button mat-stroked-button color="primary" [disabled]="busy" (click)="removeAlreadyVoted()"><mat-icon>how_to_vote</mat-icon> Remove voters who already voted</button>
+  </section>
+
+  <!-- STATUS -->
+  <section class="ec-section ec-status" *ngIf="!loading && !loadFailed">
+    <div class="ec-status-text">
+      <div class="ec-section-title">Status</div>
+      <div class="ec-muted" *ngIf="campaign.active">Active. Members see it on their home page.</div>
+      <div class="ec-muted" *ngIf="!campaign.active">Inactive. Hidden from members until it's reactivated.</div>
+    </div>
+    <ng-container *ngIf="campaign.active">
+      <button mat-stroked-button color="warn" [disabled]="busy" (click)="setActive(false)"><mat-icon>block</mat-icon> Deactivate</button>
+    </ng-container>
+    <ng-container *ngIf="!campaign.active">
+      <button mat-stroked-button color="primary" [disabled]="busy" (click)="setActive(true)"><mat-icon>check_circle</mat-icon> Activate</button>
+      <span [matTooltip]="groupCount ? 'Campaigns with groups can\'t be deleted' : 'Delete permanently'">
+        <button mat-stroked-button color="warn" [disabled]="busy || groupCount > 0" (click)="deleteCampaign()"><mat-icon>delete_forever</mat-icon> Delete</button>
+      </span>
+    </ng-container>
+  </section>
+</mat-dialog-content>
+
+<mat-progress-bar *ngIf="saving" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-actions class="ec-actions">
+  <span class="ec-unsaved" *ngIf="hasChanges && !saving">{{validationError || 'Unsaved changes'}}</span>
+  <span class="spacer"></span>
+  <button mat-button [disabled]="saving" (click)="close()">{{hasChanges ? 'Cancel' : 'Close'}}</button>
+  <button mat-raised-button color="primary" [disabled]="busy || !hasChanges || !!validationError" (click)="save()">Save changes</button>
+</mat-dialog-actions>

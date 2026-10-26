@@ -1,0 +1,181 @@
+<div class="ea-header">
+  <div class="ea-heading">
+    <h2 mat-dialog-title class="ea-title">Activity report</h2>
+    <div class="ea-subtitle">
+      <span class="ea-subtitle-name">{{activity.name}}</span>
+      <span class="ea-chip ea-chip-type">{{activity.activityType}}</span>
+      <span class="ea-chip" [ngClass]="activity.active ? 'ea-chip-active' : 'ea-chip-inactive'">{{activity.active ? 'Active' : 'Inactive'}}</span>
+      <span class="ea-chip ea-chip-pass" *ngIf="showsPasses && activity.passes != null">{{activity.passes | passLabel}}</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button [disabled]="refreshing" (click)="refresh()" [matTooltip]="'Refresh · updated ' + (lastUpdated | date:'shortTime')" aria-label="Refresh report">
+    <mat-spinner diameter="20" *ngIf="refreshing"></mat-spinner>
+    <mat-icon *ngIf="!refreshing">refresh</mat-icon>
+  </button>
+  <button mat-icon-button *ngIf="canEditEntries" matTooltip="Edit survey responses and nonresponses" aria-label="Edit survey responses and nonresponses" (click)="openEditEntriesDialog()"><mat-icon>edit_note</mat-icon></button>
+  <button mat-icon-button *ngIf="activity.activityType === 'Phonebank' && activity.textMetaData" matTooltip="Text responses during this phonebank" aria-label="Text responses" (click)="openTextResponsesDialog()"><mat-icon>sms</mat-icon></button>
+  <button mat-icon-button matTooltip="Close" aria-label="Close" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ea-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-button (click)="loadReports()">Retry</button>
+  <button mat-icon-button matTooltip="Dismiss" aria-label="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="ea-content ea-report">
+
+  <!-- STATS -->
+  <div class="ea-report-stats" *ngIf="!isPetition || contactsTile">
+    <ng-container *ngIf="!isPetition">
+      <div class="ea-stat" [class.ea-stat-loading]="loadingSize">
+        <div class="ea-stat-label">Households</div>
+        <div class="ea-stat-value">{{loadingSize ? '' : (totalHouseHolds | number)}}</div>
+      </div>
+      <div class="ea-stat" [class.ea-stat-loading]="loadingSize">
+        <div class="ea-stat-label">Residents</div>
+        <div class="ea-stat-value">{{loadingSize ? '' : (totalResidents | number)}}</div>
+      </div>
+      <div class="ea-stat" *ngIf="activity.activityType === 'Canvass' && (loadingSize || density)" [class.ea-stat-loading]="loadingSize">
+        <div class="ea-stat-label">Households / sq mi</div>
+        <div class="ea-stat-value">{{loadingSize ? '' : (density | number)}}</div>
+      </div>
+    </ng-container>
+    <div class="ea-stat" *ngIf="contactsTile" [class.ea-stat-loading]="activityReport.loading">
+      <div class="ea-stat-label">{{contactsTile.label}}{{dateRangeSelected ? ' (dates)' : ''}}</div>
+      <div class="ea-stat-value">{{contactsTile.value | number}}</div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="ea-report-toolbar">
+    <mat-form-field appearance="outline" class="ea-report-date" subscriptSizing="dynamic">
+      <mat-label>Date range</mat-label>
+      <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+        <input matStartDate formControlName="start" placeholder="Start date">
+        <input matEndDate formControlName="end" placeholder="End date" (dateChange)="changeDateRange()">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
+      <button mat-icon-button matSuffix *ngIf="range.value.start || range.value.end" matTooltip="Clear dates" aria-label="Clear dates" (click)="clearDateRange()"><mat-icon>close</mat-icon></button>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+    <span class="spacer"></span>
+    <button mat-stroked-button color="primary" class="ea-report-export" *ngIf="currentReport" [disabled]="!currentReport.rows.length" aria-label="Export CSV" (click)="exportCSV()"><mat-icon>download</mat-icon><span class="ea-report-export-text"> Export CSV</span></button>
+  </div>
+
+  <mat-tab-group class="ea-report-tabs" [selectedIndex]="selectedTab" (selectedIndexChange)="onTabChange($event)" animationDuration="0ms">
+
+    <!-- ACTIVITY -->
+    <mat-tab>
+      <ng-template mat-tab-label>Activity <span class="ea-count" *ngIf="activityReport.rows.length">{{activityReport.rows.length}}</span></ng-template>
+      <div class="ea-report-pane">
+        <mat-progress-bar mode="indeterminate" *ngIf="activityReport.loading"></mat-progress-bar>
+        <div class="ea-template-empty" *ngIf="!activityReport.loading && !activityReport.rows.length && !activityReport.error">
+          <mat-icon>insert_chart_outlined</mat-icon>
+          <div class="ea-muted">{{dateRangeSelected ? 'No activity recorded for the selected dates.' : 'No activity recorded yet.'}}</div>
+        </div>
+        <ng-container *ngTemplateOutlet="table; context: {$implicit: activityReport}"></ng-container>
+      </div>
+    </mat-tab>
+
+    <!-- SURVEY -->
+    <mat-tab>
+      <ng-template mat-tab-label>Survey responses</ng-template>
+      <div class="ea-report-pane">
+        <div class="ea-template-empty" *ngIf="surveyLoaded && !survey">
+          <mat-icon>quiz</mat-icon>
+          <div class="ea-muted">This activity has no survey.</div>
+        </div>
+
+        <mat-form-field appearance="outline" class="ea-field" *ngIf="survey">
+          <mat-label>Survey question</mat-label>
+          <mat-select [value]="selectedQuestion" (selectionChange)="onQuestionChange($event)">
+            <mat-option *ngFor="let question of survey.questions" [value]="question.question">{{question.question}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="ea-template-empty" *ngIf="survey && !selectedQuestion">
+          <mat-icon>touch_app</mat-icon>
+          <div class="ea-muted">Choose a survey question to see how people answered.</div>
+        </div>
+
+        <mat-progress-bar mode="indeterminate" *ngIf="surveyReport.loading"></mat-progress-bar>
+        <div class="ea-template-empty" *ngIf="selectedQuestion && !surveyReport.loading && !surveyReport.rows.length && !surveyReport.error">
+          <mat-icon>insert_chart_outlined</mat-icon>
+          <div class="ea-muted">{{dateRangeSelected ? 'No answers to this question for the selected dates.' : 'No answers to this question yet.'}}</div>
+        </div>
+
+        <div class="ea-report-survey" *ngIf="selectedQuestion && surveyReport.rows.length">
+          <div class="ea-report-chart-card">
+            <div class="ea-card-title">Answer totals</div>
+            <div class="ea-report-chart" [style.height.px]="chartHeight">
+              <canvas #chartCanvas role="img" [attr.aria-label]="'Answer totals for ' + selectedQuestion"></canvas>
+            </div>
+          </div>
+          <ng-container *ngTemplateOutlet="table; context: {$implicit: surveyReport}"></ng-container>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- NONRESPONSES -->
+    <mat-tab *ngIf="!isPetition">
+      <ng-template mat-tab-label>Nonresponses <span class="ea-count" *ngIf="nonResponseReport.rows.length">{{nonResponseReport.rows.length}}</span></ng-template>
+      <div class="ea-report-pane">
+        <mat-progress-bar mode="indeterminate" *ngIf="nonResponseReport.loading"></mat-progress-bar>
+        <div class="ea-template-empty" *ngIf="!nonResponseReport.loading && !nonResponseReport.rows.length && !nonResponseReport.error">
+          <mat-icon>insert_chart_outlined</mat-icon>
+          <div class="ea-muted">{{dateRangeSelected ? 'No nonresponses recorded for the selected dates.' : 'No nonresponses recorded yet.'}}</div>
+        </div>
+        <ng-container *ngTemplateOutlet="table; context: {$implicit: nonResponseReport}"></ng-container>
+      </div>
+    </mat-tab>
+
+    <!-- NOTES -->
+    <mat-tab>
+      <ng-template mat-tab-label>Notes <mat-icon class="ea-tab-dot" *ngIf="savedNotes">sticky_note_2</mat-icon></ng-template>
+      <div class="ea-report-pane">
+        <mat-form-field appearance="outline" class="ea-field">
+          <mat-label>Data manager notes</mat-label>
+          <textarea matInput [(ngModel)]="notes" cdkTextareaAutosize cdkAutosizeMinRows="5" cdkAutosizeMaxRows="14"></textarea>
+        </mat-form-field>
+        <div class="ea-report-notes-actions">
+          <span class="ea-unsaved" *ngIf="notesDirty && !savingNotes">Unsaved changes</span>
+          <span class="spacer"></span>
+          <button mat-button [disabled]="!notesDirty || savingNotes" (click)="notes = savedNotes">Discard</button>
+          <button mat-raised-button color="primary" [disabled]="!notesDirty || savingNotes" (click)="saveNotes()">Save notes</button>
+        </div>
+        <mat-progress-bar mode="indeterminate" *ngIf="savingNotes"></mat-progress-bar>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</mat-dialog-content>
+
+<mat-dialog-actions class="ea-actions">
+  <span class="ea-unsaved" *ngIf="dateRangeSelected">Filtered to {{range.value.start | date:'mediumDate'}} – {{range.value.end | date:'mediumDate'}}</span>
+  <span class="spacer"></span>
+  <button mat-button (click)="close()">Close</button>
+</mat-dialog-actions>
+
+<!-- Per-user table with a totals footer; scrolls sideways inside its card on small screens -->
+<ng-template #table let-report>
+  <div class="ea-report-table-wrap" *ngIf="report.rows.length">
+    <table class="ea-report-table">
+      <thead>
+        <tr><th *ngFor="let header of report.headers" [class.ea-num]="header !== 'User'">{{header === 'User' ? 'Volunteer' : header}}</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of report.rows">
+          <td *ngFor="let header of report.headers" [class.ea-num]="header !== 'User'">{{isNumber(row[header]) ? (row[header] | number) : (row[header] ?? 0)}}</td>
+        </tr>
+      </tbody>
+      <tfoot *ngIf="report.totals && report.rows.length > 1">
+        <tr>
+          <td *ngFor="let header of report.headers" [class.ea-num]="header !== 'User'">{{isNumber(report.totals[header]) ? (report.totals[header] | number) : report.totals[header]}}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</ng-template>

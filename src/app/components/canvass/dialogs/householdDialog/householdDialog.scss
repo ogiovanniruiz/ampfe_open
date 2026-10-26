@@ -1,0 +1,252 @@
+// Header, banners, sections and actions come from the shared ge-* dialog styles (src/app/styles/dialog-common.scss)
+
+// Matches the shared .mat-mdc-dialog-content.ge-content (70vh) so this taller cap wins, as it did in legacy
+.mat-mdc-dialog-content.hh-content {
+  // Always leave room for the header and footer, and scroll inside; dvh respects mobile browser bars
+  max-height: calc(100vh - 200px);
+  max-height: calc(100dvh - 200px);
+  overflow: auto;
+}
+
+.hh-chip-done {
+  background: rgba(46, 125, 50, 0.12);
+  color: #2e7d32;
+}
+
+.hh-chip-tried {
+  background: rgba(255, 152, 0, 0.15);
+  color: #8a5300;
+}
+
+// Nearest voting locations
+.hh-places {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.hh-places-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: rgba(0, 0, 0, 0.03);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+
+// Shown instead of the list when the address's map location is too rough to pick sites from
+.hh-places-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.03);
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.65);
+
+  mat-icon {
+    flex: none;
+    color: rgba(0, 0, 0, 0.45);
+  }
+}
+
+.hh-place {
+  padding: 8px 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 13px;
+}
+
+.hh-place-name {
+  font-weight: 600;
+}
+
+.hh-place-distance {
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.hh-place-line {
+  color: rgba(0, 0, 0, 0.65);
+  overflow-wrap: anywhere;
+
+  .ge-chip {
+    margin-right: 4px;
+  }
+
+  strong {
+    font-weight: 500;
+  }
+}
+
+// Residents
+.hh-residents {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hh-resident-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  min-width: 0;
+}
+
+.hh-resident-name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.hh-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 16px;
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.03);
+  font-size: 13px;
+}
+
+.hh-fact {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+
+  dt {
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 500;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+}
+
+// Survey questions, shown inline
+.hh-question {
+  padding: 10px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+
+  &:first-child {
+    border-top: none;
+  }
+}
+
+.hh-question-text {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.hh-question-number {
+  flex-shrink: 0;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(25, 49, 85, 0.1);
+  color: #193155;
+  font-size: 12px;
+  line-height: 22px;
+  text-align: center;
+}
+
+.hh-options {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 30px;
+  ::ng-deep .mdc-form-field > label,
+  ::ng-deep .mdc-form-field > .mat-internal-form-field-label {
+    white-space: normal;
+  }
+}
+
+.hh-notes {
+  width: 100%;
+  padding-left: 30px;
+  box-sizing: border-box;
+}
+
+.hh-needs {
+  margin: 4px 0 8px;
+  color: #c62828;
+  font-size: 13px;
+}
+
+// Submit + non-response buttons: wrap instead of clipping long labels
+.hh-answer-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+
+  button {
+    min-height: 40px;
+    height: auto;
+    padding: 6px 10px;
+    line-height: 1.25;
+    white-space: normal;
+  }
+}
+
+.hh-extras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+
+  mat-icon {
+    margin-right: 4px;
+  }
+}
+
+.hh-everyone {
+  padding: 12px;
+  border: 1px dashed rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.hh-everyone-title {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.hh-everyone-help {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+}
+
+.hh-idby {
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 12px;
+}
+
+@media (max-width: 600px) {
+  .hh-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .hh-options,
+  .hh-notes {
+    padding-left: 0;
+  }
+
+  .mat-mdc-dialog-content.hh-content {
+    max-height: calc(100vh - 170px);
+    max-height: calc(100dvh - 170px);
+  }
+}

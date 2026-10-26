@@ -1,0 +1,222 @@
+// Shares the ge-* styles in src/app/styles/dialog-common.scss; these are creator-only
+
+.gc-groupby {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.gc-option {
+  display: block;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  // Let the radio label wrap and stack the title over the description
+  ::ng-deep .mdc-form-field {
+    align-items: flex-start;
+    width: 100%;
+  }
+  ::ng-deep .mdc-form-field > label,
+  ::ng-deep .mdc-form-field > .mat-internal-form-field-label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+    white-space: normal;
+    padding-top: 10px;
+    cursor: pointer;
+  }
+}
+
+.gc-option-selected {
+  border-color: #3f51b5;
+  background: rgba(63, 81, 181, 0.06);
+
+  &:hover {
+    background: rgba(63, 81, 181, 0.09);
+  }
+}
+
+.gc-option-title {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.gc-option-desc {
+  font-size: 12px;
+  line-height: 16px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.gc-entire {
+  margin-bottom: 12px;
+}
+
+.gc-add-panel {
+  margin-bottom: 12px;
+  padding: 12px 12px 0;
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+}
+
+.gc-preset {
+  width: 100%;
+}
+
+.gc-or {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+}
+
+.gc-pickers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 4px 16px;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.gc-loading {
+  align-items: center;
+  margin: 0 0 8px;
+}
+
+.gc-rule {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 12px 8px 2px 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.gc-rule-empty {
+  background: rgba(198, 40, 40, 0.04);
+  box-shadow: inset 3px 0 0 #c62828;
+}
+
+.gc-rule-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.gc-rule-field {
+  width: 100%;
+}
+
+.gc-upload {
+  padding-bottom: 10px;
+}
+
+.gc-upload-label {
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.gc-upload-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin-bottom: 10px;
+}
+
+.gc-stale {
+  color: #b26a00;
+}
+
+.gc-tiles-stale .ge-tile-value {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.gc-map {
+  height: 360px;
+  margin-top: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+@media (max-width: 600px) {
+  .gc-map {
+    height: 260px;
+  }
+}
+
+// Tag values filter: tag + values per row
+.gc-tag-values {
+  width: 100%;
+}
+
+.gc-tag-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+
+  button {
+    margin-top: 8px;
+  }
+}
+
+.gc-tag-label,
+.gc-tag-value {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.gc-tag-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.gc-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+  vertical-align: middle;
+}
+
+@media (max-width: 480px) {
+  .gc-tag-row {
+    flex-wrap: wrap;
+  }
+
+  .gc-tag-label,
+  .gc-tag-value {
+    flex-basis: 100%;
+  }
+}

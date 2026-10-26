@@ -1,0 +1,80 @@
+<div class="rc-header">
+  <div class="rc-heading">
+    <h2 mat-dialog-title class="rc-title">Join an organization</h2>
+    <div class="rc-subtitle">An administrator approves your request.</div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="sending" (click)="closeDialog()"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+<div class="rc-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-button *ngIf="loadFailed" (click)="getAllOrgs()">Retry</button>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<!-- SEARCH -->
+<ng-container *ngIf="!sentTo">
+  <mat-dialog-content class="rc-content">
+    <p class="rc-help">Ask an administrator for the organization's name exactly as it appears in Amplify.</p>
+
+    <mat-form-field appearance="outline" class="ro-search">
+      <mat-label>Organization name</mat-label>
+      <mat-icon matPrefix class="rc-prefix">search</mat-icon>
+      <input matInput [(ngModel)]="search" (ngModelChange)="onSearch()" [disabled]="loadFailed" autocomplete="off" cdkFocusInitial>
+      <button mat-icon-button matSuffix *ngIf="search" matTooltip="Clear" (click)="search = ''; onSearch()"><mat-icon>close</mat-icon></button>
+      <mat-hint *ngIf="!searching">Type at least {{minSearch}} letters.</mat-hint>
+    </mat-form-field>
+
+    <div class="ro-list" role="radiogroup" aria-label="Organizations" *ngIf="results.length">
+      <button type="button" class="ro-row" *ngFor="let org of results; trackBy: trackOrg"
+              role="radio" [attr.aria-checked]="selected === org" [disabled]="!!org.status"
+              [class.ro-row-selected]="selected === org" (click)="select(org)">
+        <mat-icon class="ro-radio">{{selected === org ? 'radio_button_checked' : 'radio_button_unchecked'}}</mat-icon>
+        <span class="ro-name">{{org.name}}</span>
+        <span class="ro-chip" *ngIf="org.status" [ngClass]="'ro-chip-' + org.status">{{statusLabel(org)}}</span>
+      </button>
+    </div>
+    <div class="ro-more" *ngIf="moreCount">{{moreCount}} more match. Keep typing to narrow the list.</div>
+
+    <div class="ro-empty" *ngIf="searching && !results.length && !loading">
+      No organization matches "{{search.trim()}}". Check the spelling with your administrator.
+    </div>
+
+    <div class="rc-error ro-request-error" *ngIf="requestError">{{requestError}}</div>
+  </mat-dialog-content>
+
+  <mat-progress-bar *ngIf="sending" mode="indeterminate"></mat-progress-bar>
+
+  <mat-dialog-actions class="rc-actions">
+    <span class="ro-selected" *ngIf="selected">Selected: <b>{{selected.name}}</b></span>
+    <span class="spacer"></span>
+    <button mat-button [disabled]="sending" (click)="closeDialog()">Cancel</button>
+    <button mat-raised-button color="primary" [disabled]="!selected || sending" (click)="sendOrgRequest()">
+      <mat-icon>send</mat-icon> Send request
+    </button>
+  </mat-dialog-actions>
+</ng-container>
+
+<!-- SENT -->
+<ng-container *ngIf="sentTo">
+  <mat-dialog-content class="rc-content">
+    <div class="rc-success">
+      <mat-icon class="rc-success-icon">check_circle</mat-icon>
+      <div>
+        <div class="rc-success-title">Request sent</div>
+        <p class="rc-help">Your request to join <b>{{sentTo}}</b> is waiting for approval. You'll get access once an administrator approves it.</p>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="rc-actions">
+    <button mat-button (click)="requestAnother()">Request another</button>
+    <span class="spacer"></span>
+    <button mat-raised-button color="primary" (click)="closeDialog()">Done</button>
+  </mat-dialog-actions>
+</ng-container>

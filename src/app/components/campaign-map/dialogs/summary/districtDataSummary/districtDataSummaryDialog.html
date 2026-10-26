@@ -1,0 +1,160 @@
+<div class="dd-header">
+  <div class="dd-heading">
+    <h2 mat-dialog-title class="dd-title">District data</h2>
+    <div class="dd-subtitle" *ngIf="subtitle">{{subtitle}}</div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Recalculate from the voter file" [disabled]="loading || !hasDistricts" (click)="refresh()"><mat-icon>refresh</mat-icon></button>
+  <button mat-icon-button matTooltip="Close" (click)="return();"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="dd-picker-row" *ngIf="hasDistricts">
+  <mat-form-field appearance="outline" class="dd-picker">
+    <mat-label>{{districtTypeSingular | titlecase}}</mat-label>
+    <mat-select [value]="selected" (selectionChange)="selectDistrict($event.value)">
+      <mat-option *ngFor="let district of districtList" [value]="district.id">{{district.name}}</mat-option>
+      <mat-option *ngIf="districtList.length > 1" value="ALL">All {{districtTypePlural}} combined</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <span class="dd-updated" *ngIf="updatedLabel && !loading">{{updatedLabel}}</span>
+</div>
+
+<div class="dd-loading" *ngIf="loading">
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  <p>Counting voters in {{loadingName}}… large districts can take a minute the first time.</p>
+</div>
+
+<mat-dialog-content class="dd-content" *ngIf="!loading">
+  <div class="dd-banner" *ngIf="error">
+    <mat-icon>error_outline</mat-icon>
+    <span>Couldn't load the district data.</span>
+    <span class="spacer"></span>
+    <button mat-button (click)="retry()">Retry</button>
+  </div>
+
+  <div class="dd-empty" *ngIf="!error && !hasDistricts">
+    <mat-icon>map</mat-icon>
+    <p>This campaign has no district boundary set, so there's no district data to show.</p>
+  </div>
+
+  <ng-container *ngIf="!error && counts">
+    <!-- Headline numbers -->
+    <div class="dd-tiles">
+      <div class="dd-tile">
+        <div class="dd-tile-label">Registered voters</div>
+        <div class="dd-tile-value">{{counts.totalVoters | number}}</div>
+        <div class="dd-tile-sub">{{selectedName}}</div>
+      </div>
+      <div class="dd-tile">
+        <div class="dd-tile-label">Projected turnout</div>
+        <div class="dd-tile-value">{{projectedTurnOutPercent !== null ? projectedTurnOutPercent + '%' : '—'}}</div>
+        <div class="dd-tile-sub">average of the selected elections</div>
+      </div>
+      <div class="dd-tile">
+        <div class="dd-tile-label">Projected votes</div>
+        <div class="dd-tile-value">{{projectedVotes !== null ? (projectedVotes | number) : '—'}}</div>
+        <div class="dd-tile-sub">registered × projected turnout</div>
+      </div>
+      <div class="dd-tile">
+        <div class="dd-tile-label">Win number</div>
+        <div class="dd-tile-value">{{winNumber !== null ? (winNumber | number) : '—'}}</div>
+        <div class="dd-tile-sub">half of projected votes + 1</div>
+      </div>
+    </div>
+
+    <div class="dd-grid">
+      <!-- Party registration -->
+      <section class="dd-card">
+        <div class="dd-card-header">
+          <span class="dd-card-title">Party registration</span>
+          <span class="spacer"></span>
+          <mat-button-toggle-group [(ngModel)]="partyView" aria-label="Party view" class="dd-mini-toggle">
+            <mat-button-toggle value="chart" matTooltip="Chart"><mat-icon>bar_chart</mat-icon></mat-button-toggle>
+            <mat-button-toggle value="table" matTooltip="Table"><mat-icon>table_rows</mat-icon></mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+
+        <ng-container *ngIf="partyView === 'chart'">
+          <div class="dd-bar-row" *ngFor="let party of partyRows; trackBy: trackByKey" [matTooltip]="party.label + ' · ' + (party.count | number) + ' voters · ' + party.pct + '%'" tabindex="0">
+            <span class="dd-bar-label">{{party.label}}</span>
+            <span class="dd-bar-track"><span class="dd-bar-fill" [style.width.%]="party.pct"></span></span>
+            <span class="dd-bar-value">{{party.pct}}%</span>
+          </div>
+        </ng-container>
+
+        <table class="dd-table" *ngIf="partyView === 'table'">
+          <thead><tr><th>Party</th><th class="dd-num">Voters</th><th class="dd-num">Share</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let party of partyRows; trackBy: trackByKey">
+              <td>{{party.label}}</td>
+              <td class="dd-num">{{party.count | number}}</td>
+              <td class="dd-num">{{party.pct}}%</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Turnout history -->
+      <section class="dd-card">
+        <div class="dd-card-header">
+          <span class="dd-card-title">Turnout history</span>
+        </div>
+        <div class="dd-card-subtitle">Tick the elections the projection should average.</div>
+
+        <table class="dd-table">
+          <thead>
+            <tr>
+              <th>Election</th>
+              <th class="dd-num">Registered</th>
+              <th class="dd-num">Voted</th>
+              <th class="dd-num">Turnout</th>
+              <th class="dd-center">Use</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of turnoutRows; trackBy: trackByKey" [class.dd-row-off]="!row.useInProjection">
+              <td>{{row.label}}</td>
+              <td class="dd-num">{{row.registered | number}}</td>
+              <td class="dd-num">{{row.voted | number}}</td>
+              <td class="dd-num">{{row.turnout !== null ? (row.turnout * 100 | number:'1.1-1') + '%' : '—'}}</td>
+              <td class="dd-center">
+                <mat-checkbox color="primary" [checked]="row.useInProjection" [disabled]="row.turnout === null"
+                              (change)="toggleProjectionYear(row, $event.checked)" [attr.aria-label]="'Use ' + row.label + ' in projection'"></mat-checkbox>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="dd-footnote">Registered = voters on today's file registered before that election.</p>
+      </section>
+    </div>
+
+    <!-- All districts comparison -->
+    <section class="dd-card dd-compare" *ngIf="selected === 'ALL' && districtRows.length">
+      <div class="dd-card-header">
+        <span class="dd-card-title">By {{districtTypeSingular}}</span>
+      </div>
+      <div class="dd-card-subtitle">Select a row to open that {{districtTypeSingular}}.</div>
+      <table class="dd-table">
+        <thead>
+          <tr>
+            <th>{{districtTypeSingular | titlecase}}</th>
+            <th class="dd-num">Registered</th>
+            <th class="dd-num">DEM</th>
+            <th class="dd-num">REP</th>
+            <th class="dd-num">Projected votes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of districtRows; trackBy: trackByKey" class="dd-clickable" tabindex="0"
+              (click)="selectDistrict(row.id)" (keyup.enter)="selectDistrict(row.id)">
+            <td>{{row.name}}</td>
+            <td class="dd-num">{{row.totalVoters | number}}</td>
+            <td class="dd-num">{{pct(row.numDems, row.totalVoters)}}%</td>
+            <td class="dd-num">{{pct(row.numReps, row.totalVoters)}}%</td>
+            <td class="dd-num">{{districtProjectedVotes(row) !== null ? (districtProjectedVotes(row) | number) : '—'}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </ng-container>
+</mat-dialog-content>

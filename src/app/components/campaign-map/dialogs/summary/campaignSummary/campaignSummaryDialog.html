@@ -1,0 +1,186 @@
+<div class="cs-header">
+  <div>
+    <h2 mat-dialog-title class="cs-title">{{summaryType}} Summary</h2>
+    <div class="cs-subtitle">{{filterDescription}}</div>
+  </div>
+  <button mat-icon-button matTooltip="Close" (click)="return();"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="cs-content">
+  <mat-tab-group mat-stretch-tabs animationDuration="0ms">
+
+    <!-- SURVEY -->
+    <mat-tab label="Survey results">
+      <div class="cs-tab">
+        <mat-form-field appearance="outline" class="cs-picker">
+          <mat-label>Survey</mat-label>
+          <mat-select [value]="surveyID" (selectionChange)="getSurveySummary($event.value)">
+            <mat-option *ngFor="let survey of orgSurveys" [value]="survey._id">{{survey.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-progress-bar *ngIf="loadingSurveySummary" mode="indeterminate"></mat-progress-bar>
+
+        <div class="cs-tiles" *ngIf="surveyTiles.length">
+          <div class="cs-tile" *ngFor="let tile of surveyTiles">
+            <div class="cs-tile-label">{{tile.label}}</div>
+            <div class="cs-tile-value">{{tile.value}}</div>
+          </div>
+        </div>
+
+        <div class="cs-table-toolbar" *ngIf="surveySummary.length > 0">
+          <span class="cs-section-title">By {{summaryType | lowercase}}</span>
+          <span class="cs-toolbar-actions">
+            <button mat-stroked-button color="primary" *ngIf="summaryType === 'Geography' && geoType === 'person.registrationPrecinctID'" (click)="displayOnMap()"><mat-icon>map</mat-icon> Display on map</button>
+            <button mat-stroked-button color="primary" (click)="exportTable(surveySummary, surveySummaryHeaders, 'survey')"><mat-icon>download</mat-icon> Export CSV</button>
+            <button mat-stroked-button color="primary" (click)="showSheetSync = !showSheetSync"><mat-icon>table_view</mat-icon> Sync to Google Sheet</button>
+          </span>
+        </div>
+
+        <div class="cs-sheet-sync" *ngIf="surveySummary.length > 0 && showSheetSync">
+          <mat-form-field appearance="outline" class="cs-sheet-url" subscriptSizing="dynamic">
+            <mat-label>Google Sheet link</mat-label>
+            <input matInput [(ngModel)]="googleSheetURL" (keyup.enter)="syncSurveyToSheet()" placeholder="https://docs.google.com/spreadsheets/d/..." autocomplete="off">
+            <mat-hint *ngIf="sheetsServiceAccount">Share the sheet with {{sheetsServiceAccount}} as an Editor.</mat-hint>
+            <mat-hint *ngIf="sheetsServiceAccount === ''">Upload a Google service account key in Edit Organization to sync sheets.</mat-hint>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="cs-sheet-name" subscriptSizing="dynamic">
+            <mat-label>Tab name</mat-label>
+            <input matInput [(ngModel)]="sheetName" (keyup.enter)="syncSurveyToSheet()" placeholder="Sheet1" autocomplete="off">
+            <mat-hint>Replaced on every sync</mat-hint>
+          </mat-form-field>
+          <button mat-flat-button color="primary" [disabled]="syncingSheet || !sheetsServiceAccount" (click)="syncSurveyToSheet()">
+            <mat-icon>sync</mat-icon> {{syncingSheet ? 'Syncing…' : 'Sync now'}}
+          </button>
+        </div>
+
+        <app-summary-table *ngIf="surveySummary.length > 0" [rows]="surveySummary" [headers]="surveySummaryHeaders" [labelColumn]="summaryType"></app-summary-table>
+
+        <div class="empty-state" *ngIf="!loadingSurveySummary && !surveyID">
+          <mat-icon>quiz</mat-icon>
+          <p>Select a survey to see its results.</p>
+        </div>
+        <div class="empty-state" *ngIf="!loadingSurveySummary && surveyID && surveySummary.length === 0">
+          <mat-icon>insert_chart_outlined</mat-icon>
+          <p>No survey responses match these filters.</p>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- OVERVIEW -->
+    <mat-tab label="Overview">
+      <div class="cs-tab">
+        <mat-progress-bar *ngIf="loadingActivitySummary" mode="indeterminate"></mat-progress-bar>
+
+        <div class="cs-tiles" *ngIf="overviewTiles.length">
+          <div class="cs-tile" *ngFor="let tile of overviewTiles">
+            <div class="cs-tile-label">{{tile.label}}</div>
+            <div class="cs-tile-value">{{tile.value}}</div>
+          </div>
+        </div>
+
+        <div class="cs-table-toolbar" *ngIf="activitySummary.length > 0">
+          <span class="cs-section-title">By {{summaryType | lowercase}}</span>
+          <button mat-stroked-button color="primary" (click)="exportTable(activitySummary, activitySummaryHeaders, 'overview')"><mat-icon>download</mat-icon> Export CSV</button>
+        </div>
+
+        <app-summary-table *ngIf="activitySummary.length > 0" [rows]="activitySummary" [headers]="activitySummaryHeaders" [labelColumn]="summaryType"></app-summary-table>
+
+        <div class="empty-state" *ngIf="!loadingActivitySummary && activitySummary.length === 0">
+          <mat-icon>insert_chart_outlined</mat-icon>
+          <p>No activity matches these filters.</p>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- NON-RESPONSES -->
+    <mat-tab label="Non-responses">
+      <div class="cs-tab">
+        <mat-form-field appearance="outline" class="cs-picker">
+          <mat-label>Non-response set</mat-label>
+          <mat-select [value]="nonResponseSetID" (selectionChange)="getNonresponseSummary($event.value)">
+            <mat-option *ngFor="let nonResponseSet of nonResponseSets" [value]="nonResponseSet._id">{{nonResponseSet.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-progress-bar *ngIf="loadingNonresponseSummary" mode="indeterminate"></mat-progress-bar>
+
+        <div class="cs-table-toolbar" *ngIf="nonResponseSummary.length > 0">
+          <span class="cs-section-title">By {{summaryType | lowercase}}</span>
+          <button mat-stroked-button color="primary" (click)="exportTable(nonResponseSummary, nonResponseHeaders, 'nonresponses')"><mat-icon>download</mat-icon> Export CSV</button>
+        </div>
+
+        <app-summary-table *ngIf="nonResponseSummary.length > 0" [rows]="nonResponseSummary" [headers]="nonResponseHeaders" [labelColumn]="summaryType"></app-summary-table>
+
+        <div class="empty-state" *ngIf="!loadingNonresponseSummary && !nonResponseSetID">
+          <mat-icon>block</mat-icon>
+          <p>Select a non-response set to see its summary.</p>
+        </div>
+        <div class="empty-state" *ngIf="!loadingNonresponseSummary && nonResponseSetID && nonResponseSummary.length === 0">
+          <mat-icon>insert_chart_outlined</mat-icon>
+          <p>No non-responses match these filters.</p>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</mat-dialog-content>
+
+<div class="cs-filters">
+  <div class="cs-filter-fields">
+    <mat-button-toggle-group [(ngModel)]="activityType" (change)="applyFilters()" aria-label="Activity type" class="cs-type-toggle">
+      <mat-button-toggle value="all">All</mat-button-toggle>
+      <mat-button-toggle value="Phonebank">Phonebank</mat-button-toggle>
+      <mat-button-toggle value="Canvass">Canvass</mat-button-toggle>
+      <mat-button-toggle value="Texting">Texting</mat-button-toggle>
+      <mat-button-toggle value="Petition">Petition</mat-button-toggle>
+    </mat-button-toggle-group>
+
+    <mat-form-field appearance="outline" class="cs-field cs-field-date">
+      <mat-label>Date range</mat-label>
+      <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+        <input matStartDate formControlName="start" placeholder="Start date">
+        <input matEndDate formControlName="end" placeholder="End date" (dateChange)="changeDateRange()">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
+      <button mat-icon-button matSuffix *ngIf="range.value.start || range.value.end" matTooltip="Clear dates" (click)="clearDateRange()"><mat-icon>close</mat-icon></button>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="cs-field" *ngIf="summaryType === 'Activity'">
+      <mat-label>Activity name</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [(ngModel)]="activityNameFilter" (keyup.enter)="applyActivityName()" (blur)="applyActivityName()" autocomplete="off">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="cs-field" *ngIf="summaryType != 'Organization' && (dev || dataManager)">
+      <mat-label>Organizations</mat-label>
+      <mat-select [(ngModel)]="orgFilter" (selectionChange)="applyFilters()">
+        <mat-option value="myOrg">My org</mat-option>
+        <mat-option value="allOrgs">All orgs</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="cs-field" *ngIf="summaryType === 'Geography'">
+      <mat-label>Group by</mat-label>
+      <mat-select [(ngModel)]="geoType" (selectionChange)="applyFilters()">
+        <mat-option [value]="'person.address.city'">City</mat-option>
+        <mat-option [value]="'person.address.zip'">Zip</mat-option>
+        <mat-option [value]="'person.registrationPrecinctID'">Precinct</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="cs-field" *ngIf="summaryType === 'Date'">
+      <mat-label>User</mat-label>
+      <mat-select [(ngModel)]="userFilter" (selectionChange)="applyFilters()">
+        <mat-option value="allUsers">All users</mat-option>
+        <mat-option *ngFor="let user of users" [value]="user._id">{{user.name?.fullName}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="cs-filter-actions">
+      <button mat-button *ngIf="hasActiveFilters" (click)="resetFilters()">Reset filters</button>
+      <button mat-icon-button color="primary" matTooltip="Refresh" (click)="refreshSummaries()"
+              [disabled]="loadingActivitySummary || loadingSurveySummary || loadingNonresponseSummary"><mat-icon>refresh</mat-icon></button>
+    </div>
+  </div>
+</div>

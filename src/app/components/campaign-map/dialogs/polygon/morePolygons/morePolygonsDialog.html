@@ -1,0 +1,135 @@
+<div class="mp-header">
+  <div class="mp-heading">
+    <h2 mat-dialog-title class="mp-title">Polygon allocation list</h2>
+    <div class="mp-subtitle">
+      {{activePolygons.length}} active · {{archivedPolygons.length}} archived<span *ngIf="loadAllOrgPolygons"> · all organization polygons</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" (click)="closeDialog();"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
+<div class="mp-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-button *ngIf="loadFailed" (click)="getPolygons()">Retry</button>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="mp-warning" *ngIf="usageFailed">
+  <mat-icon inline>warning_amber</mat-icon>
+  <span>Couldn't load which groups and activities use these polygons. Archiving and deleting are paused.</span>
+  <span class="spacer"></span>
+  <button mat-button (click)="retryUsage()">Retry</button>
+</div>
+
+<div class="mp-mode">
+  <mat-slide-toggle color="primary" [checked]="loadAllOrgPolygons" [disabled]="savingMode" (change)="setLoadAllOrgPolygons($event.checked)">Load all organization polygons</mat-slide-toggle>
+  <span class="mp-mode-help">Show your organization's polygons from every campaign, not just this one, on the map and in this list. Saved for this campaign.</span>
+</div>
+
+<mat-form-field appearance="outline" class="mp-search" *ngIf="activePolygons.length + archivedPolygons.length > 0">
+  <mat-icon matPrefix>search</mat-icon>
+  <input matInput [(ngModel)]="search" placeholder="Search polygons, organizations, groups or activities" autocomplete="off">
+  <button mat-icon-button matSuffix *ngIf="search" matTooltip="Clear" (click)="search = ''"><mat-icon>close</mat-icon></button>
+</mat-form-field>
+
+<mat-dialog-content class="mp-content">
+  <mat-tab-group mat-stretch-tabs animationDuration="0ms">
+
+    <!-- ACTIVE -->
+    <mat-tab>
+      <ng-template matTabLabel>Active ({{activePolygons.length}})</ng-template>
+      <div class="mp-tab">
+        <div class="mp-list" *ngIf="filteredActive.length">
+          <ng-container *ngFor="let polygon of filteredActive; trackBy: trackPolygon">
+            <ng-container *ngTemplateOutlet="row; context: {$implicit: polygon, archived: false}"></ng-container>
+          </ng-container>
+        </div>
+
+        <div class="mp-empty" *ngIf="!loading && !loadFailed && !filteredActive.length">
+          <mat-icon>{{search ? 'search_off' : 'layers'}}</mat-icon>
+          <p *ngIf="search">No active polygons match "{{search}}".</p>
+          <p *ngIf="!search">No active polygons. Draw one on the map to create it.</p>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- ARCHIVED -->
+    <mat-tab>
+      <ng-template matTabLabel>Archived ({{archivedPolygons.length}})</ng-template>
+      <div class="mp-tab">
+        <div class="mp-list" *ngIf="filteredArchived.length">
+          <ng-container *ngFor="let polygon of filteredArchived; trackBy: trackPolygon">
+            <ng-container *ngTemplateOutlet="row; context: {$implicit: polygon, archived: true}"></ng-container>
+          </ng-container>
+        </div>
+
+        <div class="mp-empty" *ngIf="!loading && !loadFailed && !filteredArchived.length">
+          <mat-icon>{{search ? 'search_off' : 'inventory_2'}}</mat-icon>
+          <p *ngIf="search">No archived polygons match "{{search}}".</p>
+          <p *ngIf="!search">No archived polygons. Archived polygons are hidden from the map and new groups, and can be restored here.</p>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</mat-dialog-content>
+
+<ng-template #row let-polygon let-archived="archived">
+  <div class="mp-row" [class.mp-row-archived]="archived">
+    <div class="mp-row-main">
+      <div class="mp-name">
+        <span class="mp-name-text">{{polygon.properties.name}}</span>
+        <span class="mp-chip mp-chip-other" *ngIf="!isMine(polygon)" matTooltip="Created by another organization. Only they can archive or delete it.">{{orgName(polygon) || 'Other organization'}}</span>
+      </div>
+
+      <div class="mp-usage" *ngIf="usageKnown(polygon); else usagePending">
+        <ng-container *ngIf="usageOf(polygon) as u">
+          <div class="mp-usage-line" *ngIf="u.groups.length">
+            <span class="mp-usage-label">Groups</span>
+            <span class="mp-chip mp-chip-group" *ngFor="let group of u.groups">{{group.name}}</span>
+          </div>
+          <div class="mp-usage-line" *ngIf="u.activities.length">
+            <span class="mp-usage-label">Activities</span>
+            <button type="button" class="mp-chip mp-chip-activity" *ngFor="let activity of u.activities"
+                    matTooltip="Open report" (click)="openReportsDialog(activity)">
+              <mat-icon inline>assessment</mat-icon> {{activity.name}}
+            </button>
+          </div>
+          <div class="mp-unused" *ngIf="!u.groups.length && !u.activities.length">Not used in this campaign</div>
+        </ng-container>
+      </div>
+      <ng-template #usagePending>
+        <div class="mp-unused" *ngIf="loadingUsage"><mat-spinner diameter="12"></mat-spinner> Checking usage…</div>
+      </ng-template>
+    </div>
+
+    <div class="mp-row-actions">
+      <button mat-icon-button [matTooltip]="'Copy ID: ' + polygon._id" (click)="copyID(polygon)"><mat-icon>content_copy</mat-icon></button>
+
+      <ng-container *ngIf="isMine(polygon)">
+        <ng-container *ngIf="!archived">
+          <span [matTooltip]="archiveBlockedReason(polygon) || 'Archive'">
+            <button mat-stroked-button [disabled]="busyIDs.has(polygon._id) || !!archiveBlockedReason(polygon)" (click)="setActive(polygon, false)">
+              <mat-icon>archive</mat-icon> Archive
+            </button>
+          </span>
+        </ng-container>
+
+        <ng-container *ngIf="archived">
+          <button mat-stroked-button color="primary" [disabled]="busyIDs.has(polygon._id)" (click)="setActive(polygon, true)">
+            <mat-icon>unarchive</mat-icon> Restore
+          </button>
+          <span [matTooltip]="deleteBlockedReason(polygon) || 'Delete permanently'">
+            <button mat-icon-button color="warn" [disabled]="busyIDs.has(polygon._id) || !!deleteBlockedReason(polygon)" (click)="deletePolygon(polygon)">
+              <mat-icon>delete_forever</mat-icon>
+            </button>
+          </span>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+</ng-template>

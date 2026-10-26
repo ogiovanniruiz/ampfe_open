@@ -1,0 +1,84 @@
+<div class="td-header">
+  <div class="td-heading">
+    <h2 mat-dialog-title class="td-title">Terms of Use</h2>
+    <div class="td-subtitle">
+      <span class="td-subtitle-name">{{org?.name}}</span>
+      <span class="td-chip" *ngIf="terms?.version">Version {{terms.version}}</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" *ngIf="!required || !canAccept" [disabled]="submitting" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="td-content">
+
+  <!-- STATUS: one owner accepts for the whole organization -->
+  <mat-progress-bar mode="indeterminate" *ngIf="loadingStatus"></mat-progress-bar>
+  <div class="td-notice td-notice-required" *ngIf="statusError">
+    <mat-icon inline>error_outline</mat-icon>
+    <span>Couldn't check whether this organization has accepted the terms. <a href="" (click)="$event.preventDefault(); getStatus()">Retry</a></span>
+  </div>
+  <ng-container *ngIf="status">
+    <div class="td-notice td-notice-success" *ngIf="orgAccepted">
+      <mat-icon inline>check_circle</mat-icon>
+      <span>Accepted for <b>{{org?.name}}</b> by {{acceptedByMe ? 'you' : status.acceptedBy.name}} on {{status.acceptedBy.date | date:'mediumDate'}}.</span>
+    </div>
+    <div class="td-notice td-notice-required" *ngIf="!orgAccepted && isOwner">
+      <mat-icon inline>gavel</mat-icon>
+      <span>Please review and accept the Terms of Use on behalf of <b>{{org?.name}}</b>.</span>
+    </div>
+    <div class="td-notice td-notice-required" *ngIf="!orgAccepted && !isOwner && status.hasOwner">
+      <mat-icon inline>gavel</mat-icon>
+      <span>An owner of <b>{{org?.name}}</b> ({{ownerList}}) needs to accept the Terms of Use.</span>
+    </div>
+    <div class="td-notice td-notice-required" *ngIf="!orgAccepted && !status.hasOwner">
+      <mat-icon inline>gavel</mat-icon>
+      <span><b>{{org?.name}}</b> has no owner yet. A developer needs to assign one before the terms can be accepted.</span>
+    </div>
+  </ng-container>
+
+  <!-- PRICING (hidden while canSeeCost is false) -->
+  <div class="td-pricing" *ngIf="canSeeCost">
+    <div class="td-price"><mat-icon>account_balance</mat-icon><div><b>$600 per Month</b><span>Plus Subscription - Includes all features</span></div></div>
+    <div class="td-price"><mat-icon>account_balance</mat-icon><div><b>$400 per Month</b><span>Core Subscription - Canvassing and Data Only</span></div></div>
+    <div class="td-price"><mat-icon>account_balance</mat-icon><div><b>$200 per Month</b><span>Lite Subscription - Data Only</span></div></div>
+    <div class="td-price"><mat-icon>account_balance</mat-icon><div><b>Free</b><span>Free Subscription - No New Data. Keep access to all your previous data.</span></div></div>
+    <div class="td-price"><mat-icon>sms</mat-icon><div><b>$0.04 per Text Segment</b><span>Text segments are either Images, 140 characters of an outgoing text or any incoming text.</span></div></div>
+    <div class="td-price"><mat-icon>call</mat-icon><div><b>$0.06 per Connected Call Minute.</b><span>Only for calls connected to voice mail or contact.</span></div></div>
+    <div class="td-price"><mat-icon>call</mat-icon><div><b>$2 per Phonenumber per Month</b><span>Phone Numbers are used for Calling and Texting.</span></div></div>
+  </div>
+
+  <!-- TERMS -->
+  <div class="td-body-header">
+    <span class="td-section-title">Terms</span>
+    <span class="spacer"></span>
+    <a class="td-link" *ngIf="!termsError && termsUrl" [href]="termsUrl" target="_blank" rel="noopener">Open in a new tab <mat-icon inline>open_in_new</mat-icon></a>
+  </div>
+
+  <mat-progress-bar mode="indeterminate" *ngIf="loadingTerms"></mat-progress-bar>
+
+  <div class="td-banner" *ngIf="termsError && !loadingTerms">
+    <mat-icon>error_outline</mat-icon>
+    <span>The terms page is currently unavailable. Please contact your administrator.</span>
+    <span class="spacer"></span>
+    <button mat-button *ngIf="!required" (click)="getTerms()">Retry</button>
+  </div>
+
+  <div *ngIf="terms?.html" class="terms-body" [innerHTML]="terms.html"></div>
+</mat-dialog-content>
+
+<mat-progress-bar *ngIf="submitting" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-actions class="td-actions">
+  <ng-container *ngIf="canAccept">
+    <mat-checkbox color="primary" [(ngModel)]="agreeChecked" [disabled]="!terms || submitting">I've read and agree to the Terms of Use on behalf of {{org?.name}}</mat-checkbox>
+    <span class="spacer"></span>
+    <span class="td-error" *ngIf="submitError">{{submitError}}</span>
+    <button mat-button *ngIf="!required" [disabled]="submitting" (click)="close()">Cancel</button>
+    <button mat-raised-button color="primary" [disabled]="!agreeChecked || submitting" (click)="submitAgreement()">Accept</button>
+  </ng-container>
+  <ng-container *ngIf="!canAccept">
+    <span class="spacer"></span>
+    <button mat-raised-button color="primary" (click)="close()">Close</button>
+  </ng-container>
+</mat-dialog-actions>

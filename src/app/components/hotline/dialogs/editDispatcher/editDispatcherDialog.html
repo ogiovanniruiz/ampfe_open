@@ -1,0 +1,24 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel"  (click)="return();"><mat-icon>close</mat-icon></button>
+
+<h1 mat-dialog-title class="block-title"><b>Edit Dispatcher</b></h1>
+<mat-dialog-content>
+    <mat-form-field class="dialog-element-long"> 
+        <input matInput #firstName type="text" placeholder="First Name" disabled>
+    </mat-form-field >
+    <mat-form-field class="dialog-element-long"> 
+        <input matInput #lastName type="text" placeholder="Last Name" disabled>
+    </mat-form-field >
+    <mat-form-field style="margin:.3em;width:30%;min-width:300px"> 
+        <input matInput #phonenumber type="text" id="phone" placeholder="Phonenumber" maxlength="10">
+    </mat-form-field >
+    <button mat-mini-fab color="primary" (click)="editDispatcher()"><mat-icon>save</mat-icon></button>
+    <mat-form-field class="dialog-element-long"> 
+        <input matInput #email type="text" id="email" placeholder="Email" disabled>
+    </mat-form-field >
+</mat-dialog-content>
+<mat-dialog-actions  >
+    <button mat-raised-button class="dialog-element-long" color="warn" (click)="removeDispatcher()">REMOVE</button>
+
+
+
+</mat-dialog-actions>

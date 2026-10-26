@@ -1,0 +1,87 @@
+<button mat-icon-button class="close-button" matTooltip="Close" (click)="closeSettings();"><mat-icon>close</mat-icon></button>
+<h2 mat-dialog-title class="block-title"><b>Manage All Users</b></h2>
+<div class="mau-summary">
+    <span class="mau-pill"><mat-icon inline>people</mat-icon>{{totalCount}} users</span>
+    <span class="mau-pill mau-pill-dev"><mat-icon inline>code</mat-icon>{{devCount}} developers</span>
+</div>
+
+<mat-dialog-content class="mau-content">
+    <div class="mau-toolbar">
+        <mat-form-field appearance="outline" class="mau-search">
+            <mat-icon matPrefix>search</mat-icon>
+            <input matInput type="text" [(ngModel)]="searchText" (ngModelChange)="applyFilter()" placeholder="Search by name, email or user ID">
+            <button mat-icon-button matSuffix *ngIf="searchText" matTooltip="Clear" (click)="clearSearch()"><mat-icon>close</mat-icon></button>
+        </mat-form-field>
+        <mat-slide-toggle color="primary" [(ngModel)]="devsOnly" (change)="applyFilter()">Developers only</mat-slide-toggle>
+    </div>
+
+    <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
+    <div class="mau-table-wrap">
+        <table mat-table [dataSource]="dataSource" matSort matSortActive="user" matSortDirection="asc" class="mau-table">
+
+            <ng-container matColumnDef="user">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>User</th>
+                <td mat-cell *matCellDef="let user">
+                    <div class="mau-user">
+                        <div class="mau-avatar" [class.mau-avatar-dev]="user.dev">{{initials(user)}}</div>
+                        <div class="mau-user-text">
+                            <span class="mau-name">{{fullName(user) || '—'}}</span>
+                            <span class="mau-email">{{user.loginEmail}}</span>
+                        </div>
+                    </div>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="dev">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="mau-col-dev">Developer</th>
+                <td mat-cell *matCellDef="let user" class="mau-col-dev" (click)="$event.stopPropagation()">
+                    <mat-slide-toggle color="primary"
+                                      [checked]="user.dev"
+                                      [disabled]="savingIds.has(user._id)"
+                                      (change)="updateDevStatus(user, $event.checked)"></mat-slide-toggle>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="mau-col-actions"></th>
+                <td mat-cell *matCellDef="let user" class="mau-col-actions" (click)="$event.stopPropagation()">
+                    <button mat-icon-button [matMenuTriggerFor]="userMenu" matTooltip="More actions"><mat-icon>more_vert</mat-icon></button>
+                    <mat-menu #userMenu="matMenu" xPosition="before">
+                        <button mat-menu-item (click)="openProfile(user)">
+                            <mat-icon>account_circle</mat-icon>
+                            <span>View profile</span>
+                        </button>
+                        <button mat-menu-item (click)="resetPassword(user)">
+                            <mat-icon>lock_reset</mat-icon>
+                            <span>Reset password</span>
+                        </button>
+                        <mat-divider></mat-divider>
+                        <button mat-menu-item class="mau-danger" (click)="deleteUser(user)">
+                            <mat-icon color="warn">delete_forever</mat-icon>
+                            <span>Delete user</span>
+                        </button>
+                    </mat-menu>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="mau-row" tabindex="0" (click)="openProfile(row)" (keydown.enter)="openProfile(row)"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell mau-empty" [attr.colspan]="displayedColumns.length">
+                    <ng-container *ngIf="!loading">
+                        <mat-icon>person_search</mat-icon>
+                        <span *ngIf="searchText; else noUsers">No users match "{{searchText}}"</span>
+                        <ng-template #noUsers><span>No users to show</span></ng-template>
+                    </ng-container>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+</mat-dialog-content>
+
+<mat-dialog-actions *ngIf="displayErrorMsg">
+    <mat-error>{{errorMessage}}</mat-error>
+</mat-dialog-actions>

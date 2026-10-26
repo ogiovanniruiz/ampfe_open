@@ -1,0 +1,110 @@
+<div class="tn-header">
+  <div>
+    <h2 mat-dialog-title class="tn-title">Texting Numbers</h2>
+    <div class="tn-summary" *ngIf="accountExists && textingCampaigns.length">
+      <b>{{summary.operations}}</b> {{summary.operations === 1 ? 'operation' : 'operations'}}
+      <ng-container *ngIf="summary.anyLoaded"> · <b>{{summary.numbers}}</b> {{summary.numbers === 1 ? 'number' : 'numbers'}} loaded</ng-container>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Refresh" [disabled]="loading" (click)="refreshAll()"><mat-icon>refresh</mat-icon></button>
+  <button mat-icon-button matTooltip="Close" (click)="return();"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-progress-bar mode="indeterminate" *ngIf="loading || updatingHotline"></mat-progress-bar>
+
+<div class="tn-banner" *ngIf="displayErrorMsg">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="displayErrorMsg = false"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="tn-content">
+  <div class="tn-empty" *ngIf="!loading && !accountExists">
+    <mat-icon>sms_failed</mat-icon>
+    <p>No texting account exists for this organization.</p>
+    <button mat-raised-button color="primary" *ngIf="dev" (click)="createSWAccount()">Create texting account</button>
+  </div>
+
+  <div class="tn-empty" *ngIf="!loading && accountExists && textingCampaigns.length === 0">
+    <mat-icon>forum</mat-icon>
+    <p>No texting operations yet. Contact support to create one.</p>
+  </div>
+
+  <mat-accordion multi class="tn-accordion">
+    <mat-expansion-panel *ngFor="let campaign of textingCampaigns" [expanded]="textingCampaigns.length === 1"
+                         (opened)="getSWCampaignPhonenumbers(campaign.id)">
+      <mat-expansion-panel-header class="tn-panel-header">
+        <mat-panel-title class="tn-panel-title">{{campaign.name}}</mat-panel-title>
+        <mat-panel-description class="tn-panel-desc">
+          <span class="tn-desc-text">{{campaign.description}}</span>
+          <span class="tn-count" *ngIf="numbersByCampaign[campaign.id]">{{numbersByCampaign[campaign.id].length}} {{numbersByCampaign[campaign.id].length === 1 ? 'number' : 'numbers'}}</span>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <mat-progress-bar mode="indeterminate" *ngIf="loadingByCampaign[campaign.id]"></mat-progress-bar>
+
+      <!-- Buy -->
+      <div class="tn-buy">
+        <mat-form-field appearance="outline" class="tn-areacode">
+          <mat-label>Area code</mat-label>
+          <input matInput maxlength="3" inputmode="numeric" autocomplete="off"
+                 [(ngModel)]="areaCodes[campaign.id]" (keyup.enter)="buyPhonenumber(campaign)">
+        </mat-form-field>
+        <button mat-raised-button color="primary" class="tn-buy-button" [disabled]="loadingByCampaign[campaign.id]" (click)="buyPhonenumber(campaign)">
+          <mat-icon>add</mat-icon> Buy number
+        </button>
+        <span class="tn-buy-error" role="alert" *ngIf="buyErrors[campaign.id]">{{buyErrors[campaign.id]}}</span>
+      </div>
+
+      <!-- Numbers -->
+      <div class="tn-list" *ngIf="numbersByCampaign[campaign.id]?.length">
+        <div class="tn-row" *ngFor="let phonenumber of numbersByCampaign[campaign.id]; let i = index; trackBy: trackNumber">
+          <div class="tn-row-main">
+            <div class="tn-number-line">
+              <span class="tn-index">{{i + 1}}</span>
+              <span class="tn-number">{{formatPhone($safeNavigationMigration(phonenumber.phone_number?.number))}}</span>
+              <span class="tn-chip tn-chip-hotline" *ngIf="isHotline(phonenumber)"><mat-icon inline>support_agent</mat-icon> Hotline</span>
+            </div>
+            <div class="tn-meta">
+              <span class="tn-chip" [ngClass]="'ge-tone-' + authStatus(phonenumber.state).tone"
+                    [matTooltip]="'Text authorization: ' + (phonenumber.state || 'unknown')">
+                {{authStatus(phonenumber.state).label}}
+              </span>
+            </div>
+          </div>
+
+          <button mat-icon-button [matMenuTriggerFor]="numberMenu" matTooltip="Actions" [disabled]="loadingByCampaign[campaign.id] || updatingHotline"><mat-icon>more_vert</mat-icon></button>
+          <mat-menu #numberMenu="matMenu" xPosition="before">
+            <button mat-menu-item *ngIf="!isHotline(phonenumber)" [disabled]="!canSetHotline(phonenumber)" (click)="setHotline(phonenumber, true)"
+                    [matTooltip]="canSetHotline(phonenumber) ? '' : 'Another number is already the hotline'">
+              <mat-icon>support_agent</mat-icon><span>Set as hotline</span>
+            </button>
+            <button mat-menu-item *ngIf="isHotline(phonenumber)" (click)="setHotline(phonenumber, false)">
+              <mat-icon>phone_disabled</mat-icon><span>Remove hotline</span>
+            </button>
+            <button mat-menu-item [disabled]="isHotline(phonenumber)" (click)="removeFromOperation(campaign, phonenumber)"
+                    [matTooltip]="isHotline(phonenumber) ? 'Remove hotline first' : ''">
+              <mat-icon>link_off</mat-icon><span>Remove from operation</span>
+            </button>
+            <button mat-menu-item class="tn-danger" [disabled]="isHotline(phonenumber)" (click)="releasePhonenumber(campaign, phonenumber)">
+              <mat-icon color="warn">delete</mat-icon><span>{{isHotline(phonenumber) ? 'Delete (remove hotline first)' : 'Delete number'}}</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+
+      <div class="tn-empty tn-empty-small" *ngIf="numbersByCampaign[campaign.id] && !numbersByCampaign[campaign.id].length && !loadingByCampaign[campaign.id]">
+        <mat-icon>sms</mat-icon>
+        <p>No numbers yet. Buy one to start texting.</p>
+      </div>
+
+      <div class="tn-panel-actions" *ngIf="dev && numbersByCampaign[campaign.id]?.length">
+        <button mat-stroked-button [disabled]="loadingByCampaign[campaign.id]" (click)="updateSWUrls(campaign)">
+          <mat-icon>sync</mat-icon> Update SignalWire URLs
+        </button>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</mat-dialog-content>

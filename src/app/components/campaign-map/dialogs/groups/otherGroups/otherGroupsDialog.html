@@ -1,0 +1,96 @@
+<div class="og-header">
+  <div class="og-heading">
+    <h2 mat-dialog-title class="og-title">More groups</h2>
+    <div class="og-subtitle">Your organization's groups in this campaign · {{activeGroups.length}} active · {{archivedGroups.length}} archived</div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" (click)="closeDialog()"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
+<div class="og-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-button *ngIf="loadFailed" (click)="errorMessage = ''; getAllCampaignGroups()">Retry</button>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-form-field appearance="outline" class="og-search" *ngIf="activeGroups.length + archivedGroups.length > 0">
+  <mat-icon matPrefix>search</mat-icon>
+  <input matInput [(ngModel)]="search" placeholder="Search by name or filter" autocomplete="off">
+  <button mat-icon-button matSuffix *ngIf="search" matTooltip="Clear" (click)="search = ''"><mat-icon>close</mat-icon></button>
+</mat-form-field>
+
+<mat-dialog-content class="og-content">
+  <mat-tab-group mat-stretch-tabs animationDuration="0ms">
+
+    <!-- ACTIVE -->
+    <mat-tab>
+      <ng-template matTabLabel>Active ({{activeGroups.length}})</ng-template>
+      <div class="og-tab">
+        <div class="og-list" *ngIf="filteredActive.length">
+          <div class="og-row" *ngFor="let group of filteredActive; trackBy: trackGroup">
+            <ng-container *ngTemplateOutlet="details; context: {$implicit: group}"></ng-container>
+            <div class="og-row-actions">
+              <button mat-stroked-button color="primary" [disabled]="busyIDs.has(group._id)" (click)="editGroup(group)">
+                <mat-icon>edit</mat-icon> Edit
+              </button>
+              <button mat-icon-button [disabled]="busyIDs.has(group._id)" (click)="setActive(group, false)"
+                      [matTooltip]="group.activityCount ? 'Archive (activities already created from it keep their contacts)' : 'Archive'">
+                <mat-icon>archive</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="og-empty" *ngIf="!loading && !loadFailed && !filteredActive.length">
+          <mat-icon>{{search ? 'search_off' : 'group_add'}}</mat-icon>
+          <p *ngIf="search">No active groups match "{{search}}".</p>
+          <p *ngIf="!search">Your organization has no active groups in this campaign. Create one from the Groups panel.</p>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- ARCHIVED -->
+    <mat-tab>
+      <ng-template matTabLabel>Archived ({{archivedGroups.length}})</ng-template>
+      <div class="og-tab">
+        <div class="og-list" *ngIf="filteredArchived.length">
+          <div class="og-row og-row-archived" *ngFor="let group of filteredArchived; trackBy: trackGroup">
+            <ng-container *ngTemplateOutlet="details; context: {$implicit: group}"></ng-container>
+            <div class="og-row-actions">
+              <button mat-stroked-button color="primary" [disabled]="busyIDs.has(group._id)" (click)="setActive(group, true)">
+                <mat-icon>unarchive</mat-icon> Restore
+              </button>
+              <span *ngIf="dev" [matTooltip]="group.activityCount ? 'Used by activities, so it can\'t be deleted' : 'Delete permanently'">
+                <button mat-icon-button color="warn" [disabled]="busyIDs.has(group._id) || group.activityCount > 0" (click)="deleteGroup(group)">
+                  <mat-icon>delete_forever</mat-icon>
+                </button>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="og-empty" *ngIf="!loading && !loadFailed && !filteredArchived.length">
+          <mat-icon>{{search ? 'search_off' : 'inventory_2'}}</mat-icon>
+          <p *ngIf="search">No archived groups match "{{search}}".</p>
+          <p *ngIf="!search">No archived groups. Archived groups are hidden from new activities and can be restored here.</p>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</mat-dialog-content>
+
+<ng-template #details let-group>
+  <div class="og-row-text">
+    <div class="og-name">
+      <span class="og-name-text">{{group.name}}</span>
+      <span class="og-chip og-chip-groupby">{{groupByLabel(group)}}</span>
+      <span class="og-chip og-chip-wide" *ngIf="group.campaignWide">Campaign-wide</span>
+    </div>
+    <div class="og-preview" [matTooltip]="preview(group)" [matTooltipShowDelay]="500">{{preview(group) || 'No filters'}}</div>
+    <div class="og-meta">{{usageLabel(group)}}</div>
+  </div>
+</ng-template>

@@ -1,0 +1,39 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel" (click)="closeSettings()"><mat-icon>close</mat-icon></button>
+<h2 mat-dialog-title class="block-title"><b>Planning Map</b></h2>
+<mat-dialog-content class="dialog-section">
+    <mat-form-field  class="dialog-element">
+        <mat-label>Assembly</mat-label>
+        <mat-select [formControl]="assemblyDistrictsFormControl" multiple>
+          <mat-option *ngFor="let assembly of assemblyList" [value]="assembly">{{assembly}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field  class="dialog-element"> 
+        <mat-label>Congressional</mat-label>
+        <mat-select [(formControl)]="congressionalDistrictsFormControl" multiple>
+          <mat-option *ngFor="let congressional of congressionalList" [value]="congressional">{{congressional}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field  class="dialog-element">
+        <mat-label>Senate</mat-label>
+        <mat-select [formControl]="senateDistrictsFormControl" multiple>
+          <mat-option *ngFor="let senate of senateList" [value]="senate">{{senate}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field  class="dialog-element">
+        <mat-label>BOS</mat-label>
+        <mat-select [formControl]="bosDistrictsFormControl" multiple>
+          <mat-option *ngFor="let bos of bosList" [value]="bos">{{bos}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field  class="dialog-element">
+      <mat-label>City Wards</mat-label>
+      <mat-select [formControl]="wardDistrictsFormControl" multiple>
+        <mat-option *ngFor="let ward of wardList" [value]="ward">{{ward}}</mat-option>
+      </mat-select>
+  </mat-form-field>
+
+</mat-dialog-content>
+<mat-dialog-actions >
+  <button mat-raised-button color='primary' (click)="getDistrictsById()"> Load Target Districts</button>
+  <button mat-raised-button color='warn' (click)="selectIEUDistricts()"> Select Special Districts</button>
+</mat-dialog-actions>

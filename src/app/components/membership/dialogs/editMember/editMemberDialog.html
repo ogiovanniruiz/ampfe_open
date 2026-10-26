@@ -1,0 +1,133 @@
+<div class="dialog-header">
+  <h2 mat-dialog-title>Edit community member</h2>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]='showProgressbar' (click)="cancel()"><mat-icon>close</mat-icon></button>
+</div>
+<mat-progress-bar *ngIf="showProgressbar" mode='indeterminate'></mat-progress-bar>
+<mat-error *ngIf="displayMessage" class="em-message">{{message}}</mat-error>
+
+<mat-dialog-content>
+  <!-- One column on phones, flowing into rows on wider screens -->
+  <div class="em-section-label">Name</div>
+  <div class="form-grid">
+    <mat-form-field>
+      <mat-label>First Name</mat-label>
+      <input matInput #firstName type="name" id='name' required>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Middle Name</mat-label>
+      <input matInput #middleName type="name"  id='name'>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Last Name</mat-label>
+      <input matInput #lastName type="name"  id='name'>
+    </mat-form-field>
+  </div>
+
+  <div class="em-section-label">Contact</div>
+  <div class="form-grid">
+    <mat-form-field>
+      <mat-label>Phone Number</mat-label>
+      <input matInput #phone type="tel"  id='phone' maxlength="10" inputmode="tel" (input)="numericOnly($event)">
+    </mat-form-field>
+    <mat-form-field class="span-2">
+      <mat-label>Email</mat-label>
+      <input matInput #email type="email" id='email' inputmode="email">
+    </mat-form-field>
+  </div>
+
+  <div class="em-section-label">Address</div>
+  <div class="form-grid">
+    <mat-form-field class="span-2">
+      <mat-label>Address</mat-label>
+      <input matInput #address type="text" id='address'>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Unit#</mat-label>
+      <input matInput #unit type="text" id='unit'>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>City</mat-label>
+      <input matInput #city type="text" id='city'>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>State</mat-label>
+      <mat-select #state>
+        <mat-option *ngFor="let state of states | keyvalue" [value]="state.key">{{state.key}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Zip</mat-label>
+      <input matInput #zip type="text" id='zipcode' maxlength="5" inputmode="numeric" (input)="numericOnly($event)">
+    </mat-form-field>
+  </div>
+
+  <div class="em-section-label">Tags</div>
+  <div class="form-grid">
+    <tag-picker class="span-2" [tags]="memberTags" [orgTags]="tags" [definitions]="tagDefinitions" (tagsChange)="memberTags = $event"></tag-picker>
+  </div>
+
+  <div class="em-section-label">Consent</div>
+  <div class="em-consent">
+    <mat-slide-toggle color="primary" [(ngModel)]="textingConsent">
+      Texting
+      <span class="em-consent-date" *ngIf="member?.enrollment?.optinTexting?.dateUpdated">· updated {{member.enrollment.optinTexting.dateUpdated | date:'mediumDate'}}</span>
+    </mat-slide-toggle>
+    <mat-slide-toggle color="primary" [(ngModel)]="emailConsent">
+      Email
+      <span class="em-consent-date" *ngIf="member?.enrollment?.optinEmail?.dateUpdated">· updated {{member.enrollment.optinEmail.dateUpdated | date:'mediumDate'}}</span>
+    </mat-slide-toggle>
+  </div>
+
+  <div class="em-section-label">Details</div>
+  <dl class="em-details">
+    <ng-container *ngIf="member?.enrollment?.source"><dt>Added from</dt><dd>{{member.enrollment.source}}</dd></ng-container>
+    <ng-container *ngIf="member?.enrollment?.dateCreated"><dt>Added on</dt><dd>{{member.enrollment.dateCreated | date:'mediumDate'}}</dd></ng-container>
+    <ng-container *ngIf="member?.resident?.voterID"><dt>Voter ID</dt><dd>{{member.resident.voterID}}</dd></ng-container>
+    <ng-container *ngIf="blockgroupID"><dt>Blockgroup GEOID</dt><dd>{{blockgroupID}}</dd></ng-container>
+    <ng-container *ngIf="precinctID"><dt>Precinct</dt><dd>{{precinctID}}</dd></ng-container>
+    <ng-container *ngIf="countyID"><dt>County</dt><dd>{{countyID}}</dd></ng-container>
+    <ng-container *ngIf="citywideID"><dt>City</dt><dd>{{citywideID}}</dd></ng-container>
+    <ng-container *ngIf="citywardID"><dt>City ward</dt><dd>{{citywardID}}</dd></ng-container>
+    <ng-container *ngIf="assemblyID"><dt>Assembly</dt><dd>{{assemblyID}}</dd></ng-container>
+    <ng-container *ngIf="senateID"><dt>Senate</dt><dd>{{senateID}}</dd></ng-container>
+    <ng-container *ngIf="congressionalID"><dt>Congressional</dt><dd>{{congressionalID}}</dd></ng-container>
+    <ng-container *ngIf="recreationalID"><dt>Recreational</dt><dd>{{recreationalID}}</dd></ng-container>
+    <ng-container *ngIf="schoolID"><dt>School</dt><dd>{{schoolID}}</dd></ng-container>
+    <ng-container *ngIf="waterID"><dt>Water</dt><dd>{{waterID}}</dd></ng-container>
+    <ng-container *ngIf="bosID"><dt>BOS</dt><dd>{{bosID}}</dd></ng-container>
+  </dl>
+
+  <div class="em-section-label">History</div>
+  <p class="em-muted" *ngIf="loadingHistory">Loading history…</p>
+  <ng-container *ngIf="history">
+    <dl class="em-details">
+      <ng-container *ngIf="history.upload"><dt>Upload</dt><dd>{{history.upload.uploadName}}</dd></ng-container>
+      <ng-container *ngIf="history.addedBy"><dt>Added by</dt><dd>{{history.addedBy}}</dd></ng-container>
+      <ng-container *ngIf="history.date"><dt>Added</dt><dd>{{history.date | date:'medium'}}</dd></ng-container>
+      <ng-container *ngIf="history.activities.length"><dt>Opted in through</dt><dd>
+        <span class="tag-pill" *ngFor="let activity of history.activities">{{activity.name}}<span *ngIf="activity.activityType"> · {{activity.activityType}}</span></span>
+      </dd></ng-container>
+    </dl>
+
+    <p class="em-muted" *ngIf="history.contacts.length === 0">No contacts logged{{member?.resident?.personID ? '' : ' (not matched to a person record)'}}.</p>
+    <ol class="em-timeline" *ngIf="history.contacts.length">
+      <li *ngFor="let contact of history.contacts">
+        <div class="em-timeline-head">
+          <span class="em-timeline-activity">{{contact.activityName}}</span>
+          <span class="em-muted">{{contact.activityType}}<span *ngIf="contact.pass != null"> · {{contact.pass | passLabel}}</span> · {{contact.date | date:'medium'}}<span *ngIf="contact.contactedBy"> · {{contact.contactedBy}}</span></span>
+        </div>
+        <div *ngIf="contact.nonResponse" class="em-timeline-outcome">{{contact.nonResponse}}</div>
+        <dl class="em-details em-responses" *ngIf="contact.responses.length">
+          <ng-container *ngFor="let r of contact.responses"><dt>{{r.question}}</dt><dd>{{r.response || '—'}}</dd></ng-container>
+        </dl>
+      </li>
+    </ol>
+  </ng-container>
+</mat-dialog-content>
+
+<mat-dialog-actions class="em-actions" *ngIf='!showProgressbar'>
+  <button mat-raised-button color="primary" (click)="editMember()">SAVE</button>
+  <span class="spacer"></span>
+  <button mat-stroked-button color="warn" (click)="deleteMember()">DELETE</button>
+</mat-dialog-actions>

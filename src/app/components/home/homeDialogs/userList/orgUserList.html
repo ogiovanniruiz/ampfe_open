@@ -1,0 +1,138 @@
+<div class="ul-header">
+  <div class="ul-heading">
+    <h2 mat-dialog-title class="ul-title">Team members</h2>
+    <div class="ul-subtitle">
+      <span *ngIf="orgName">{{orgName}} · </span>{{members.length}} {{members.length === 1 ? 'member' : 'members'}}<span *ngIf="requests.length"> · {{requests.length}} waiting</span><span *ngIf="owner"> · Owner: {{isMe(owner) ? 'You' : displayName(owner)}}</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="busyIDs.size > 0" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
+<div class="ul-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-button *ngIf="loadFailed" (click)="load()">Retry</button>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-form-field appearance="outline" class="ul-search" *ngIf="members.length + requests.length > 5">
+  <mat-icon matPrefix>search</mat-icon>
+  <input matInput [(ngModel)]="search" placeholder="Search by name or email" autocomplete="off">
+  <button mat-icon-button matSuffix *ngIf="search" matTooltip="Clear" (click)="search = ''"><mat-icon>close</mat-icon></button>
+</mat-form-field>
+
+<mat-dialog-content class="ul-content">
+  <mat-tab-group mat-stretch-tabs animationDuration="0ms" [(selectedIndex)]="selectedTab">
+
+    <!-- MEMBERS -->
+    <mat-tab>
+      <ng-template matTabLabel>Members ({{members.length}})</ng-template>
+      <div class="ul-tab">
+        <div class="ul-list" *ngIf="filteredMembers.length">
+          <div class="ul-row" *ngFor="let user of filteredMembers; trackBy: trackUser" [class.ul-row-me]="isMe(user)" [class.ul-row-wrap]="canEdit(user)">
+            <ng-container *ngTemplateOutlet="person; context: {$implicit: user}"></ng-container>
+            <div class="ul-row-actions">
+              <mat-spinner diameter="20" *ngIf="busyIDs.has(user._id)"></mat-spinner>
+
+              <ng-container *ngIf="!busyIDs.has(user._id)">
+                <button mat-stroked-button class="ul-level" *ngIf="canEdit(user); else readOnlyLevel" [matMenuTriggerFor]="levelMenu"
+                        [attr.aria-label]="'Change role for ' + displayName(user)">
+                  {{levelLabel(getOrgLevel(user))}} <mat-icon iconPositionEnd>arrow_drop_down</mat-icon>
+                </button>
+                <ng-template #readOnlyLevel>
+                  <span class="ul-chip" [ngClass]="'ul-chip-' + (getOrgLevel(user) || 'none').toLowerCase()">{{levelLabel(getOrgLevel(user))}}</span>
+                </ng-template>
+              </ng-container>
+
+              <mat-menu #levelMenu="matMenu" xPosition="before">
+                <button mat-menu-item *ngFor="let level of assignableLevels(user)" class="ul-menu-level"
+                        [disabled]="level.value === 'OWNER' && ownerOptionDisabled(user)" (click)="setLevel(user, level.value)">
+                  <mat-icon>{{getOrgLevel(user) === level.value ? 'check' : level.icon}}</mat-icon>
+                  <span class="ul-menu-text">
+                    <span>{{level.label}}</span>
+                    <span class="ul-menu-caption" *ngIf="level.value === 'OWNER' && ownerOptionDisabled(user)">Org already has an owner</span>
+                  </span>
+                </button>
+                <ng-container *ngIf="canTransferTo(user)">
+                  <mat-divider></mat-divider>
+                  <button mat-menu-item (click)="transferOwnership(user)">
+                    <mat-icon>swap_horiz</mat-icon>
+                    <span>Transfer ownership</span>
+                  </button>
+                </ng-container>
+                <mat-divider></mat-divider>
+                <button mat-menu-item class="ul-menu-remove" (click)="removeMember(user)">
+                  <mat-icon color="warn">person_remove</mat-icon>
+                  <span>Remove from organization</span>
+                </button>
+              </mat-menu>
+            </div>
+          </div>
+        </div>
+
+        <div class="ul-empty" *ngIf="!loading && !loadFailed && !filteredMembers.length">
+          <mat-icon>{{search ? 'search_off' : 'group'}}</mat-icon>
+          <p>{{search ? 'No members match "' + search + '".' : 'No members yet.'}}</p>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- REQUESTS -->
+    <mat-tab>
+      <ng-template matTabLabel>
+        Requests
+        <span class="ul-tab-count" *ngIf="requests.length">{{requests.length}}</span>
+      </ng-template>
+      <div class="ul-tab">
+        <div class="ul-list" *ngIf="filteredRequests.length">
+          <div class="ul-row" *ngFor="let user of filteredRequests; trackBy: trackUser" [class.ul-row-wrap]="canApprove">
+            <ng-container *ngTemplateOutlet="person; context: {$implicit: user, waiting: true}"></ng-container>
+            <div class="ul-row-actions">
+              <mat-spinner diameter="20" *ngIf="busyIDs.has(user._id)"></mat-spinner>
+              <ng-container *ngIf="!busyIDs.has(user._id) && canApprove">
+                <button mat-button color="warn" (click)="decline(user)">Decline</button>
+                <div class="ul-split">
+                  <button mat-flat-button color="primary" class="ul-approve" (click)="approve(user)">Approve</button>
+                  <button mat-flat-button color="primary" class="ul-approve-more" [matMenuTriggerFor]="approveMenu" aria-label="Approve with another role">
+                    <mat-icon>arrow_drop_down</mat-icon>
+                  </button>
+                </div>
+                <mat-menu #approveMenu="matMenu" xPosition="before">
+                  <button mat-menu-item *ngFor="let level of levels" class="ul-menu-level"
+                          [disabled]="!canManage(undefined, level.value) || (level.value === 'OWNER' && ownerOptionDisabled())" (click)="approve(user, level.value)">
+                    <mat-icon>{{level.icon}}</mat-icon>
+                    <span class="ul-menu-text">
+                      <span>Approve as {{level.label.toLowerCase()}}</span>
+                      <span class="ul-menu-caption" *ngIf="level.value === 'OWNER' && ownerOptionDisabled()">Org already has an owner</span>
+                    </span>
+                  </button>
+                </mat-menu>
+              </ng-container>
+              <span class="ul-chip ul-chip-waiting" *ngIf="!busyIDs.has(user._id) && !canApprove">Waiting</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ul-empty" *ngIf="!loading && !loadFailed && !filteredRequests.length">
+          <mat-icon>{{search ? 'search_off' : 'how_to_reg'}}</mat-icon>
+          <p>{{search ? 'No requests match "' + search + '".' : 'No one is waiting to join.'}}</p>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</mat-dialog-content>
+
+<ng-template #person let-user let-waiting="waiting">
+  <div class="ul-avatar" [class.ul-avatar-waiting]="waiting" aria-hidden="true">{{initials(user)}}</div>
+  <div class="ul-person">
+    <div class="ul-name">
+      <span class="ul-name-text">{{displayName(user)}}</span>
+      <span class="ul-chip ul-chip-you" *ngIf="isMe(user)">You</span>
+    </div>
+    <div class="ul-email">{{user.loginEmail}}</div>
+  </div>
+</ng-template>

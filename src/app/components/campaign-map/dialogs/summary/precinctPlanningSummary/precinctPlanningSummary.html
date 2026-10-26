@@ -1,0 +1,83 @@
+<button mat-icon-button class="close-button" matTooltip="Close" (click)="return();" ><mat-icon>close</mat-icon></button>
+
+<h2 mat-dialog-title class="block-title" >Precinct Planning Table</h2>
+<mat-progress-bar mode="indeterminate" *ngIf="loadingTable"></mat-progress-bar>
+
+<mat-dialog-content class="planning-content">
+
+  <section class="saved-tables">
+    <h3 class="section-title">Saved tables</h3>
+    <p class="hint" *ngIf="generatedGroupByPrecinctTableGroups.length === 0">No saved tables yet. Generate one below from a campaign-wide group.</p>
+
+    <mat-radio-group [(ngModel)]="selectedCampaignDefaultGroupID">
+      <div class="saved-row" *ngFor="let group of generatedGroupByPrecinctTableGroups"
+           [class.loaded]="loadedGroupByPrecinctTableGroup?._id === group._id">
+        <mat-icon class="row-icon">table_chart</mat-icon>
+        <span class="group-name">{{ group.name }}</span>
+        <mat-radio-button [value]="group._id" (change)="updateCampaignDefaultGroup(group)" matTooltip="Campaign's default group">Default</mat-radio-button>
+        <button mat-stroked-button color="primary" (click)="loadGroupByPrecinctTable(group)" [disabled]="loadingTable">Load</button>
+      </div>
+    </mat-radio-group>
+
+    <mat-form-field class="dialog-element-long generate-field" *ngIf="campaignWideGroups.length > 0">
+      <mat-label>Generate New Group By PrecinctID Table</mat-label>
+      <mat-select>
+        <mat-option [value]='group.name' *ngFor="let group of campaignWideGroups" (click)="generateNewGroupByPrecinctTable(group)" [disabled]="generatedGroupByPrecinctTableGroups.includes(group)">{{group.name}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </section>
+
+  <div class="empty-state" *ngIf="!loadingTable && !loadedGroupByPrecinctTableGroup">
+    <mat-icon>map</mat-icon>
+    <p>Load a saved table or generate one from a campaign-wide group.</p>
+  </div>
+
+  <ng-container *ngIf="!loadingTable && loadedGroupByPrecinctTableGroup">
+    <div class="table-title">
+      <b>{{ loadedGroupByPrecinctTableGroup.name }}</b>
+      <span class="count">· {{ sortedData.length | number }} {{ sortedData.length === 1 ? 'precinct' : 'precincts' }}</span>
+    </div>
+
+    <div class="empty-state" *ngIf="sortedData.length === 0">
+      <mat-icon>search_off</mat-icon>
+      <p>No precincts found for this group.</p>
+    </div>
+
+    <div class="table-wrapper" *ngIf="sortedData.length > 0">
+      <table class="precinct-table" matSort (matSortChange)="sortData($event)">
+        <thead>
+          <tr>
+            <th mat-sort-header="precinctID">Precinct ID</th>
+            <th mat-sort-header="hh" class="num">Households</th>
+            <th mat-sort-header="res" class="num">Residents</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let precinct of sortedData">
+            <td class="precinct-cell">
+              <button mat-icon-button matTooltip="Find on map" (click)="findOnMap(precinct.precinctID)"><mat-icon>search</mat-icon></button>
+              {{precinct.precinctID}}
+            </td>
+            <td class="num">{{precinct.households | number}}</td>
+            <td class="num">{{precinct.residents | number}}</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Total</td>
+            <td class="num">{{totals.households | number}}</td>
+            <td class="num">{{totals.residents | number}}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </ng-container>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-stroked-button [disabled]='loadingTable || sortedData.length === 0' (click)="displayOnMap()"><mat-icon>layers</mat-icon> Display on Map</button>
+  <button mat-stroked-button color="primary" (click)="exportPrecinctTable()" [disabled]='loadingTable || sortedData.length === 0'><mat-icon>download</mat-icon> Export Table</button>
+
+  <span class="spacer"></span>
+  <button mat-stroked-button [disabled]='loadingTable || sortedData.length === 0' (click)="clearTable()" color="warn"><mat-icon>delete</mat-icon> Clear Table</button>
+</mat-dialog-actions>

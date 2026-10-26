@@ -1,0 +1,119 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel" (click)="closeDialog();">
+  <mat-icon>close</mat-icon>
+</button>
+
+<h2 style="text-align: center;">Live Election Results</h2>
+
+<mat-error *ngIf="showError">{{ errorMessage }}</mat-error>
+
+<mat-dialog-content>
+  <mat-tab-group mat-stretch-tabs>
+
+    <mat-tab label="State Wide Results">
+      <mat-progress-bar mode="indeterminate" *ngIf="loadingSOSResults"></mat-progress-bar>
+
+
+      <table style="text-align: center; margin: auto;" *ngIf="statewideElectionResults">
+        <thead>
+          <tr>
+            <th style="text-align:center!important;">Race</th>
+            <th style="text-align:center!important;">Candidate</th>
+            <th style="text-align:center!important;">Votes</th>
+            <th style="text-align:center!important;">Percentage</th>
+            <th style="text-align:center!important;">Position</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <ng-container *ngFor="let item of statewideElectionResults">
+            <ng-container *ngIf="statewidePreferredCandidates[item.race] as candidateIndexes">
+              <tr *ngFor="let idx of candidateIndexes">
+                <td>{{ item.race }}</td>
+                <td>{{ item.candidates[idx]?.candidate ?? '-' }}</td>
+                <td>{{ item.candidates[idx]?.votes ?? '-' }}</td>
+                <td>{{ item.candidates[idx]?.percent ?? '-' }}</td>
+                <td>{{ getCandidatePosition(item.candidates, idx) }}</td>
+              </tr>
+            </ng-container>
+          </ng-container>
+        </tbody>
+      </table>
+      <button mat-stroked-button color="primary" [disabled]="!statewideElectionResults" (click)="getLiveSOSResults();">Refresh Statewide Results</button>
+            <a href="https://dp.electionresults.sos.ca.gov/" target="_blank" rel="noopener noreferrer" style="margin-left: 10px;">Source</a>
+
+    </mat-tab>
+
+    <mat-tab label="San Bernardino County Results">
+            <mat-progress-bar mode="indeterminate" *ngIf="loadingSBResults"></mat-progress-bar>
+
+      <table style="text-align: center!important; margin:auto;" *ngIf="sbElectionResults">
+        <thead>
+          <tr>
+            <th style="text-align:center!important;">Race</th>
+            <th style="text-align:center!important;">Candidate</th>
+            <th style="text-align:center!important;">Votes</th>
+            <th style="text-align:center!important;">Percentage</th>
+            <th style="text-align:center!important;">Position</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <ng-container *ngFor="let item of sbElectionResults">
+            <ng-container *ngIf="sbPreferredCandidates[item.race] as candidateIndexes">
+              <tr *ngFor="let idx of candidateIndexes">
+                <td>{{ item.race }}</td>
+                <td>{{ item.candidates[idx]?.candidate ?? '-' }}</td>
+                <td>{{ item.candidates[idx]?.votes ?? '-' }}</td>
+                <td>{{ item.candidates[idx]?.percent ?? '-' }}</td>
+                <td>{{ getCandidatePosition(item.candidates, idx) }}</td>
+              </tr>
+            </ng-container>
+          </ng-container>
+        </tbody>
+      </table>
+      <button mat-stroked-button color="primary" [disabled]="!sbElectionResults" (click)="getLiveSBResults();">Refresh San Bernardino Results</button>
+            <a href="https://results.rov.sbcounty.gov/Results/20260602/" target="_blank" rel="noopener noreferrer" style="margin-left: 10px;">Source</a>
+
+
+    </mat-tab>
+
+    <mat-tab label="Riverside County Results">
+      <mat-progress-bar mode="indeterminate" *ngIf="loadingRivResults"></mat-progress-bar>
+
+      <table style="text-align: center!important; margin:auto;" *ngIf="rivElectionResults">
+        <thead>
+          <tr>
+            <th style="text-align:center!important;">Race</th>
+            <th style="text-align:center!important;">Candidate</th>
+            <th style="text-align:center!important;">Votes</th>
+            <th style="text-align:center!important;">Percentage</th>
+            <th style="text-align:center!important;">Position</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <ng-container *ngFor="let item of rivElectionResults">
+<ng-container *ngIf="rivPreferredCandidates[item.race] as candidateNames">
+  <tr *ngFor="let name of candidateNames">
+    <ng-container *ngIf="getCandidateByName(item.candidates, name) as candidate">
+      <td>{{ item.race }}</td>
+      <td>{{ candidate.candidate ?? '-' }}</td>
+      <td>{{ candidate.votes ?? '-' }}</td>
+      <td>{{ candidate.percent ?? '-' }}</td>
+      <td>{{ getRiversideCandidatePosition(item.candidates, candidate) }}</td>
+    </ng-container>
+  </tr>
+</ng-container>
+          </ng-container>
+        </tbody>
+      </table>
+            <button mat-stroked-button color="primary"  [disabled]='!rivElectionResults' (click)="getLiveRiversideResults();">Refresh Riverside Results</button>
+            <a href="https://www.livevoterturnout.com/ENR/riversidecaenr/11/en/Index_11.html" target="_blank" rel="noopener noreferrer" style="margin-left: 10px;">Source</a>
+
+    </mat-tab>
+
+  </mat-tab-group>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-stroked-button color="warn" [disabled]='!rivElectionResults || !sbElectionResults || !statewideElectionResults' (click)="refreshAllTables();">Refresh All Tables</button>
+</mat-dialog-actions>

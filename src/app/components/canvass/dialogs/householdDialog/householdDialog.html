@@ -1,0 +1,148 @@
+<div class="ge-header">
+  <div class="ge-heading">
+    <h2 mat-dialog-title class="ge-title">{{fullAddress1}}</h2>
+    <div class="ge-subtitle">
+      <span class="ge-subtitle-name" *ngIf="fullAddress2">{{fullAddress2}}</span>
+      <span class="ge-chip ge-chip-groupby">{{household.residents.length}} {{household.residents.length === 1 ? 'resident' : 'residents'}}</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="loading" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ge-banner" *ngIf="activityInactive">
+  <mat-icon>block</mat-icon>
+  <span>This activity is no longer active. Please contact your administrator for more information.</span>
+</div>
+
+<div class="ge-banner" *ngIf="errorMessage" role="alert">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="ge-content hh-content" [@.disabled]="disableAnimation">
+
+  <!-- NEAREST VOTING LOCATIONS -->
+  <mat-progress-bar mode="indeterminate" *ngIf="gettingPollingLocations"></mat-progress-bar>
+  <section class="ge-section hh-places" *ngIf="pollingLocationApproximate">
+    <p class="hh-places-note"><mat-icon>how_to_vote</mat-icon> Voting locations not shown: this address's map location is approximate.</p>
+  </section>
+  <section class="ge-section hh-places" *ngIf="nearestPollingLocations?.length">
+    <button type="button" class="hh-places-toggle" (click)="showPlaces = !showPlaces" [attr.aria-expanded]="showPlaces">
+      <mat-icon>how_to_vote</mat-icon>
+      <span>Nearest voting locations ({{nearestPollingLocations.length}})</span>
+      <span class="spacer"></span>
+      <mat-icon>{{showPlaces ? 'expand_less' : 'expand_more'}}</mat-icon>
+    </button>
+    <ng-container *ngIf="showPlaces">
+      <div class="hh-place" *ngFor="let place of nearestPollingLocations; index as i">
+        <div class="hh-place-name">{{i + 1}}. {{place.properties?.[0]?.Name}}
+          <span class="hh-place-distance" *ngIf="place.distanceMiles != null">· {{place.distanceMiles}} mi</span>
+        </div>
+        <div class="hh-place-line">{{place.properties?.[0]?.Address}}<span *ngIf="place.properties?.[0]?.Room"> · {{place.properties[0].Room}}</span></div>
+        <div class="hh-place-line" *ngFor="let site of place.properties">
+          <span class="ge-chip" [ngClass]="isVoteCenter(site) ? 'ge-chip-groupby' : 'hh-chip-done'"
+                [matTooltip]="isVoteCenter(site) ? 'Vote in person or drop off a ballot' : 'Drop off a ballot only'">{{isVoteCenter(site) ? 'Vote center' : 'Ballot drop-off'}}</span>
+          <ng-container *ngIf="site.EarlyHours; else allHours">
+            <strong>Early</strong> {{site.EarlyHours}} · <strong>Election Day</strong> {{site.ElectionDayHours}}
+          </ng-container>
+          <ng-template #allHours>{{site.Hours}}</ng-template>
+        </div>
+      </div>
+    </ng-container>
+  </section>
+
+  <ng-container *ngIf="!activityInactive">
+    <!-- RESIDENTS -->
+    <section class="ge-section">
+      <mat-accordion class="hh-residents">
+        <mat-expansion-panel *ngFor="let resident of household.residents; trackBy: trackResident"
+                             [expanded]="household.residents.length === 1"
+                             [disabled]="isComplete(resident)">
+          <mat-expansion-panel-header>
+            <mat-panel-title class="hh-resident-title">
+              <span class="hh-resident-name">{{residentName(resident)}}</span>
+              <span class="ge-chip hh-chip-done" *ngIf="isComplete(resident)">Done</span>
+              <span class="ge-chip hh-chip-tried" *ngIf="!isComplete(resident) && isTried(resident)">Tried this pass</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <!-- Voter facts -->
+          <dl class="hh-facts">
+            <div class="hh-fact" *ngIf="resident.age"><dt>Age</dt><dd>{{resident.age}}</dd></div>
+            <div class="hh-fact"><dt>Voting propensity</dt><dd>{{getPropensityLabel(resident)}}</dd></div>
+            <div class="hh-fact" *ngIf="resident.phones?.length"><dt>Phone</dt><dd>{{formatPhone(resident.phones[0].number)}}</dd></div>
+            <div class="hh-fact" *ngIf="resident.party && showPartisan"><dt>Party</dt><dd>{{resident.party}}</dd></div>
+            <div class="hh-fact" *ngIf="resident.progressive && showPartisan"><dt>Progressive</dt><dd>{{resident.progressive}}</dd></div>
+            <div class="hh-fact" *ngIf="resident.segment && showPartisan"><dt>Segment</dt><dd>{{resident.segment}}</dd></div>
+            <div class="hh-fact" *ngIf="resident.ideology_score && showPartisan"><dt>Ideology score</dt><dd>{{resident.ideology_score}}</dd></div>
+          </dl>
+
+          <!-- Survey -->
+          <div *ngIf="survey">
+            <div class="hh-question" *ngFor="let item of visibleQuestions">
+              <div class="hh-question-text">
+                <span class="hh-question-number">{{item.number}}</span>
+                <span>{{item.question.question}}</span>
+              </div>
+
+              <ng-container [ngSwitch]="item.question.questionType">
+                <mat-radio-group *ngSwitchCase="'SINGLESELECT'" class="hh-options" color="primary"
+                                 [name]="'q' + item.index + '_' + resident.personID"
+                                 [(ngModel)]="answers[resident.personID][item.index]" (ngModelChange)="clearNeeds(resident)">
+                  <mat-radio-button *ngFor="let option of item.question.responses" [value]="option.response">{{option.response}}</mat-radio-button>
+                </mat-radio-group>
+
+                <div *ngSwitchCase="'MULTISELECT'" class="hh-options">
+                  <mat-checkbox *ngFor="let option of item.question.responses" color="primary"
+                                [checked]="isChecked(resident, item.index, option.response)"
+                                (change)="toggleOption(resident, item.index, option.response, $event.checked)">{{option.response}}</mat-checkbox>
+                </div>
+
+                <mat-form-field *ngSwitchCase="'NOTES'" appearance="outline" class="hh-notes">
+                  <mat-label>Answer</mat-label>
+                  <textarea matInput rows="2" [name]="'q' + item.index + '_' + resident.personID"
+                            [(ngModel)]="answers[resident.personID][item.index]"></textarea>
+                </mat-form-field>
+              </ng-container>
+            </div>
+          </div>
+
+          <div class="hh-needs" *ngIf="needsResponses.has(resident.personID)">Answer at least one multiple-choice question to submit, or choose a non-response.</div>
+
+          <div class="hh-answer-buttons" *ngIf="nonResponseSet">
+            <button mat-raised-button color="primary" [disabled]="loading" (click)="createActivityContactRecord(resident, household)"><mat-icon>check</mat-icon> Submit</button>
+            <button mat-stroked-button *ngFor="let nonResponse of nonResponseSet.nonResponses" [disabled]="loading"
+                    (click)="createActivityNonResponseRecord(resident, household, nonResponse)">{{nonResponse.nonResponse}}</button>
+          </div>
+
+          <div class="hh-extras" *ngIf="activity.enableTexting || optinOption">
+            <button mat-stroked-button color="primary" (click)="openOptinFormBottomSheet(resident)">
+              <mat-icon>{{activity.enableTexting ? 'sms' : 'how_to_reg'}}</mat-icon> {{activity.enableTexting ? 'Opt in & text' : 'Opt in'}}
+            </button>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </section>
+
+    <!-- WHOLE HOUSEHOLD -->
+    <section class="ge-section hh-everyone" *ngIf="nonResponseSet && household.residents.length > 1">
+      <div class="hh-everyone-title">Nobody answered?</div>
+      <div class="hh-everyone-help">Applies to everyone not yet contacted on this pass.</div>
+      <div class="hh-answer-buttons">
+        <button mat-stroked-button color="warn" *ngFor="let nonResponse of nonResponseSet.nonResponses" [disabled]="loading"
+                (click)="submitNonResponseForHH(household, nonResponse)">{{nonResponse.nonResponse}}</button>
+      </div>
+    </section>
+  </ng-container>
+</mat-dialog-content>
+
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
+<mat-dialog-actions class="ge-actions" *ngIf="!activityInactive">
+  <button mat-stroked-button color="primary" *ngIf="optinOption" (click)="openCreateMemberDialog()"><mat-icon>person_add</mat-icon> New person</button>
+  <span class="spacer"></span>
+  <span class="hh-idby" *ngIf="activity.idBy">IDs by {{activity.idBy | lowercase}}</span>
+</mat-dialog-actions>

@@ -1,0 +1,93 @@
+<div class="eo-header">
+  <div class="eo-heading">
+    <h2 mat-dialog-title class="eo-title">Create organization</h2>
+    <div class="eo-subtitle">
+      <span>New organizations have no members until someone requests to join.</span>
+      <span class="eo-dev-chip">Developer</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="creating" (click)="closeDialog()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="eo-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<!-- FORM -->
+<ng-container *ngIf="showForm">
+  <mat-dialog-content class="eo-content">
+    <section class="eo-section">
+      <div class="eo-section-title">Details</div>
+      <mat-form-field appearance="outline" class="eo-field">
+        <mat-label>Organization name</mat-label>
+        <input matInput [(ngModel)]="name" (ngModelChange)="nameError = ''" [disabled]="creating" required autocomplete="off">
+        <mat-hint class="eo-error" *ngIf="nameError">{{nameError}}</mat-hint>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="eo-field">
+        <mat-label>Description</mat-label>
+        <textarea matInput [(ngModel)]="description" [disabled]="creating" cdkTextareaAutosize cdkAutosizeMinRows="2" cdkAutosizeMaxRows="6"></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="eo-field">
+        <mat-label>Contact email (optional)</mat-label>
+        <input matInput type="email" [(ngModel)]="contactEmail" [disabled]="creating" autocomplete="email">
+        <mat-hint class="eo-error" *ngIf="emailError">{{emailError}}</mat-hint>
+      </mat-form-field>
+    </section>
+
+    <section class="eo-section">
+      <div class="eo-section-title">Plan and calling</div>
+      <div class="eo-row">
+        <mat-form-field appearance="outline" class="eo-field">
+          <mat-label>Subscription</mat-label>
+          <mat-select [(ngModel)]="subscription" [disabled]="creating">
+            <mat-option *ngFor="let s of subscriptions" [value]="s.value">{{s.label}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="eo-field">
+          <mat-label>Calling service</mat-label>
+          <mat-select [(ngModel)]="callingService" [disabled]="creating">
+            <mat-option *ngFor="let c of callingServices" [value]="c.value">{{c.label}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="eo-muted eo-small">Both can be changed later in Edit Organization.</div>
+    </section>
+  </mat-dialog-content>
+
+  <mat-progress-bar *ngIf="creating" mode="indeterminate"></mat-progress-bar>
+
+  <mat-dialog-actions class="eo-actions">
+    <span class="spacer"></span>
+    <button mat-button [disabled]="creating" (click)="closeDialog()">Cancel</button>
+    <button mat-raised-button color="primary" [disabled]="creating || !formValid" (click)="createOrganization()">Create organization</button>
+  </mat-dialog-actions>
+</ng-container>
+
+<!-- CREATED -->
+<ng-container *ngIf="!showForm && lastCreated as org">
+  <mat-dialog-content class="eo-content">
+    <div class="co-success">
+      <mat-icon class="co-success-icon">check_circle</mat-icon>
+      <div class="co-success-body">
+        <div class="co-success-title">{{org.name}} was created</div>
+        <div class="eo-muted">{{label(subscriptions, org.subscription)}} plan · {{label(callingServices, org.callingService || 'signalwire')}}</div>
+        <div class="co-id">
+          <span class="eo-muted">Organization ID</span>
+          <code>{{org._id}}</code>
+          <button mat-icon-button matTooltip="Copy ID" (click)="copyID(org)"><mat-icon>content_copy</mat-icon></button>
+        </div>
+        <div class="eo-muted eo-small">Users find it by name under Request Organization. Approve them and set an owner from the organization's team list.</div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="eo-actions">
+    <button mat-button (click)="createAnother()">Create another</button>
+    <span class="spacer"></span>
+    <button mat-raised-button color="primary" (click)="closeDialog()">Done</button>
+  </mat-dialog-actions>
+</ng-container>

@@ -1,0 +1,57 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel"  (click)="return();"><mat-icon>close</mat-icon></button>
+
+<h1 mat-dialog-title class="block-title"><b>Incoming Text Messages</b></h1>
+<mat-dialog-content  [@.disabled]="true">
+    <mat-accordion class="example-headers-align">
+        <mat-expansion-panel *ngFor="let hotline_message of hotline_messages;" >
+            <mat-expansion-panel-header >
+                <mat-icon color="warn" *ngIf="hotline_message.textConversation.slice(-1)[0].origin === 'external'">warning</mat-icon>
+                <mat-panel-title >{{hotline_message.externalPhonenumber}} {{hotline_message.name.firstName}} {{hotline_message.name.lastName}}</mat-panel-title>
+                <mat-panel-description> 
+                    
+                    {{hotline_message.textConversation.slice(-1)[0].msg}}
+                                
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <section *ngFor="let responses of hotline_message.textConversation">
+                <mat-card>
+                    <mat-card-header>
+                        <div mat-card-avatar *ngIf="responses.origin === 'external'" class="person-image"></div>
+                        <div mat-card-avatar *ngIf="responses.origin === 'internal'" class="user-image"></div>
+                        <mat-card-subtitle *ngIf="responses.origin === 'external'">{{hotline_message.externalPhonenumber}}: </mat-card-subtitle>
+                        <mat-card-subtitle *ngIf="responses.origin === 'internal'">{{hotline_message.internalPhonenumber}}: </mat-card-subtitle>
+                        <mat-card-subtitle >{{responses.date}}: </mat-card-subtitle>
+
+                        <mat-card-content>
+                            <p *ngIf="responses.msg">{{responses.msg}}</p>
+                            <img *ngIf="responses.mediaUrl && responses.mediaUrlType === 'image/jpeg'"  src="{{ responses.mediaUrl }}" />
+                            <video *ngIf="responses.mediaUrl && responses.mediaUrlType === 'video/mp4'" width="640" height="360" controls>
+                                <source [src]="responses.mediaUrl" type="video/mp4">
+                            </video>
+                            <!--
+                            <iframe *ngIf="responses.mediaUrl"
+                                width="640"
+                                height="360"
+                                [src]="responses.mediaUrl"
+                                frameborder="0"
+                                allowfullscreen>
+                            </iframe>-->
+
+                        </mat-card-content>
+    
+                    </mat-card-header>
+                </mat-card>
+
+              </section>
+              <mat-card-actions  >
+                <mat-divider></mat-divider>
+                <mat-form-field style="width:90%">
+                    <mat-label>Input a response</mat-label>
+                    <input matInput #inputResponse (keyup.enter)="sendFollowUpText(inputResponse.value,hotline_message.externalPhonenumber)">
+                </mat-form-field>
+                <button mat-icon-button (click)="sendFollowUpText(inputResponse.value, hotline_message.externalPhonenumber)" matTooltip='Send Response' style="float: right;"><mat-icon>send</mat-icon></button>
+            </mat-card-actions>
+        </mat-expansion-panel>
+    </mat-accordion>
+    <br>
+</mat-dialog-content>

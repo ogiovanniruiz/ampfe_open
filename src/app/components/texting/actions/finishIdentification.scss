@@ -1,0 +1,31 @@
+// Header, sections and actions come from the shared ge-* dialog styles (src/app/styles/dialog-common.scss); questions and
+// answer buttons from the canvass household dialog (householdDialog.scss), so both forms look the same
+
+// The sheet itself is capped at 80% of the screen with 8px padding; fit inside it so only the questions scroll
+// and the header and Submit stay in view
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 640px;
+  max-width: 100%;
+  max-height: calc(80vh - 16px);
+  max-height: calc(80dvh - 16px);
+  margin: 0 auto;
+}
+
+.ge-header,
+.fi-actions {
+  flex-shrink: 0;
+}
+
+.fi-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 8px 0 0;
+}
+
+.fi-actions {
+  padding: 12px 0 4px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}

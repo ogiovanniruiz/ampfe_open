@@ -1,0 +1,49 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel"  (click)="return();"><mat-icon>close</mat-icon></button>
+
+<h1 mat-dialog-title class="block-title"><b>Responders</b></h1>
+<mat-dialog-content>
+  <table style="margin:auto;" mat-table [dataSource]="responders" class="mat-elevation-z8">
+              
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> NAME </th>
+      <td mat-cell *matCellDef="let element"> {{element.name.fullName}} </td>
+    </ng-container>
+  
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef> EMAIL </th>
+      <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+    </ng-container>
+  
+
+    <ng-container matColumnDef="phonenumber">
+      <th mat-header-cell *matHeaderCellDef> PHONE NUMBER </th>
+      <td mat-cell *matCellDef="let element"> {{element.phonenumber}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="address">
+        <th mat-header-cell *matHeaderCellDef> ADDRESS </th>
+        <td mat-cell *matCellDef="let element"> {{element.address.address}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="city">
+        <th mat-header-cell *matHeaderCellDef> CITY </th>
+        <td mat-cell *matCellDef="let element"> {{element.address.city}} </td>
+      </ng-container>
+  
+  
+    <ng-container matColumnDef="edit_responder">
+      <th mat-header-cell *matHeaderCellDef> EDIT RESPONDER</th>
+      <td mat-cell *matCellDef="let element"> <button mat-icon-button  (click)="openEditResponderDialog(element)"><mat-icon>edit</mat-icon></button> </td>
+
+    </ng-container>
+  
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+</mat-dialog-content>
+<mat-dialog-actions  >
+
+    <button mat-raised-button color="primary" class='dialog-element-long' (click)="openCreateResponderDialog()">CREATE RESPONDER</button>
+
+</mat-dialog-actions>

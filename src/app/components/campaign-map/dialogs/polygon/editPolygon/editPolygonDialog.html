@@ -1,0 +1,149 @@
+<div class="ge-header">
+  <div class="ge-heading">
+    <h2 mat-dialog-title class="ge-title">Edit polygon</h2>
+    <div class="ge-subtitle">
+      <span class="ge-subtitle-name">{{savedName}}</span>
+      <span class="ge-chip ge-chip-groupby" *ngIf="!loadingUsage && !usageError">{{activeGroups.length ? activeGroups.length + (activeGroups.length === 1 ? ' group' : ' groups') : 'Not used'}}</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button [matTooltip]="'Copy polygon ID: ' + data._id" (click)="copyID()"><mat-icon>content_copy</mat-icon></button>
+  <button mat-icon-button matTooltip="Close" [disabled]="busy" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ge-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="ge-content">
+
+  <!-- DETAILS -->
+  <section class="ge-section">
+    <mat-form-field appearance="outline" class="ge-name">
+      <mat-label>Polygon name</mat-label>
+      <input matInput [(ngModel)]="name" (ngModelChange)="nameError = ''" (keyup.enter)="save()" required autocomplete="off">
+      <mat-hint class="ge-error" *ngIf="nameError">{{nameError}}</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="ge-name">
+      <mat-label>Notes (optional)</mat-label>
+      <textarea matInput rows="2" [(ngModel)]="description"></textarea>
+    </mat-form-field>
+  </section>
+
+  <!-- USAGE -->
+  <section class="ge-section">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Used by</span>
+      <span class="ge-section-sub" *ngIf="!loadingUsage && !usageError">{{polygonGroups.length}} {{polygonGroups.length === 1 ? 'group' : 'groups'}} · {{polygonActivities.length}} {{polygonActivities.length === 1 ? 'activity' : 'activities'}}</span>
+    </div>
+
+    <div class="ge-empty cp-usage-state" *ngIf="loadingUsage"><mat-spinner diameter="20"></mat-spinner><span>Checking groups and activities…</span></div>
+    <div class="ge-empty" *ngIf="usageError">{{usageError}}</div>
+
+    <ng-container *ngIf="!loadingUsage && !usageError">
+      <div class="ge-filters" *ngIf="polygonGroups.length || polygonActivities.length; else unused">
+        <div class="ge-filter-group" *ngIf="polygonGroups.length">
+          <div class="ge-filter-group-title">Groups</div>
+          <div class="cp-usage-row" *ngFor="let group of polygonGroups">
+            <mat-icon inline>{{group.campaignWide ? 'public' : 'group'}}</mat-icon>
+            <span class="cp-usage-name">{{group.name}}</span>
+            <span class="ge-chip ge-chip-groupby" *ngIf="!group.active">Archived</span>
+          </div>
+        </div>
+        <div class="ge-filter-group" *ngIf="polygonActivities.length">
+          <div class="ge-filter-group-title">Activities</div>
+          <div class="cp-usage-row" *ngFor="let activity of polygonActivities">
+            <mat-icon inline>event_note</mat-icon>
+            <span class="cp-usage-name">{{activity.name}}</span>
+            <span class="ge-chip ge-chip-groupby">{{activity.activityType}}</span>
+            <span class="ge-chip ge-chip-groupby" *ngIf="!activity.active">Completed</span>
+          </div>
+        </div>
+      </div>
+      <ng-template #unused>
+        <div class="ge-empty">No groups or activities use this polygon yet.</div>
+      </ng-template>
+    </ng-container>
+  </section>
+
+  <!-- PREVIEW + ESTIMATE -->
+  <section class="ge-section">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Who's inside</span>
+      <span class="ge-section-sub cp-stale" *ngIf="estimateStale">Rule set changed. Refresh to update.</span>
+      <span class="spacer"></span>
+      <button mat-stroked-button color="primary" [disabled]="estimating" (click)="getEstimate()">
+        <mat-icon>{{estimateResults ? 'refresh' : 'calculate'}}</mat-icon> {{estimateResults ? 'Refresh' : 'Get estimate'}}
+      </button>
+    </div>
+
+    <mat-form-field appearance="outline" class="ge-name">
+      <mat-label>Campaign-wide Rule set</mat-label>
+      <mat-select [(ngModel)]="ruleSetID" (selectionChange)="onRuleSetChange()" [disabled]="loadingGroups">
+        <mat-option [value]="everyone">Everyone (no filters)</mat-option>
+        <mat-option *ngFor="let group of campaignGroups" [value]="group._id">{{group.name}}</mat-option>
+      </mat-select>
+      <mat-hint>{{loadingGroups ? 'Loading campaign-wide rule sets…' : 'Campaign-wide groups whose filters apply inside this polygon.'}}</mat-hint>
+    </mat-form-field>
+
+    <div class="ge-tiles" [class.ge-tiles-loading]="estimating" [class.cp-tiles-stale]="estimateStale">
+      <div class="ge-tile">
+        <div class="ge-tile-label">Households</div>
+        <div class="ge-tile-value">{{estimateResults ? (estimateResults.totalHHs | number) : '—'}}</div>
+      </div>
+      <div class="ge-tile">
+        <div class="ge-tile-label">Residents</div>
+        <div class="ge-tile-value">{{estimateResults ? (estimateResults.totalResidents | number) : '—'}}</div>
+      </div>
+      <div class="ge-tile">
+        <div class="ge-tile-label">Phones</div>
+        <div class="ge-tile-value">{{estimateResults ? (estimateResults.totalPhones | number) : '—'}}</div>
+      </div>
+      <div class="ge-tile" matTooltip="Phones minus landlines and numbers that failed before. This is about how many residents a textbank will get.">
+        <div class="ge-tile-label">Textable</div>
+        <div class="ge-tile-value">{{estimateResults?.totalTextable != null ? (estimateResults.totalTextable | number) : '—'}}</div>
+      </div>
+      <div class="ge-tiles-spinner" *ngIf="estimating"><mat-spinner diameter="28"></mat-spinner></div>
+    </div>
+
+    <div class="cp-map" leaflet
+         [leafletOptions]="options"
+         (leafletMapReady)="onMapReady($event)">
+    </div>
+  </section>
+
+  <!-- NEW GROUP -->
+  <section class="ge-section">
+    <div class="ge-section-header">
+      <span class="ge-section-title">New group from this polygon</span>
+    </div>
+    <div class="cp-group-row">
+      <mat-form-field appearance="outline" class="cp-group-name">
+        <mat-label>Group name</mat-label>
+        <input matInput [(ngModel)]="groupName" (ngModelChange)="onGroupNameChange()" (keyup.enter)="createGroup()" required autocomplete="off">
+        <mat-hint class="ge-error" *ngIf="groupNameError">{{groupNameError}}</mat-hint>
+      </mat-form-field>
+      <button mat-stroked-button color="primary" class="cp-group-button" [disabled]="!canCreateGroup" (click)="createGroup()"><mat-icon>group_add</mat-icon> Create group</button>
+    </div>
+    <div class="ge-note">
+      <mat-icon inline>info</mat-icon>
+      <span>Targets {{ruleSetID === everyone ? 'everyone' : 'the “' + ruleSetName + '” filters'}} inside this polygon.</span>
+    </div>
+  </section>
+</mat-dialog-content>
+
+<mat-progress-bar *ngIf="busy" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-actions class="ge-actions">
+  <span [matTooltip]="archiveTooltip">
+    <button mat-button color="warn" [disabled]="!canArchive" (click)="archivePolygon()"><mat-icon>archive</mat-icon> Archive</button>
+  </span>
+  <span class="spacer"></span>
+  <span class="ge-unsaved" *ngIf="hasChanges && !saving">Unsaved changes</span>
+  <button mat-button [disabled]="busy" (click)="close()">{{hasChanges ? 'Cancel' : 'Close'}}</button>
+  <button mat-raised-button color="primary" [disabled]="!canSave" (click)="save()">Save changes</button>
+</mat-dialog-actions>

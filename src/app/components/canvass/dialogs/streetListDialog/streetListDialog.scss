@@ -1,0 +1,212 @@
+.sl-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #fff;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.sl-title-row {
+  display: flex;
+  align-items: center;
+}
+
+.sl-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.sl-spacer {
+  flex: 1;
+}
+
+.sl-progress-label {
+  margin: 4px 0 6px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.sl-search {
+  width: 100%;
+  margin-top: 12px;
+
+  mat-icon[matPrefix] {
+    margin-right: 8px;
+    color: rgba(0, 0, 0, 0.54);
+  }
+}
+
+.sl-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: -8px;
+}
+
+.sl-content {
+  padding-top: 12px !important;
+}
+
+.sl-empty {
+  text-align: center;
+  color: rgba(0, 0, 0, 0.54);
+  padding: 16px;
+}
+
+// Streets
+.sl-street-header {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 6px;
+  padding-right: 8px;
+}
+
+.sl-street-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.sl-street-count {
+  margin-left: auto;
+  font-weight: 400;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.sl-done-icon {
+  color: #4caf50;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.sl-street-done .sl-street-name span:not(.sl-street-count) {
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.sl-street-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.sl-street-bar-fill {
+  height: 100%;
+  background: #3f51b5;
+  transition: width 0.3s ease;
+}
+
+.sl-bar-done {
+  background: #4caf50;
+}
+
+.sl-group-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.54);
+  margin: 12px 0 4px;
+}
+
+// Doors
+.sl-door {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 8px 4px;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: none;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: rgba(0, 0, 0, 0.04);
+    outline: none;
+  }
+}
+
+.sl-door-number {
+  flex: 0 0 auto;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 6px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+  background: rgba(63, 81, 181, 0.12);
+  color: #3f51b5;
+}
+
+.sl-door-number-done {
+  background: rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.sl-door-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.sl-door-title {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sl-door-sub {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.54);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Status chips
+.sl-status {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sl-status-todo {
+  border: 1px solid #3f51b5;
+  color: #3f51b5;
+}
+
+.sl-status-partial {
+  background: rgba(255, 152, 0, 0.15);
+  color: #b26a00;
+}
+
+.sl-status-passed {
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.sl-status-complete {
+  background: rgba(76, 175, 80, 0.15);
+  color: #2e7d32;
+}

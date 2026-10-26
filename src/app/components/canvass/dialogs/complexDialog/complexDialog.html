@@ -1,0 +1,30 @@
+<div class="cx-header">
+  <div class="cx-heading">
+    <h2 mat-dialog-title class="cx-title">{{fullAddress1}}</h2>
+    <div class="cx-subtitle" *ngIf="fullAddress2">{{fullAddress2}}</div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" (click)="return();"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="cx-progress">
+  <div class="cx-progress-label"><b>{{progress.done}} of {{progress.total}}</b> units done</div>
+  <div class="cx-bar"><div class="cx-bar-fill" [class.cx-bar-done]="progress.done >= progress.total" [style.width.%]="progress.total ? (progress.done / progress.total) * 100 : 0"></div></div>
+</div>
+
+<mat-dialog-content class="cx-content">
+  <button type="button" class="cx-unit" *ngFor="let record of records; trackBy: trackRecord"
+          [class.cx-unit-done]="unitStatus(record) !== 'todo'" [disabled]="opening"
+          (click)="openHousehold(record)">
+    <span class="cx-badge">{{unitLabel(record)}}</span>
+    <span class="cx-unit-text">
+      <span class="cx-unit-name">{{unitLabel(record) === 'Main' ? 'Main residence' : 'Unit ' + unitLabel(record)}}</span>
+      <span class="cx-unit-sub">{{residentCount(record)}} {{residentCount(record) === 1 ? 'resident' : 'residents'}}</span>
+    </span>
+    <span class="cx-chip" [ngClass]="'cx-chip-' + unitStatus(record)">
+      <mat-icon inline *ngIf="unitStatus(record) === 'complete'">check</mat-icon>
+      {{unitStatus(record) === 'complete' ? 'Complete' : unitStatus(record) === 'passed' ? 'Passed' : 'To do'}}
+    </span>
+    <mat-icon class="cx-chevron">chevron_right</mat-icon>
+  </button>
+</mat-dialog-content>

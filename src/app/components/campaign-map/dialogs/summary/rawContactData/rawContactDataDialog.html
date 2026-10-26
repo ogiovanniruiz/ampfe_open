@@ -1,0 +1,121 @@
+<div class="rc-header">
+  <h2 mat-dialog-title class="rc-title">Export contact data</h2>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" (click)="return();"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="rc-content">
+  <!-- 1. Survey -->
+  <div class="rc-step">
+    <div class="rc-step-label"><span class="rc-step-num">1</span> Survey</div>
+    <mat-form-field appearance="outline" class="rc-survey-field">
+      <mat-label>{{loadingSurveys ? 'Loading surveys…' : 'Select a survey'}}</mat-label>
+      <mat-select [(ngModel)]="selectedSurveyID" [disabled]="loadingSurveys || !orgSurveys.length">
+        <mat-option *ngFor="let survey of orgSurveys" [value]="survey._id">{{survey.name}}</mat-option>
+      </mat-select>
+      <mat-hint *ngIf="!loadingSurveys && !orgSurveys.length">There are no active surveys on this campaign.</mat-hint>
+    </mat-form-field>
+  </div>
+
+  <!-- 2. Options -->
+  <div class="rc-step">
+    <div class="rc-step-label"><span class="rc-step-num">2</span> Options</div>
+    <div class="rc-options">
+      <div class="rc-option">
+        <span class="rc-option-label">Responses</span>
+        <mat-button-toggle-group [(ngModel)]="mode" aria-label="Responses">
+          <mat-button-toggle value="SINGLESELECT">All answers</mat-button-toggle>
+          <mat-button-toggle value="NOTES">Notes only</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+      <div class="rc-option" *ngIf="dev || dataManager">
+        <span class="rc-option-label">Organizations</span>
+        <mat-button-toggle-group [(ngModel)]="orgFilter" aria-label="Organizations">
+          <mat-button-toggle value="myOrg">My org</mat-button-toggle>
+          <mat-button-toggle value="allOrgs">All orgs</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+      <mat-checkbox color="primary" [(ngModel)]="includeNonResponses">Include non-responses</mat-checkbox>
+    </div>
+  </div>
+
+  <!-- 3. Columns -->
+  <div class="rc-step">
+    <div class="rc-step-label">
+      <span class="rc-step-num">3</span> Columns
+      <span class="spacer"></span>
+      <button mat-button color="primary" class="rc-link" (click)="setAllFields(true)">Select all</button>
+      <button mat-button class="rc-link" (click)="setAllFields(false)">Clear</button>
+    </div>
+    <p class="rc-note">Survey answers are always included, one column per question.</p>
+
+    <div class="rc-field-groups" [formGroup]="fields">
+      <div class="rc-field-group" *ngFor="let group of fieldGroups">
+        <div class="rc-field-group-title">{{group.title}}</div>
+        <mat-checkbox *ngFor="let field of group.fields" [formControlName]="field.key" color="primary">{{field.label}}</mat-checkbox>
+      </div>
+    </div>
+  </div>
+
+  <div class="rc-result" *ngIf="resultMessage" [class.rc-result-error]="resultIsError">
+    <mat-icon>{{resultIsError ? 'error_outline' : 'check_circle'}}</mat-icon>
+    <span>{{resultMessage}}</span>
+  </div>
+
+  <!-- Preview -->
+  <div class="rc-preview" *ngIf="hasPreview && rawSurveyData.length">
+    <div class="rc-preview-header">
+      <span class="rc-step-label rc-preview-title">Preview</span>
+      <span class="rc-preview-count">
+        {{sortedData.length > previewLimit ? 'Showing ' + previewLimit + ' of ' + (sortedData.length | number) + ' rows. Export for the full data.' : (sortedData.length | number) + ' rows'}}
+      </span>
+    </div>
+
+    <div class="rc-stale" *ngIf="previewStale">
+      <mat-icon inline>update</mat-icon>
+      <span>Settings changed since this preview was loaded.</span>
+      <span class="spacer"></span>
+      <button mat-button color="primary" [disabled]="!canFetch" (click)="loadPreview()">Refresh</button>
+    </div>
+
+    <div class="rc-table-wrap" [class.rc-table-stale]="previewStale">
+      <table class="rc-table" matSort (matSortChange)="sortData($event)">
+        <thead>
+          <tr>
+            <th *ngFor="let header of headers; trackBy: trackHeader" [mat-sort-header]="header" [matTooltip]="header" [matTooltipShowDelay]="400">
+              <span class="rc-header-text">{{header}}</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of previewData">
+            <td *ngFor="let header of headers; trackBy: trackHeader">{{item[header] ?? ''}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-actions class="rc-actions">
+  <span class="rc-summary">{{selectedFields.length}} {{selectedFields.length === 1 ? 'column' : 'columns'}} selected</span>
+  <span *ngIf="showBigQuery" matTooltip="Push all survey responses in this campaign to BigQuery">
+    <button mat-stroked-button [disabled]="loading" (click)="syncBigQuery()">
+      <mat-icon>cloud_upload</mat-icon> Sync to BigQuery
+    </button>
+  </span>
+  <span *ngIf="showOptinSync" matTooltip="Push C3 2026 opt-ins (q2 & q4 Yes, with email) to BigQuery">
+    <button mat-stroked-button [disabled]="loading" (click)="syncOptins()">
+      <mat-icon>cloud_upload</mat-icon> Sync Opt-ins
+    </button>
+  </span>
+  <span class="spacer"></span>
+  <button mat-stroked-button color="primary" [disabled]="!canFetch" (click)="loadPreview()">
+    <mat-icon>table_view</mat-icon> Preview
+  </button>
+  <button mat-raised-button color="primary" [disabled]="!canFetch" (click)="exportCSV()">
+    <mat-icon>download</mat-icon> Export CSV
+  </button>
+</mat-dialog-actions>

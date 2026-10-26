@@ -1,0 +1,12 @@
+// Layout, residents and survey styles come from the phonebank page (pb-*), the canvass
+// household dialog (hh-*) and the shared dialog styles (ge-*); see styleUrls.
+
+// SignalWire needs real <video> elements for call audio, kept out of sight
+.sw-media {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}

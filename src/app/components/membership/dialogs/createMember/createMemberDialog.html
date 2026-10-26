@@ -1,0 +1,160 @@
+<div class="ge-header">
+  <div class="ge-heading">
+    <h2 mat-dialog-title class="ge-title">New community member</h2>
+    <div class="ge-subtitle">
+      <span class="ge-subtitle-name" *ngIf="household?.fullAddress1">{{household.fullAddress1}}<ng-container *ngIf="household.fullAddress2">, {{household.fullAddress2}}</ng-container></span>
+      <span class="ge-chip ge-chip-groupby" *ngIf="activity">{{activity.name}}</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="showProgressbar" (click)="cancel()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ge-banner" *ngIf="displayErrorMsg" role="alert">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="displayErrorMsg = false"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ge-banner" *ngIf="displayMessage" role="alert">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{message}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="displayMessage = false"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="ge-content">
+
+  <div class="cm-saved" *ngIf="savedNames.length" role="status">
+    <mat-icon>check_circle</mat-icon>
+    <span>Saved: {{savedNames.join(', ')}}</span>
+  </div>
+
+  <!-- CONTACT -->
+  <section class="ge-section">
+    <div class="ge-section-header"><span class="ge-section-title">Contact</span></div>
+    <div class="cm-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>First name</mat-label>
+        <input matInput #firstName id="firstName" autocomplete="off" required>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Last name</mat-label>
+        <input matInput #lastName id="lastName" autocomplete="off" required>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Middle name</mat-label>
+        <input matInput #middleName id="middleName" autocomplete="off">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{optinTexting ? 'Phone' : 'Phone (optional)'}}</mat-label>
+        <span matPrefix class="cm-prefix">+1&nbsp;</span>
+        <input matInput #phone type="tel" id="phone" inputmode="tel" placeholder="(909) 555-1234" autocomplete="off" [required]="optinTexting">
+        <mat-hint *ngIf="optinTexting">Needed for texting consent</mat-hint>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{optinEmail || requireEmail ? 'Email' : 'Email (optional)'}}</mat-label>
+        <input matInput #email type="email" id="email" autocomplete="off" [required]="optinEmail || requireEmail">
+        <mat-hint *ngIf="optinEmail && !requireEmail">Needed for email consent</mat-hint>
+      </mat-form-field>
+    </div>
+
+    <!-- CONSENT (same as the petition form) -->
+    <div class="cm-consents">
+      <div class="cm-consent" [class.cm-consent-checked]="optinTexting">
+        <mat-checkbox color="primary" [(ngModel)]="optinTexting">
+          <span class="cm-consent-title">Opt in to texting</span>
+          <span class="cm-consent-help">They agreed to receive texts{{orgName ? ' from ' + orgName : ''}}.<ng-container *ngIf="enableTexting"> Required to text them.</ng-container></span>
+        </mat-checkbox>
+      </div>
+      <div class="cm-consent" [class.cm-consent-checked]="optinEmail">
+        <mat-checkbox color="primary" [(ngModel)]="optinEmail">
+          <span class="cm-consent-title">Opt in to email</span>
+          <span class="cm-consent-help">They agreed to receive emails{{orgName ? ' from ' + orgName : ''}}.</span>
+        </mat-checkbox>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADDRESS -->
+  <section class="ge-section">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Address</span>
+      <span class="ge-section-sub">From the household on the map. Add a unit if they have one.</span>
+    </div>
+    <div class="cm-grid">
+      <mat-form-field appearance="outline" class="cm-full">
+        <mat-label>Address</mat-label>
+        <input matInput #address id="address" disabled>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Unit</mat-label>
+        <input matInput #unit id="unit" maxlength="10" autocomplete="off">
+        <mat-hint>Apt, suite or unit #</mat-hint>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>City</mat-label>
+        <input matInput #city id="city" disabled>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>State</mat-label>
+        <mat-select #state disabled>
+          <mat-option *ngFor="let state of states | keyvalue" [value]="state.key">{{state.key}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Zip</mat-label>
+        <input matInput #zip id="zipcode" maxlength="5" (input)="numericOnly($event)" disabled>
+      </mat-form-field>
+    </div>
+  </section>
+
+  <!-- TAGS -->
+  <section class="ge-section" *ngIf="pickerTags.length">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Tags</span>
+      <span class="ge-section-sub">Add at least one</span>
+    </div>
+    <tag-picker label="Add a tag" [tags]="memberTags" [orgTags]="pickerTags" [definitions]="tagDefinitions"
+                (tagsChange)="memberTags = $event"></tag-picker>
+  </section>
+
+  <!-- SURVEY -->
+  <section class="ge-section" *ngIf="visibleQuestions.length">
+    <div class="ge-section-header"><span class="ge-section-title">Survey</span></div>
+    <div class="hh-question" *ngFor="let item of visibleQuestions" [ngSwitch]="item.question.questionType">
+      <div class="hh-question-text">
+        <span class="hh-question-number">{{item.number}}</span>
+        <span>{{item.question.question}}</span>
+      </div>
+
+      <mat-radio-group *ngSwitchCase="'SINGLESELECT'" class="hh-options" color="primary" [name]="'q' + item.index"
+                       [(ngModel)]="answers[item.index]" (ngModelChange)="needsResponses = false">
+        <mat-radio-button *ngFor="let option of item.question.responses" [value]="option.response">{{option.response}}</mat-radio-button>
+      </mat-radio-group>
+
+      <div *ngSwitchCase="'MULTISELECT'" class="hh-options">
+        <mat-checkbox *ngFor="let option of item.question.responses" color="primary"
+                      [checked]="isChecked(item.index, option.response)"
+                      (change)="toggleOption(item.index, option.response, $event.checked)">{{option.response}}</mat-checkbox>
+      </div>
+
+      <mat-form-field *ngSwitchCase="'NOTES'" appearance="outline" class="hh-notes">
+        <mat-label>Answer</mat-label>
+        <textarea matInput rows="2" [name]="'q' + item.index" [(ngModel)]="answers[item.index]"></textarea>
+      </mat-form-field>
+    </div>
+    <div class="hh-needs" *ngIf="needsResponses">Answer at least one multiple-choice question to submit.</div>
+  </section>
+</mat-dialog-content>
+
+<mat-progress-bar mode="indeterminate" *ngIf="showProgressbar"></mat-progress-bar>
+
+<mat-dialog-actions class="ge-actions">
+  <button mat-stroked-button [disabled]="showProgressbar" (click)="cancel()">Cancel</button>
+  <span class="spacer"></span>
+  <button mat-raised-button color="primary" [disabled]="showProgressbar" (click)="createMemberWithForm()">
+    <mat-icon>person_add</mat-icon> Save member
+  </button>
+</mat-dialog-actions>

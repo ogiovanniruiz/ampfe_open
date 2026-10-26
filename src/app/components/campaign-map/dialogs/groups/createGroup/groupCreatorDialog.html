@@ -1,0 +1,266 @@
+<div class="ge-header">
+  <div class="ge-heading">
+    <h2 mat-dialog-title class="ge-title">Create group</h2>
+    <div class="ge-subtitle">
+      <span class="ge-chip ge-chip-groupby">{{groupByLabel}}</span>
+      <span class="ge-chip ge-chip-wide" *ngIf="campaignWide">Campaign-wide</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="creating" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ge-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="ge-content">
+
+  <!-- DETAILS -->
+  <section class="ge-section">
+    <mat-form-field appearance="outline" class="ge-name">
+      <mat-label>Group name</mat-label>
+      <input matInput [(ngModel)]="name" (ngModelChange)="nameError = ''" (keyup.enter)="createGroup()" required autocomplete="off">
+      <mat-hint class="ge-error" *ngIf="nameError">{{nameError}}</mat-hint>
+    </mat-form-field>
+
+    <div class="ge-toggle" [matTooltip]="canSetCampaignWide ? '' : 'Only developers and campaign data managers can change this'">
+      <mat-slide-toggle color="primary" [(ngModel)]="campaignWide" (ngModelChange)="estimateStale = !!estimateResults" [disabled]="!canSetCampaignWide">Campaign-wide</mat-slide-toggle>
+      <span class="ge-help">Visible to every organization in this campaign.</span>
+    </div>
+  </section>
+
+  <!-- GROUP BY -->
+  <section class="ge-section">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Who to target</span>
+    </div>
+    <mat-radio-group #groupByRadio class="gc-groupby" [value]="groupBy" (change)="changeGroupBy($event.value, groupByRadio)">
+      <mat-radio-button color="primary" class="gc-option" [class.gc-option-selected]="groupBy === 'INDIVIDUAL'" value="INDIVIDUAL">
+        <span class="gc-option-title">Voter individuals</span>
+        <span class="gc-option-desc">One row per registered voter.</span>
+      </mat-radio-button>
+      <mat-radio-button color="primary" class="gc-option" [class.gc-option-selected]="groupBy === 'HOUSEHOLD'" value="HOUSEHOLD">
+        <span class="gc-option-title">Voter households</span>
+        <span class="gc-option-desc">One row per address; contacts reach everyone living there.</span>
+      </mat-radio-button>
+      <mat-radio-button color="primary" class="gc-option" [class.gc-option-selected]="groupBy === 'MEMBERSHIP'" value="MEMBERSHIP">
+        <span class="gc-option-title">Community member list</span>
+        <span class="gc-option-desc">People from your organization's uploads and sign-ups.</span>
+      </mat-radio-button>
+    </mat-radio-group>
+  </section>
+
+  <!-- FILTERS -->
+  <section class="ge-section">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Filters</span>
+      <span class="ge-section-sub">{{addedRules.length ? addedRules.length + (addedRules.length === 1 ? ' filter' : ' filters') : 'No filters'}} · {{groupByLabel}}</span>
+    </div>
+
+    <div class="ge-toggle gc-entire" *ngIf="groupBy === 'MEMBERSHIP'">
+      <mat-slide-toggle color="primary" [checked]="entireMembership" (change)="setEntireMembership($event.checked)">Entire membership list</mat-slide-toggle>
+      <span class="ge-help">Include every member of your organization, not just those inside the campaign district.</span>
+    </div>
+
+    <div class="gc-add-panel">
+      <div class="ge-filter-group-title">Add a filter</div>
+      <div class="gc-pickers">
+        <mat-form-field appearance="outline">
+          <mat-label>{{groupBy === 'HOUSEHOLD' ? 'Household' : 'General'}}</mat-label>
+          <mat-select (selectionChange)="pickRule($event)">
+            <mat-option *ngFor="let ruleOption of ruleOptions" [value]="ruleOption" [disabled]="isRuleAdded(ruleOption.value)">{{ruleOption.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Contact history</mat-label>
+          <mat-select (selectionChange)="pickRule($event)">
+            <mat-option *ngFor="let ruleOption of contactRuleOptions" [value]="ruleOption" [disabled]="isRuleAdded(ruleOption.value)">{{ruleOption.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Vote history</mat-label>
+          <mat-select (selectionChange)="pickRule($event)">
+            <mat-option *ngFor="let ruleOption of voteHistoryRuleOptions" [value]="ruleOption" [disabled]="isRuleAdded(ruleOption.value)">{{ruleOption.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Geography</mat-label>
+          <mat-select (selectionChange)="pickRule($event)">
+            <mat-option *ngFor="let ruleOption of geographicRuleOptions" [value]="ruleOption" [disabled]="isRuleAdded(ruleOption.value)">{{ruleOption.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" *ngIf="groupBy === 'MEMBERSHIP'">
+          <mat-label>Membership</mat-label>
+          <mat-select (selectionChange)="pickRule($event)">
+            <mat-option *ngFor="let ruleOption of membershipRuleOptions" [value]="ruleOption" [disabled]="isRuleAdded(ruleOption.value)">{{ruleOption.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <ng-container *ngIf="campaignGroups.length > 0">
+        <div class="gc-or"><span>or</span></div>
+        <mat-form-field appearance="outline" class="gc-preset">
+          <mat-label>Start from a campaign-wide group</mat-label>
+          <mat-select #presetPicker (selectionChange)="applyGroupQuery($event.value, presetPicker)">
+            <mat-option *ngFor="let group of campaignGroups" [value]="group">{{group.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+    </div>
+
+    <div class="ge-note gc-loading" *ngIf="gettingZips">
+      <mat-spinner diameter="14"></mat-spinner>
+      <span>Loading locations…</span>
+    </div>
+
+    <div class="ge-readonly" *ngIf="skippedRulesMessage">
+      <mat-icon inline>warning_amber</mat-icon>
+      <span>{{skippedRulesMessage}}</span>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="getEstimate()">
+      <div class="ge-empty" *ngIf="entireMembership && addedRules.length === 1">The group includes every member of your organization.</div>
+      <div class="ge-filters" *ngIf="addedRules.length; else noFilters">
+        <div class="gc-rule" *ngFor="let addedRule of addedRules" [class.gc-rule-empty]="showEmptyRules && isRuleEmpty(addedRule)">
+          <div class="gc-rule-body">
+
+            <!-- Tags: one row per tag; a tag with values can be narrowed to some of them -->
+            <div *ngIf="addedRule.tagValues" class="gc-tag-values">
+              <div class="gc-upload-label">{{addedRule.name}}</div>
+              <div class="gc-tag-row" *ngFor="let row of tagValueRows(addedRule); let i = index; trackBy: trackIndex">
+                <mat-form-field appearance="outline" class="gc-tag-label">
+                  <mat-label>Tag</mat-label>
+                  <mat-select [value]="row.label" (selectionChange)="setTagValueLabel(addedRule, i, $event.value)">
+                    <mat-option *ngFor="let label of availableTagsFor(addedRule, i)" [value]="label">
+                      <span class="gc-dot" *ngIf="tagDefinitionFor(label)?.values?.length" [style.background]="tagDefinitionFor(label).values[0].color"></span>{{label}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="gc-tag-value" *ngIf="tagDefinitionFor(row.label)?.values?.length">
+                  <mat-label>Values (optional)</mat-label>
+                  <mat-select multiple [value]="row.values" [disabled]="!row.label" (selectionChange)="setTagValueValues(addedRule, i, $event.value)">
+                    <mat-option *ngFor="let option of tagDefinitionFor(row.label)?.values" [value]="option.value">
+                      <span class="gc-dot" [style.background]="option.color"></span> {{option.value}}
+                    </mat-option>
+                    <mat-option value=""><span class="gc-dot"></span> No value</mat-option>
+                  </mat-select>
+                  <mat-hint *ngIf="!row.values?.length">Leave empty for any value</mat-hint>
+                </mat-form-field>
+                <button type="button" mat-icon-button matTooltip="Remove this tag" (click)="removeTagValueRow(addedRule, i)"><mat-icon>close</mat-icon></button>
+              </div>
+              <div class="gc-tag-actions">
+                <button type="button" mat-button color="primary" [disabled]="availableTagsFor(addedRule, -1).length === 0" (click)="addTagValueRow(addedRule)"><mat-icon>add</mat-icon> Add another tag</button>
+                <span class="ge-help">Members must match every tag.</span>
+              </div>
+              <div class="ge-help ge-error" *ngIf="showEmptyRules && isRuleEmpty(addedRule)">Choose a tag</div>
+            </div>
+
+            <mat-form-field *ngIf="!addedRule.upload && !addedRule.tagValues" appearance="outline" class="gc-rule-field" [formArrayName]="addedRule.value">
+              <mat-label>{{addedRule.name}}</mat-label>
+              <ng-container *ngIf="addedRule.date; else selectTemplate">
+                <mat-date-range-input [rangePicker]="picker">
+                  <input matStartDate [formControlName]="0" placeholder="Start date">
+                  <input matEndDate [formControlName]="1" placeholder="End date">
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+              </ng-container>
+
+              <ng-template #selectTemplate>
+                <mat-select [formControlName]="0" [compareWith]="compareValues" [multiple]="addedRule.multiple">
+                  <mat-option *ngFor="let option of addedRule.options" [value]="option.value">{{option.name}}</mat-option>
+                </mat-select>
+              </ng-template>
+              <mat-hint class="ge-error" *ngIf="showEmptyRules && isRuleEmpty(addedRule)">Choose a value</mat-hint>
+            </mat-form-field>
+
+            <div *ngIf="addedRule.value === 'pdiIDs'" class="gc-upload">
+              <div class="gc-upload-label">{{addedRule.name}}</div>
+              <div class="gc-upload-row">
+                <input type="file" accept=".csv" #pdiCsvInput hidden (change)="onPdiCsvSelected($event)">
+                <button type="button" mat-stroked-button (click)="pdiCsvInput.click()"><mat-icon>upload_file</mat-icon> Import PDI ID CSV</button>
+                <span class="ge-value">{{pdiIdCount | number}} loaded</span>
+              </div>
+              <div class="ge-help" *ngIf="pdiCsvMessage">{{pdiCsvMessage}}</div>
+              <div class="ge-help ge-error" *ngIf="showEmptyRules && isRuleEmpty(addedRule)">Import a CSV of PDI IDs</div>
+            </div>
+
+            <div *ngIf="addedRule.value === 'precincts'" class="gc-upload-row">
+              <input type="file" accept=".csv" #precinctCsvInput hidden (change)="onPrecinctCsvSelected($event)">
+              <button type="button" mat-stroked-button (click)="precinctCsvInput.click()"><mat-icon>upload_file</mat-icon> Import precinct CSV</button>
+              <span class="ge-help" *ngIf="precinctCsvMessage">{{precinctCsvMessage}}</span>
+            </div>
+          </div>
+
+          <button type="button" mat-icon-button matTooltip="Remove filter" (click)="removeRule(addedRule)"><mat-icon>remove_circle_outline</mat-icon></button>
+        </div>
+      </div>
+      <ng-template #noFilters>
+        <div class="ge-empty" *ngIf="groupBy !== 'MEMBERSHIP'">No filters yet. Without filters the group includes everyone in the campaign{{campaignWide ? '' : ' your organization can reach'}}.</div>
+        <div class="ge-empty" *ngIf="groupBy === 'MEMBERSHIP'">No filters yet. Without filters the group includes your organization's members inside the campaign district.</div>
+      </ng-template>
+    </form>
+
+    <div class="ge-note">
+      <mat-icon inline>info</mat-icon>
+      <span>Filters can't be changed after a group is created.</span>
+    </div>
+  </section>
+
+  <!-- ESTIMATE -->
+  <section class="ge-section">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Estimate</span>
+      <span class="ge-section-sub gc-stale" *ngIf="estimateStale">Filters changed. Refresh to update.</span>
+      <span class="spacer"></span>
+      <button type="button" mat-stroked-button color="primary" [disabled]="busy" (click)="getEstimate()">
+        <mat-icon>{{estimateResults ? 'refresh' : 'calculate'}}</mat-icon> {{estimateResults ? 'Refresh' : 'Get estimate'}}
+      </button>
+    </div>
+
+    <div class="ge-tiles" [class.ge-tiles-loading]="estimating" [class.gc-tiles-stale]="estimateStale">
+      <div class="ge-tile">
+        <div class="ge-tile-label">Households</div>
+        <div class="ge-tile-value">{{estimateResults ? (estimateResults.totalHHs | number) : '—'}}</div>
+      </div>
+      <div class="ge-tile">
+        <div class="ge-tile-label">Residents</div>
+        <div class="ge-tile-value">{{estimateResults ? (estimateResults.totalResidents | number) : '—'}}</div>
+      </div>
+      <div class="ge-tile">
+        <div class="ge-tile-label">Phones</div>
+        <div class="ge-tile-value">{{estimateResults ? (estimateResults.totalPhones | number) : '—'}}</div>
+      </div>
+      <div class="ge-tile" matTooltip="Phones minus landlines and numbers that failed before. This is about how many residents a textbank will get.">
+        <div class="ge-tile-label">Textable</div>
+        <div class="ge-tile-value">{{estimateResults?.totalTextable != null ? (estimateResults.totalTextable | number) : '—'}}</div>
+      </div>
+      <div class="ge-tiles-spinner" *ngIf="estimating"><mat-spinner diameter="28"></mat-spinner></div>
+    </div>
+
+    <div class="ge-note" *ngIf="estimateResults?.maxHouseholds && estimateResults.totalHHs > estimateResults.maxHouseholds">
+      <mat-icon inline>warning</mat-icon>
+      <span>Over the {{estimateResults.maxHouseholds | number}}-household limit for activities. An activity from this group would only get {{estimateResults.maxHouseholds | number}} of them. Narrow the group.</span>
+    </div>
+
+    <div *ngIf="showMap" class="gc-map" leaflet
+         [leafletOptions]="options"
+         [leafletCenter]="center"
+         [(leafletZoom)]="zoom"
+         [leafletFitBoundsOptions]="{ padding: [50, 50] }"
+         (leafletMapReady)="onMapReady($event)">
+    </div>
+  </section>
+</mat-dialog-content>
+
+<mat-progress-bar *ngIf="creating" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-actions class="ge-actions">
+  <span class="spacer"></span>
+  <button mat-button [disabled]="creating" (click)="close()">Cancel</button>
+  <button mat-raised-button color="primary" [disabled]="!canCreate" (click)="createGroup()">Create group</button>
+</mat-dialog-actions>

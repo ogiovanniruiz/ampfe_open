@@ -1,0 +1,47 @@
+// Member choices and the preview; the rest comes from the shared dialog styles (ge-*, bt-*)
+
+.mm-option {
+  display: block;
+  padding: 8px 12px;
+
+  & + .mm-option {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  ::ng-deep .mdc-form-field {
+    align-items: flex-start;
+  }
+  ::ng-deep .mdc-form-field > label,
+  ::ng-deep .mdc-form-field > .mat-internal-form-field-label {
+    white-space: normal;
+    padding-top: 10px;
+  }
+}
+
+.mm-name {
+  font-weight: 500;
+}
+
+.mm-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.mm-preview {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 16px;
+  margin: 0;
+  font-size: 14px;
+
+  dt {
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+}

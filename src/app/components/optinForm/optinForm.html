@@ -1,0 +1,99 @@
+<div class="ge-header">
+  <div class="ge-heading">
+    <h2 class="ge-title">{{allowTexting ? 'Opt in & text ' + (residentName || 'this person') : 'Add ' + (residentName || 'this person') + ' to the member list'}}</h2>
+    <div class="ge-subtitle"><span class="ge-subtitle-name">{{activity?.name}}</span></div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="saving" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ge-banner" *ngIf="message" role="alert">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{message}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="message = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+<div class="op-content" *ngIf="!loading">
+
+  <!-- MEMBER STATUS -->
+  <div class="tt-notice tt-notice-success" *ngIf="member && (wasMember || saved)" role="status">
+    <mat-icon inline>{{saved ? 'check_circle' : 'verified'}}</mat-icon>
+    <div>
+      <div *ngIf="!saved">{{residentName || 'This person'}} is already on your Community Member List.</div>
+      <div *ngIf="saved">{{wasMember ? 'Consent saved.' : (matchedExisting ? 'Updated their existing member record.' : 'Saved to the member list.')}}</div>
+      <div class="op-chips">
+        <span class="op-chip" [class.op-chip-on]="hasTextingConsent">{{hasTextingConsent ? 'Opted in to texting' : 'Not opted in to texting'}}</span>
+        <span class="op-chip" [class.op-chip-on]="hasEmailConsent">{{hasEmailConsent ? 'Opted in to email' : 'Not opted in to email'}}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONSENT (new member, or consent still missing on an existing one) -->
+  <form *ngIf="showForm" [formGroup]="form" (ngSubmit)="save()">
+    <section class="ge-section">
+      <div class="ge-section-header">
+        <span class="ge-section-title">{{member ? 'Add consent' : 'Consent'}}</span>
+        <span class="ge-section-sub">Only check what they agreed to.</span>
+      </div>
+      <div class="op-consents">
+        <div class="op-consent" [class.op-consent-checked]="form.getRawValue().optinTexting">
+          <mat-checkbox color="primary" formControlName="optinTexting">
+            <span class="op-consent-title">Opt in to texting</span>
+            <span class="op-consent-help">They agreed to receive texts{{orgName ? ' from ' + orgName : ''}}.<ng-container *ngIf="allowTexting && !hasTextingConsent"> Required to text them.</ng-container></span>
+          </mat-checkbox>
+        </div>
+        <div class="op-consent" [class.op-consent-checked]="form.getRawValue().optinEmail">
+          <mat-checkbox color="primary" formControlName="optinEmail">
+            <span class="op-consent-title">Opt in to email</span>
+            <span class="op-consent-help">They agreed to receive emails{{orgName ? ' from ' + orgName : ''}}.</span>
+          </mat-checkbox>
+        </div>
+      </div>
+
+      <div class="op-fields">
+        <mat-form-field appearance="outline" class="tt-field">
+          <mat-label>Phone</mat-label>
+          <span matPrefix class="tt-prefix">+1&nbsp;</span>
+          <input matInput type="tel" inputmode="tel" formControlName="phone" placeholder="(909) 555-1234" [required]="form.value.optinTexting">
+          <mat-hint *ngIf="form.value.optinTexting">Required for texting.</mat-hint>
+          <mat-error *ngIf="form.get('phone').hasError('required')">Enter a phone number to opt in to texting.</mat-error>
+          <mat-error *ngIf="form.get('phone').hasError('phone')">Enter a 10-digit US phone number.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="tt-field">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" [required]="form.value.optinEmail">
+          <mat-hint *ngIf="form.value.optinEmail">Required for email.</mat-hint>
+          <mat-error *ngIf="form.get('email').hasError('required')">Enter an email to opt in to email.</mat-error>
+          <mat-error *ngIf="form.get('email').hasError('email')">Enter a valid email address.</mat-error>
+        </mat-form-field>
+
+        <tag-picker class="tt-field" *ngIf="pickerTags.length && !member" label="Add a tag (optional)"
+                    [tags]="form.value.tags" [orgTags]="pickerTags" [definitions]="tagDefinitions"
+                    (tagsChange)="form.patchValue({tags: $event})"></tag-picker>
+      </div>
+    </section>
+  </form>
+
+  <div class="tt-notice" *ngIf="allowTexting && member && !hasTextingConsent && !showForm" role="status">
+    <mat-icon inline>info</mat-icon>
+    <span>Texting needs their consent to receive texts.</span>
+  </div>
+</div>
+
+<mat-progress-bar *ngIf="saving" mode="indeterminate"></mat-progress-bar>
+
+<div class="ge-actions op-actions">
+  <span class="op-note" *ngIf="allowTexting && saved && !hasTextingConsent">Texting needs their consent to receive texts.</span>
+  <span class="spacer"></span>
+  <button mat-button [disabled]="saving" (click)="close()">{{member && !showForm ? 'Done' : 'Cancel'}}</button>
+  <button mat-raised-button [color]="canSendText ? undefined : 'primary'" *ngIf="showForm" [disabled]="saving || loading" (click)="save()">
+    <mat-icon>person_add</mat-icon> {{saveLabel}}
+  </button>
+  <button mat-raised-button color="primary" *ngIf="canSendText" [disabled]="saving" (click)="sendText()">
+    <mat-icon>sms</mat-icon> Send text
+  </button>
+</div>

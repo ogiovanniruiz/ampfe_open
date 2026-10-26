@@ -1,0 +1,79 @@
+<div class="ge-header">
+  <div class="ge-heading">
+    <h2 mat-dialog-title class="ge-title">{{viewingOther ? 'User profile' : 'Your profile'}}</h2>
+    <div class="ge-subtitle" *ngIf="user?.name?.fullName">
+      <span class="ge-subtitle-name">{{user.name.fullName}}</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button *ngIf="user?._id" [matTooltip]="'Copy user ID: ' + user._id" (click)="copyID()"><mat-icon>content_copy</mat-icon></button>
+  <button mat-icon-button matTooltip="Close" [disabled]="saving" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ge-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="ge-content">
+
+  <!-- NAME -->
+  <section class="ge-section">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Name</span>
+    </div>
+    <div class="up-names">
+      <mat-form-field appearance="outline" class="up-name">
+        <mat-label>First name</mat-label>
+        <input matInput [(ngModel)]="firstName" (ngModelChange)="firstNameError = ''" (keyup.enter)="save()" [disabled]="saving" autocomplete="given-name" required>
+        <mat-hint class="ge-error" *ngIf="firstNameError">{{firstNameError}}</mat-hint>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="up-name">
+        <mat-label>Last name</mat-label>
+        <input matInput [(ngModel)]="lastName" (ngModelChange)="lastNameError = ''" (keyup.enter)="save()" [disabled]="saving" autocomplete="family-name" required>
+        <mat-hint class="ge-error" *ngIf="lastNameError">{{lastNameError}}</mat-hint>
+      </mat-form-field>
+    </div>
+  </section>
+
+  <!-- EMAIL -->
+  <section class="ge-section">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Sign-in email</span>
+    </div>
+    <div class="up-email">{{user?.loginEmail}}</div>
+    <div class="ge-help">{{viewingOther ? "The email they sign in with; it can't be changed here." : "This is the email you sign in with and can't be changed here."}}</div>
+  </section>
+
+  <!-- ORGANIZATIONS -->
+  <section class="ge-section">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Organizations</span>
+    </div>
+    <div class="up-loading" *ngIf="loadingOrgs">
+      <mat-spinner diameter="20"></mat-spinner>
+      <span class="ge-help">Loading organizations…</span>
+    </div>
+    <ng-container *ngIf="!loadingOrgs">
+      <div class="up-org" *ngFor="let membership of orgMemberships">
+        <span class="up-org-name">{{membership.name}}</span>
+        <span class="ge-chip ge-chip-groupby" *ngIf="membership.level">{{levelLabel(membership.level)}}</span>
+      </div>
+      <div class="ge-empty" *ngIf="!orgMemberships.length">{{viewingOther ? 'Not a member of any organization.' : "You're not a member of any organization yet."}}</div>
+    </ng-container>
+  </section>
+
+</mat-dialog-content>
+
+<mat-dialog-actions class="ge-actions">
+  <span class="spacer"></span>
+  <button mat-button [disabled]="saving" (click)="close()">Cancel</button>
+  <button mat-raised-button color="primary" [disabled]="!canSave" (click)="save()">
+    <span class="up-save">
+      <mat-spinner *ngIf="saving" diameter="16"></mat-spinner>
+      {{saving ? 'Saving…' : 'Save'}}
+    </span>
+  </button>
+</mat-dialog-actions>

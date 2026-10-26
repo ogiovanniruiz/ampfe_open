@@ -1,0 +1,91 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.rc-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rc-heading {
+  min-width: 0;
+}
+
+.rc-title {
+  margin: 0 !important;
+  font-weight: 600;
+}
+
+.rc-subtitle {
+  margin-top: 2px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.rc-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 4px 4px 4px 12px;
+  border-radius: 8px;
+  background: #fdecea;
+  color: #b71c1c;
+  font-size: 14px;
+}
+
+.mat-mdc-dialog-content.rc-content {
+  padding-top: 8px;
+}
+
+.rc-help {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.rc-field {
+  width: 100%;
+  max-width: 320px;
+}
+
+.rc-prefix {
+  margin-right: 6px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.rc-error {
+  color: #c62828;
+}
+
+.rc-success {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 10px;
+  background: rgba(46, 125, 50, 0.08);
+
+  .rc-help {
+    margin: 4px 0 0;
+  }
+}
+
+.rc-success-icon {
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+  color: #2e7d32;
+}
+
+.rc-success-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.rc-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

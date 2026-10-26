@@ -1,0 +1,31 @@
+<div class="nr-header">
+  <div class="nr-heading">
+    <h2 mat-dialog-title class="nr-title">New non-response set</h2>
+    <div class="nr-subtitle">The outcomes volunteers can record when they don't get a survey response</div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" (click)="return();"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="nr-content">
+  <mat-form-field appearance="outline" class="nr-name">
+    <mat-label>Set name</mat-label>
+    <input matInput [(ngModel)]="name" required autocomplete="off" placeholder="e.g. Canvass outcomes">
+  </mat-form-field>
+
+  <app-nonresponse-editor [items]="nonResponses" [showSuggestions]="true"></app-nonresponse-editor>
+
+  <div class="nr-banner" *ngIf="errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{errorMessage}}</span>
+  </div>
+</mat-dialog-content>
+
+<mat-progress-bar *ngIf="saving" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-actions class="nr-actions">
+  <button mat-button [disabled]="saving || !isDirty" (click)="clear()">Clear</button>
+  <span class="spacer"></span>
+  <button mat-button (click)="return()">Cancel</button>
+  <button mat-raised-button color="primary" [disabled]="!canCreate" (click)="createNonResponseSet()">Create set</button>
+</mat-dialog-actions>

@@ -1,0 +1,92 @@
+<div class="ld">
+
+  <!-- HEADER -->
+  <div class="ld-header">
+    <img class="ld-logo" [src]="logo_dir" alt="Amplify">
+    <div class="ld-version">
+      <span>Version {{version}}</span>
+      <span class="ld-chip" *ngIf="!production">Development</span>
+    </div>
+  </div>
+
+  <mat-progress-bar *ngIf="checkingVersion || loggingIn" mode="indeterminate" class="ld-progress"></mat-progress-bar>
+
+  <!-- SERVER UNREACHABLE -->
+  <div class="ld-notice ld-notice-error" *ngIf="versionCheckFailed && !checkingVersion">
+    <mat-icon>cloud_off</mat-icon>
+    <div class="ld-notice-body">
+      <b>Couldn't reach the server</b>
+      <span>Check your connection and try again.</span>
+      <button mat-stroked-button color="primary" (click)="checkVersion()"><mat-icon>refresh</mat-icon> Retry</button>
+    </div>
+  </div>
+
+  <!-- OUT OF SYNC -->
+  <div class="ld-notice ld-notice-update" *ngIf="!synced && !checkingVersion && !versionCheckFailed">
+    <mat-icon>system_update</mat-icon>
+    <div class="ld-notice-body">
+      <b>A newer version of Amplify is available</b>
+      <span *ngIf="serverVersion">Version {{serverVersion}} is ready to load.</span>
+      <button mat-raised-button color="primary" (click)="updateApp()"><mat-icon>system_update</mat-icon> Load latest version</button>
+      <a class="ld-link" href="https://ampdocs.p64.io/amplify-version-out-sync" target="_blank" rel="noopener">Still seeing this? Get help</a>
+    </div>
+  </div>
+
+  <!-- SIGN IN -->
+  <ng-container *ngIf="synced && !checkingVersion">
+    <h2 class="ld-title">Sign in to Amplify</h2>
+
+    <button mat-stroked-button class="ld-provider" [disabled]="loggingIn" (click)="initOauthLogin()">
+      <img width="18" height="18" alt="" src="../assets/google_logo.png">
+      <span>Continue with Google</span>
+    </button>
+
+    <button mat-stroked-button class="ld-provider" *ngIf="!showEmailForm" (click)="openEmailForm()">
+      <mat-icon>email</mat-icon>
+      <span>Sign in with email</span>
+    </button>
+
+    <ng-container *ngIf="showEmailForm">
+      <div class="ld-divider"><span>or</span></div>
+
+      <form class="ld-form" [formGroup]="loginForm" (ngSubmit)="localLogin()">
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input #emailInput matInput type="email" formControlName="email" [errorStateMatcher]="matcher" autocomplete="email" name="email" required>
+          <mat-error *ngIf="emailControl.hasError('required')">Enter your email.</mat-error>
+          <mat-error *ngIf="emailControl.hasError('email') && !emailControl.hasError('required')">Enter a valid email address.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" [errorStateMatcher]="matcher" autocomplete="current-password" name="password" required>
+          <button mat-icon-button matSuffix type="button" (click)="hide = !hide" [attr.aria-label]="hide ? 'Show password' : 'Hide password'" [attr.aria-pressed]="!hide">
+            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+          <mat-error *ngIf="passwordControl.hasError('required')">Enter your password.</mat-error>
+        </mat-form-field>
+
+        <div class="ld-banner" *ngIf="message" role="alert">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{message}}</span>
+        </div>
+
+        <button mat-raised-button color="primary" type="submit" class="ld-submit" [disabled]="loggingIn">
+          <mat-icon>login</mat-icon> {{loggingIn ? 'Signing in…' : 'Sign in'}}
+        </button>
+      </form>
+
+      <div class="ld-links">
+        <button mat-button color="primary" type="button" (click)="localRegister()"><mat-icon>person_add</mat-icon> Create account</button>
+        <button mat-button color="primary" type="button" (click)="localForgotPassword()"><mat-icon>lock_reset</mat-icon> Forgot password?</button>
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <!-- FOOTER -->
+  <div class="ld-footer">
+    <a href="https://ampdocs.p64.io/" target="_blank" rel="noopener"><mat-icon inline>menu_book</mat-icon> Documentation</a>
+    <span aria-hidden="true">·</span>
+    <a href="https://github.com/ogiovanniruiz/ampfe_open" target="_blank" rel="noopener"><mat-icon inline>code</mat-icon> Source code</a>
+  </div>
+</div>

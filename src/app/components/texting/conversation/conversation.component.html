@@ -1,0 +1,40 @@
+<div class="cv">
+    <div class="cv-header">
+        <button mat-icon-button class="cv-back" matTooltip="Back to conversations" (click)="back.emit()"><mat-icon>arrow_back</mat-icon></button>
+        <div class="cv-title">
+            <div class="cv-name">{{selectedTextContactRecord.person?.resident?.name?.firstName}} {{selectedTextContactRecord.person?.resident?.name?.lastName}}</div>
+            <div class="cv-sub" *ngIf="selectedTextContactRecord.person?.fullAddress1">{{selectedTextContactRecord.person.fullAddress1}}</div>
+        </div>
+        <button mat-raised-button color="primary" (click)="openFinishIDBottomSheet()" [disabled]="!survey || !nonResponseSet">
+            <mat-icon>done</mat-icon> Finish
+        </button>
+    </div>
+
+    <div class="cv-messages" #messageList>
+        <ng-container *ngFor="let message of messages; let i = index">
+            <div class="cv-sender" *ngIf="showSender(i)" [class.cv-sender-user]="message.origin === 'USER'">{{senderName(message.origin)}}</div>
+            <div class="cv-row" [class.cv-row-user]="message.origin === 'USER'">
+                <div class="cv-bubble" [class.cv-bubble-user]="message.origin === 'USER'">{{message.msg || '(image)'}}</div>
+            </div>
+        </ng-container>
+    </div>
+
+    <mat-progress-bar *ngIf="sendingText" mode="indeterminate"></mat-progress-bar>
+
+    <div class="cv-composer">
+        <div class="cv-quick" *ngIf="quickResponses.length">
+            <button type="button" class="cv-quick-chip" *ngFor="let response of quickResponses" (click)="useQuickResponse(response)" [matTooltip]="response" [matTooltipShowDelay]="500">{{response}}</button>
+        </div>
+
+        <div class="cv-error" *ngIf="displayErrorMsg"><mat-icon inline>error_outline</mat-icon> {{errorMessage}}</div>
+
+        <div class="cv-input-row">
+            <mat-form-field appearance="outline" class="cv-input">
+                <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="5"
+                          [(ngModel)]="draft" (keydown)="onComposerKeydown($event)"
+                          placeholder="Write a reply…" [disabled]="sendingText"></textarea>
+            </mat-form-field>
+            <button mat-mini-fab color="primary" matTooltip="Send" (click)="sendFollowUpText(draft)" [disabled]="sendingText || !draft.trim()"><mat-icon>send</mat-icon></button>
+        </div>
+    </div>
+</div>

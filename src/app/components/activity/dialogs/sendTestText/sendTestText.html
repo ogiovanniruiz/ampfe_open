@@ -1,0 +1,89 @@
+<div class="ge-header">
+  <div class="ge-heading">
+    <h2 mat-dialog-title class="ge-title">Send a test text</h2>
+    <div class="ge-subtitle"><span class="ge-subtitle-name">{{activity.name}}</span></div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="sending" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ge-banner" *ngIf="message" role="alert">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{message}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="message = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="ge-content">
+
+  <!-- TO / FROM -->
+  <section class="ge-section">
+    <form (ngSubmit)="sendTestText()">
+      <mat-form-field appearance="outline" class="tt-field">
+        <mat-label>Send to</mat-label>
+        <span matPrefix class="tt-prefix">+1&nbsp;</span>
+        <input matInput type="tel" inputmode="tel" autocomplete="tel-national" name="phone" [formControl]="phone" placeholder="(909) 555-1234" required>
+        <mat-hint>Your mobile number.</mat-hint>
+        <mat-error *ngIf="phone.hasError('required')">Enter a phone number.</mat-error>
+        <mat-error *ngIf="phone.hasError('phone')">Enter a 10-digit US phone number.</mat-error>
+      </mat-form-field>
+    </form>
+
+    <div class="tt-from" *ngIf="activityPhonenumber">
+      <mat-icon inline>sim_card</mat-icon>
+      <span class="tt-from-label">From</span>
+      <span class="tt-from-number">{{formatPhone(activityPhonenumber)}}</span>
+    </div>
+    <div class="tt-notice tt-notice-warning" *ngIf="!activityPhonenumber">
+      <mat-icon inline>warning_amber</mat-icon>
+      <span>This activity has no texting number. Set one in Edit activity before sending.</span>
+    </div>
+  </section>
+
+  <!-- MESSAGE -->
+  <section class="ge-section">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Message</span>
+    </div>
+
+    <mat-form-field appearance="outline" class="tt-field" *ngIf="initTextMsgs.length > 1">
+      <mat-label>Opening message</mat-label>
+      <mat-select [value]="selectedInitTextMsg" (selectionChange)="selectMessage($event.value)">
+        <mat-option *ngFor="let initTextMsg of initTextMsgs" [value]="initTextMsg">{{optionLabel(initTextMsg)}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="tt-preview">
+      <ng-container *ngIf="hasContent; else noContent">
+        <ng-container *ngIf="sendImage && imageUrl">
+          <img class="tt-image" [src]="imageUrl" alt="Attached image" *ngIf="!imageFailed" (error)="imageFailed = true">
+          <div class="tt-image-fallback" *ngIf="imageFailed"><mat-icon inline>image</mat-icon> Image attached</div>
+        </ng-container>
+        <div class="tt-bubble" *ngIf="previewText">{{previewText}}</div>
+      </ng-container>
+      <ng-template #noContent>
+        <div class="tt-empty">This activity has no opening message to send.</div>
+      </ng-template>
+    </div>
+
+    <div class="ge-note tt-note">
+      <mat-icon inline>info</mat-icon>
+      <span>Names are filled in with yours. Replies to test texts aren't recorded.</span>
+    </div>
+  </section>
+
+  <div class="tt-notice tt-notice-success" *ngIf="sentTo" role="status">
+    <mat-icon inline>check_circle</mat-icon>
+    <span>Sent to {{sentTo}}.</span>
+  </div>
+</mat-dialog-content>
+
+<mat-progress-bar *ngIf="sending" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-actions class="ge-actions">
+  <span class="spacer"></span>
+  <button mat-button [disabled]="sending" (click)="close()">Close</button>
+  <button mat-raised-button color="primary" [disabled]="!canSend" (click)="sendTestText()">
+    <mat-icon>send</mat-icon> {{sending ? 'Sending…' : (sentTo ? 'Send again' : 'Send test text')}}
+  </button>
+</mat-dialog-actions>

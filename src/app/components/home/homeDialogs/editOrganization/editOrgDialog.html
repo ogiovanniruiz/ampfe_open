@@ -1,0 +1,165 @@
+<div class="eo-header">
+  <div class="eo-heading">
+    <h2 mat-dialog-title class="eo-title">Edit organization</h2>
+    <div class="eo-subtitle">
+      <span class="eo-subtitle-name">{{org.name}}</span>
+      <span class="eo-chip" [ngClass]="org.active ? 'eo-chip-active' : 'eo-chip-inactive'">{{org.active ? 'Active' : 'Inactive'}}</span>
+      <span class="eo-chip eo-chip-plan">{{label(subscriptions, org.subscription)}} plan</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button [matTooltip]="'Copy organization ID: ' + org._id" (click)="copyID()"><mat-icon>content_copy</mat-icon></button>
+  <button mat-icon-button matTooltip="Close" [disabled]="busy" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="eo-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="eo-content">
+
+  <!-- DETAILS -->
+  <section class="eo-section">
+    <div class="eo-section-title">Details</div>
+    <mat-form-field appearance="outline" class="eo-field">
+      <mat-label>Organization name</mat-label>
+      <input matInput [(ngModel)]="name" (ngModelChange)="nameError = ''" required autocomplete="off">
+      <mat-hint class="eo-error" *ngIf="nameError">{{nameError}}</mat-hint>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="eo-field">
+      <mat-label>Description</mat-label>
+      <textarea matInput [(ngModel)]="description" cdkTextareaAutosize cdkAutosizeMinRows="2" cdkAutosizeMaxRows="6"></textarea>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="eo-field">
+      <mat-label>Contact email</mat-label>
+      <input matInput type="email" [(ngModel)]="contactEmail" autocomplete="email">
+      <mat-hint class="eo-error" *ngIf="emailError">{{emailError}}</mat-hint>
+    </mat-form-field>
+  </section>
+
+  <!-- LOGO -->
+  <section class="eo-section">
+    <div class="eo-section-title">Logo</div>
+    <div class="eo-logo">
+      <div class="eo-logo-frame">
+        <img *ngIf="previewUrl || currentLogo; else noLogo" [src]="previewUrl || currentLogo" alt="Organization logo">
+        <ng-template #noLogo><mat-icon class="eo-logo-empty">image</mat-icon></ng-template>
+      </div>
+      <div class="eo-logo-body">
+        <div class="eo-logo-name" *ngIf="selectedFile">{{selectedFile.name}} <span class="eo-muted">· new, not uploaded yet</span></div>
+        <div class="eo-muted" *ngIf="!selectedFile">{{currentLogo ? 'Current logo.' : 'No logo yet.'}} PNG, JPEG or WebP, up to 2 MB. Square images look best.</div>
+        <div class="eo-logo-actions">
+          <input #fileInput type="file" accept="image/png,image/jpeg,image/webp" hidden (change)="onFileChanged($event)">
+          <button mat-stroked-button [disabled]="busy" (click)="fileInput.click()"><mat-icon>image</mat-icon> {{selectedFile ? 'Choose another' : 'Choose image'}}</button>
+          <ng-container *ngIf="selectedFile">
+            <button mat-raised-button color="primary" [disabled]="busy" (click)="uploadLogo()"><mat-icon>upload</mat-icon> Upload</button>
+            <button mat-button [disabled]="busy" (click)="clearSelection()">Remove</button>
+          </ng-container>
+        </div>
+        <div class="eo-error eo-small" *ngIf="logoError">{{logoError}}</div>
+      </div>
+    </div>
+    <mat-progress-bar *ngIf="uploading" mode="indeterminate"></mat-progress-bar>
+  </section>
+
+  <!-- GOOGLE SERVICE ACCOUNT -->
+  <section class="eo-section eo-key-section" [class.eo-drop-active]="keyDragOver"
+           (dragover)="onKeyDragOver($event)" (dragleave)="keyDragOver = false" (drop)="onKeyDrop($event)">
+    <div class="eo-section-title">Google service account</div>
+    <div class="eo-logo">
+      <div class="eo-logo-frame">
+        <mat-icon class="eo-logo-empty" [class.eo-key-set]="serviceAccount || selectedKeyFile">key</mat-icon>
+      </div>
+      <div class="eo-logo-body">
+        <ng-container *ngIf="selectedKeyFile">
+          <div class="eo-logo-name">{{selectedKeyEmail}} <span class="eo-muted">· new, not uploaded yet</span></div>
+          <div class="eo-muted">{{selectedKeyFile.name}}</div>
+        </ng-container>
+        <ng-container *ngIf="!selectedKeyFile">
+          <div class="eo-muted" *ngIf="loadingServiceAccount">Loading…</div>
+          <ng-container *ngIf="!loadingServiceAccount && serviceAccount">
+            <div class="eo-logo-name">
+              {{serviceAccount.clientEmail}}
+              <button mat-icon-button class="eo-copy" matTooltip="Copy email" (click)="copyServiceAccountEmail()"><mat-icon>content_copy</mat-icon></button>
+            </div>
+            <div class="eo-muted">Project {{serviceAccount.projectId}} · updated {{serviceAccount.updatedAt | date:'mediumDate'}}</div>
+          </ng-container>
+          <div class="eo-muted" *ngIf="!loadingServiceAccount && !serviceAccount">No key yet. Choose or drop the service account's JSON key file.</div>
+        </ng-container>
+        <div class="eo-muted eo-small">Used for Google Sheets sync. Share sheets with this email as an Editor.</div>
+        <div class="eo-logo-actions">
+          <input #keyInput type="file" accept=".json,application/json" hidden (change)="onKeyFileChanged($event)">
+          <button mat-stroked-button [disabled]="busy" (click)="keyInput.click()"><mat-icon>key</mat-icon> {{selectedKeyFile ? 'Choose another' : (serviceAccount ? 'Replace key' : 'Choose key file')}}</button>
+          <ng-container *ngIf="selectedKeyFile">
+            <button mat-raised-button color="primary" [disabled]="busy" (click)="uploadServiceAccount()"><mat-icon>upload</mat-icon> Upload</button>
+            <button mat-button [disabled]="busy" (click)="clearKeySelection()">Remove</button>
+          </ng-container>
+          <button mat-button color="warn" *ngIf="serviceAccount && !selectedKeyFile" [disabled]="busy" (click)="removeServiceAccount()">Remove key</button>
+        </div>
+        <div class="eo-error eo-small" *ngIf="keyError">{{keyError}}</div>
+      </div>
+    </div>
+    <mat-progress-bar *ngIf="keyUploading" mode="indeterminate"></mat-progress-bar>
+  </section>
+
+  <!-- PLATFORM -->
+  <section class="eo-section">
+    <div class="eo-section-title">
+      Plan and calling
+      <span class="eo-dev-chip" *ngIf="dev">Developer</span>
+    </div>
+
+    <ng-container *ngIf="dev; else platformReadOnly">
+      <div class="eo-row">
+        <mat-form-field appearance="outline" class="eo-field">
+          <mat-label>Subscription</mat-label>
+          <mat-select [(ngModel)]="subscription">
+            <mat-option *ngFor="let s of subscriptions" [value]="s.value">{{s.label}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="eo-field">
+          <mat-label>Calling service</mat-label>
+          <mat-select [(ngModel)]="callingService">
+            <mat-option *ngFor="let c of callingServices" [value]="c.value">{{c.label}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <mat-form-field appearance="outline" class="eo-field">
+        <mat-label>SignalWire brand ID</mat-label>
+        <input matInput [(ngModel)]="brandID" autocomplete="off">
+      </mat-form-field>
+    </ng-container>
+
+    <ng-template #platformReadOnly>
+      <dl class="eo-facts">
+        <div><dt>Subscription</dt><dd>{{label(subscriptions, org.subscription)}}</dd></div>
+        <div><dt>Calling service</dt><dd>{{label(callingServices, org.callingService || 'signalwire')}}</dd></div>
+        <div><dt>SignalWire brand ID</dt><dd>{{org.signalWireAccount?.brandID || '—'}}</dd></div>
+      </dl>
+      <div class="eo-muted eo-small">Contact the Amplify team to change your plan or calling service.</div>
+    </ng-template>
+  </section>
+
+  <!-- STATUS -->
+  <section class="eo-section eo-status">
+    <div class="eo-status-text">
+      <div class="eo-section-title">Status</div>
+      <div class="eo-muted" *ngIf="org.active">Active. Members can use the organization and its campaigns.</div>
+      <div class="eo-muted" *ngIf="!org.active">Inactive. Members can't use the organization until it's reactivated.</div>
+    </div>
+    <button mat-stroked-button color="warn" *ngIf="org.active" [disabled]="busy" (click)="setActive(false)"><mat-icon>block</mat-icon> Deactivate</button>
+    <button mat-stroked-button color="primary" *ngIf="!org.active" [disabled]="busy" (click)="setActive(true)"><mat-icon>check_circle</mat-icon> Activate</button>
+  </section>
+</mat-dialog-content>
+
+<mat-progress-bar *ngIf="saving" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-actions class="eo-actions">
+  <span class="eo-unsaved" *ngIf="hasChanges && !saving">Unsaved changes</span>
+  <span class="spacer"></span>
+  <button mat-button [disabled]="busy" (click)="close()">{{hasChanges ? 'Cancel' : 'Close'}}</button>
+  <button mat-raised-button color="primary" [disabled]="busy || !hasChanges || !formValid" (click)="save()">Save changes</button>
+</mat-dialog-actions>

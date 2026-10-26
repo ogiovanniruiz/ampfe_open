@@ -1,0 +1,205 @@
+// Login dialog: a centered card (420px on desktop, the screen less 16px gutters on phones; set by loginDialogConfig)
+
+:host {
+  display: block;
+}
+
+// Icons sit just left of each button's label
+.ld button mat-icon {
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.ld {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ld-header {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+.ld-logo {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+
+  // A smaller logo keeps the card short, so more of the map shows around it
+  @media (max-width: 767.98px) {
+    max-width: 200px;
+  }
+}
+
+.ld-version {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 12px;
+}
+
+.ld-chip {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: rgba(255, 152, 0, 0.15);
+  color: #8a5300;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.ld-progress {
+  border-radius: 2px;
+}
+
+.ld-title {
+  margin: 4px 0 0;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+}
+
+// Google and email sign-in buttons
+.ld-provider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 44px;
+  font-weight: 500;
+
+  img {
+    margin-right: 10px;
+    vertical-align: -3px;
+  }
+
+  // Legacy middle-aligned the icon on the label's text line, 0.64px below MDC's flex centring
+  .mat-icon {
+    position: relative;
+    top: 0.64px;
+  }
+}
+
+.ld-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+  }
+}
+
+.ld-form {
+  display: flex;
+  flex-direction: column;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.ld-submit {
+  width: 100%;
+  height: 44px;
+  font-size: 15px;
+}
+
+.ld-links {
+  display: flex;
+  width: calc(100% + 16px);
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px;
+  margin: -4px -8px 0;
+}
+
+.ld-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #fdecea;
+  color: #b71c1c;
+  font-size: 14px;
+
+  mat-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+}
+
+.ld-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 14px;
+
+  > mat-icon {
+    flex-shrink: 0;
+  }
+}
+
+.ld-notice-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+
+  button {
+    margin-top: 4px;
+  }
+}
+
+.ld-notice-update {
+  background: rgba(255, 152, 0, 0.12);
+  color: #6d4100;
+}
+
+.ld-notice-error {
+  background: #fdecea;
+  color: #b71c1c;
+}
+
+.ld-link {
+  color: inherit;
+  font-size: 12px;
+}
+
+.ld-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 12px;
+
+  a {
+    color: rgba(0, 0, 0, 0.6);
+    text-decoration: none;
+
+    &:hover {
+      color: rgba(0, 0, 0, 0.87);
+      text-decoration: underline;
+    }
+  }
+}

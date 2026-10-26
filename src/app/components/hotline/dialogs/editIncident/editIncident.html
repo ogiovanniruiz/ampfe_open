@@ -1,0 +1,117 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel"  (click)="return();"><mat-icon>close</mat-icon></button>
+
+<h1 mat-dialog-title class="block-title"><b>Edit Incident</b></h1>
+<mat-dialog-content [@.disabled]="disableAnimation">
+    <mat-form-field  style="margin:.3em; width:30%; min-width:300px"> 
+        <mat-label>Categories</mat-label>
+        <mat-select #categories multiple >
+            <mat-option value="ICE_ALERT" >ICE ALERT</mat-option>
+            <mat-option value="DHS_ALERT" >DHS ALERT</mat-option>
+            <mat-option value="SHERIFF_ALERT" >SHERIFF ALERT</mat-option>
+            <mat-option value="OTHER_LAW_ENFORCEMENT" >OTHER LAW ENFORCEMENT</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field style="margin:.3em; width:30%; min-width:300px"> 
+        <mat-label>Status</mat-label>
+        <mat-select #status >
+            <mat-option value="confirmed"> Confirmed</mat-option>
+            <mat-option value="unconfirmed"> Unconfirmed</mat-option>
+        </mat-select>
+    </mat-form-field >
+    <mat-form-field style="margin:.3em; width:30%; min-width:300px"> 
+        <mat-select placeholder="Severity" #severity >
+            <mat-option value="3" >Red (Arrests In Progress)</mat-option>
+            <mat-option value="2" >Orange (Threats of Arrest)</mat-option>
+            <mat-option value="1" >Yellow (Law Enforcement Presence)</mat-option>
+        </mat-select>
+    </mat-form-field >
+    <mat-form-field class="dialog-element-long"> 
+        <input matInput #address type="text" disabled placeholder="Address">
+    </mat-form-field >
+    <mat-form-field class="dialog-element-long"> 
+        <input matInput #address2 type="text" disabled placeholder="Address Line 2 (Optional)">
+    </mat-form-field >
+    <mat-form-field style="margin:.3em;width:30%;min-width:300px"> 
+        <input matInput #city type="text" id="city" disabled placeholder="City">
+    </mat-form-field >
+    <mat-form-field style="margin:.3em;width:20%;min-width:300px"> 
+        <mat-select placeholder="State" #state disabled>
+            <mat-option value="CA" selected="true">CA</mat-option>
+        </mat-select>
+    </mat-form-field >
+    <mat-form-field style="margin:.3em;width:30%;min-width:300px"> 
+        <input matInput #zip type="text" id="zip" disabled placeholder="Zip">
+    </mat-form-field >
+    <mat-form-field class="dialog-element-long"> 
+        <mat-select placeholder="County" #county disabled>
+            <mat-option value="RIVERSIDE">RIVERSIDE</mat-option>
+            <mat-option value="SAN BERNARDINO">SAN BERNARDINO</mat-option>
+
+        </mat-select>
+    </mat-form-field >
+
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+        <mat-tab label="Reports">
+
+            <mat-accordion class="example-headers-align">
+                <mat-expansion-panel *ngFor="let report of incident.reports">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      Created By: {{report.userName}}
+                    </mat-panel-title>
+                    <mat-panel-description>
+                      Created On: {{report.date_created}}
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+                  <p>{{report.notes}}</p>
+                </mat-expansion-panel>
+                <mat-expansion-panel>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <mat-icon>add</mat-icon>
+                            Add New Report
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <mat-form-field class="dialog-element-long">
+                        <textarea  matInput placeholder="New Report" #new_report maxlength="1000"></textarea>
+                    </mat-form-field>
+                </mat-expansion-panel>
+            </mat-accordion>
+
+
+        </mat-tab>
+        <mat-tab label="Alerts">
+            <mat-accordion class="example-headers-align">
+                <mat-expansion-panel *ngFor="let alert of alerts">
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>
+                        Alert: {{alert._id}}
+                      </mat-panel-title>
+                      <mat-panel-description>
+                        Created On: {{alert.date_created}}
+                      </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <p>Text Message: {{alert.textMessage}}</p>
+                    <br>
+                    <p><b>Audiences:</b></p>
+                    <p *ngFor="let audience of alert.audiences">{{audience}}</p>
+
+                  </mat-expansion-panel>
+
+            </mat-accordion>
+
+
+        </mat-tab>
+      </mat-tab-group>
+
+
+
+    <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
+    <mat-slide-toggle style="margin: 10px" [checked]="incident.active" [disabled]="false" (click)="toggleActive(!activeToggle.checked)" #activeToggle>Active</mat-slide-toggle>
+
+</mat-dialog-content>
+<mat-dialog-actions  >
+    <button mat-raised-button (click)='saveChanges()' style="margin:.3em; width:30%; min-width:300px" color="primary">SAVE CHANGES</button>
+    <span class="spacer"></span>
+    <button mat-raised-button (click)='openCreateAlertDialog()' style="margin:.3em; width:30%; min-width:300px" color="warn">CREATE ALERT</button>
+</mat-dialog-actions>

@@ -1,0 +1,192 @@
+<mat-toolbar class='org-toolbar' *ngIf="dataLoaded" >
+  <!-- Labels show whenever they fit; otherwise icon-only buttons (ampFitLabels sets data-fit) -->
+  <div class="org-toolbar-actions" ampFitLabels>
+    <button class="extended-fab-button" mat-stroked-button color='primary' matTooltip="My Organizations" (click)="openUserOrgsDialog()">
+      <mat-icon>view_list</mat-icon>
+      <span class="extended-fab-button__text">My Organizations</span>
+    </button>
+    <button class="extended-fab-button" matBadge="!" [matBadgeHidden]="requests.length === 0 && !termsPending" matBadgeColor="warn" mat-stroked-button color="primary" *ngIf="dev || (orgLevel === 'ADMINISTRATOR' || orgLevel === 'OWNER')" [matTooltip]="termsPending ? 'Administrative Tools: Terms of Use need owner acceptance' : 'Administrative Tools'" [matMenuTriggerFor]="toolsMenu">
+      <mat-icon>build</mat-icon>
+      <span class="extended-fab-button__text">Administrative Tools</span>
+    </button>
+    <button class="extended-fab-button" mat-stroked-button color="primary" *ngIf="dev || (orgLevel === 'ADMINISTRATOR' || orgLevel === 'OWNER')" matTooltip="Community Lists" (click)="openMembership()">
+      <mat-icon>contacts</mat-icon>
+      <span class="extended-fab-button__text">Community Lists</span>
+    </button>
+    <button class="extended-fab-button" mat-stroked-button color="warn" *ngIf="dev" [matMenuTriggerFor]="devMenu" matTooltip="Developer Options">
+      <mat-icon>warning</mat-icon>
+      <span class="extended-fab-button__text">Developers</span>
+    </button>
+  </div>
+      <!--
+
+  <section *ngIf="homeOrg">
+  <button class="extended-fab-button" mat-stroked-button color="warn" *ngIf="homeOrg._id=='5f6905163ff2f50019f5e243' && ((orgLevel === 'ADMINISTRATOR' || orgLevel === 'OWNER') || dev)" (click)="openLiveElectionResultsDialog()"  matTooltip="Live Election Results" >
+    <mat-icon>warning</mat-icon>
+    <span class="extended-fab-button__text" id='fadeshow' >IEU's Live Election Results</span>
+  </button>
+
+  </section>-->
+
+</mat-toolbar>
+<main class="home-main">
+  <!-- LOADING -->
+  <div class="home-loading" *ngIf="!dataLoaded">
+    <mat-card>
+      <img class="home-loading-logo" width="373" height="81" [src]="logo_dir" alt="Amplify">
+      <ng-container *ngIf="signedOut; else loadingOrError">
+        <p class="loading-message">You're signed out.</p>
+        <div class="loading-actions">
+          <button mat-raised-button color="primary" (click)="signIn()"><mat-icon>login</mat-icon> Sign in</button>
+        </div>
+      </ng-container>
+      <ng-template #loadingOrError>
+        <ng-container *ngIf="!loadError; else loadFailedTpl">
+          <p class="loading-message">Loading campaigns…</p>
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </ng-container>
+      </ng-template>
+      <ng-template #loadFailedTpl>
+        <p class="loading-message loading-error" role="alert">{{loadError}}</p>
+        <div class="loading-actions">
+          <button mat-raised-button color="primary" (click)="retryLoad()"><mat-icon>refresh</mat-icon> Retry</button>
+          <button mat-button (click)="logOut()">Log out</button>
+        </div>
+      </ng-template>
+    </mat-card>
+  </div>
+
+  <ng-container *ngIf="dataLoaded">
+    <!-- ORGANIZATION -->
+    <section class="home-org" *ngIf="homeOrg">
+      <div class="home-org-logo home-org-logo-loading" *ngIf="logoLoading" aria-label="Loading logo"><mat-spinner diameter="24"></mat-spinner></div>
+      <ng-container *ngIf="!logoLoading">
+        <img class="home-org-logo" alt="" [src]="imageBuffer" *ngIf="imageBuffer">
+        <img class="home-org-logo" alt="" src="../assets/icons/icon-72x72.png" *ngIf="!imageBuffer">
+      </ng-container>
+      <div class="home-org-text">
+        <div class="home-org-name-row">
+          <h1 class="home-org-name">{{homeOrg.name}}</h1>
+          <span class="home-chip" *ngIf="subscription">{{subscription | titlecase}}</span>
+        </div>
+        <p class="home-org-description" *ngIf="homeOrg.description">{{homeOrg.description}}</p>
+      </div>
+      <button mat-icon-button *ngIf="canManage" matTooltip="Edit organization" (click)="editOrganization()"><mat-icon>edit</mat-icon></button>
+    </section>
+
+    <section class="home-empty home-empty-org" *ngIf="!homeOrg">
+      <mat-icon>corporate_fare</mat-icon>
+      <h2>You're not in an organization yet</h2>
+      <p>Ask to join your organization to see its campaigns.</p>
+      <button mat-raised-button color="primary" (click)="openRequestOrgForm()">Find or request an organization</button>
+    </section>
+
+    <!-- CAMPAIGNS -->
+    <ng-container *ngIf="homeOrg">
+      <div class="home-section-header">
+        <h2 class="home-section-title">Campaigns</h2>
+        <span class="home-section-count">{{activeCampaigns.length}}</span>
+        <span class="spacer"></span>
+        <button mat-stroked-button color="primary" *ngIf="canManage" (click)="openManageCampaignsDialog()"><mat-icon>tune</mat-icon> Manage Campaigns</button>
+      </div>
+
+      <div class="home-campaigns" *ngIf="activeCampaigns.length; else noCampaigns">
+        <mat-card class="campaign-card" *ngFor="let campaign of activeCampaigns; trackBy: trackCampaign">
+          <div class="campaign-card-top">
+            <div class="campaign-card-icon"><img width="28" height="28" alt="" src="../assets/campaign.png"></div>
+            <div class="campaign-card-heading">
+              <h3 class="campaign-card-name" [title]="campaign.name">{{campaign.name}}</h3>
+              <div class="campaign-card-meta">
+                <span>ID {{campaign.campaignID}}</span>
+                <span class="home-chip home-chip-paused" *ngIf="campaign.sleep">Paused</span>
+              </div>
+            </div>
+            <button mat-icon-button *ngIf="canEditCampaign(campaign)" matTooltip="Edit campaign" (click)="openEditCampaignDialog(campaign)"><mat-icon>edit</mat-icon></button>
+          </div>
+
+          <p class="campaign-card-description" *ngIf="campaign.description" [title]="campaign.description">{{campaign.description}}</p>
+
+          <div class="campaign-card-note" *ngIf="campaign.sleep">
+            <mat-icon inline>pause_circle</mat-icon>
+            <span>Activities are paused for this campaign.</span>
+          </div>
+
+          <div class="campaign-card-activities" *ngIf="activities.length; else noActivities">
+            <button mat-flat-button color="primary" *ngFor="let activity of activities; trackBy: trackActivity" [disabled]="campaign.sleep" (click)="enterActivityDashboard(campaign, activity.type)">
+              <mat-icon>{{activity.icon}}</mat-icon>
+              <span>{{activity.label}}</span>
+            </button>
+          </div>
+          <ng-template #noActivities>
+            <div class="campaign-card-note">
+              <mat-icon inline>info</mat-icon>
+              <span>Activities aren't included in the Free plan.</span>
+            </div>
+          </ng-template>
+
+          <button mat-stroked-button color="warn" class="campaign-card-manage" *ngIf="canManage" (click)="enterMap(campaign.campaignID)">
+            <mat-icon>map</mat-icon> Campaign management
+          </button>
+        </mat-card>
+      </div>
+
+      <ng-template #noCampaigns>
+        <section class="home-empty">
+          <mat-icon>campaign</mat-icon>
+          <h2>No active campaigns yet</h2>
+          <p *ngIf="canManage">Create or join a campaign in Manage Campaigns.</p>
+          <p *ngIf="!canManage">Your organization's campaigns will show up here.</p>
+          <button mat-raised-button color="primary" *ngIf="canManage" (click)="openManageCampaignsDialog()">Manage campaigns</button>
+        </section>
+      </ng-template>
+    </ng-container>
+  </ng-container>
+</main>
+<!-------------------MENUS SECTION--------------------->
+<mat-menu #toolsMenu="matMenu">
+  <button mat-menu-item (click)="openManageCampaignsDialog()">
+    <mat-icon>create</mat-icon>
+    <span>Manage Campaigns</span>
+  </button>
+  <button mat-menu-item  *ngIf="subscription !== 'FREE'" (click)="openUserListDialog()">
+    <mat-icon matBadge={{requests.length}} aria-hidden="false" [matBadgeHidden]="requests.length === 0" matBadgeColor="warn">people</mat-icon>
+    <span >Team Members</span>
+  </button>
+  <button mat-menu-item *ngIf="subscription === 'PLUS' && homeOrg.callingService === 'twilio'" (click)="openTwilioAccountDialog()">
+    <mat-icon>call</mat-icon>
+    <span>Twilio Calling Pool</span>
+  </button>
+  <button mat-menu-item *ngIf="subscription === 'PLUS'  && homeOrg.callingService === 'signalwire'" (click)="openSignalWireAccountDialog()">
+    <mat-icon>call</mat-icon>
+    <span>SignalWire Calling Pool</span>
+  </button>
+  <button mat-menu-item *ngIf="subscription === 'PLUS'" (click)="openTextingNumbersDialog()">
+    <mat-icon>sms</mat-icon>
+    <span>Texting Numbers</span>
+  </button>
+  <button mat-menu-item (click)="openOrgBillingDialog()">
+    <mat-icon>monetization_on</mat-icon>
+    <span>Organization Billing</span>
+  </button>
+  <button mat-menu-item (click)="openTermsDialog()">
+    <mat-icon matBadge="!" aria-hidden="false" [matBadgeHidden]="!termsPending" matBadgeColor="warn">domain</mat-icon>
+    <span>Terms Of Use</span>
+  </button>
+</mat-menu>
+<mat-menu #devMenu="matMenu">
+  <div>
+    <button mat-menu-item (click)="openCreateOrgForm()">
+      <mat-icon>add</mat-icon>
+      <span>Create New Organization</span>
+    </button> 
+    <button mat-menu-item (click)="openManageAllUsersDialog()">
+      <mat-icon>edit</mat-icon>
+      <span>Manage All Users</span>
+    </button> 
+    <!--
+    <button mat-menu-item [disabled]='production' (click)="massGeocodeVoters()">
+      <mat-icon>warning</mat-icon>
+      <span>Mass Voter Update</span>
+    </button>-->
+  </div>
+</mat-menu>

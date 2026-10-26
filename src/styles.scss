@@ -1,0 +1,1280 @@
+/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+@use 'sass:map';
+@use 'sass:meta';
+@import url('//fonts.googleapis.com/icon?family=Material+Icons');
+
+// MDC typography letter-spaces buttons, toolbars and body text and drops "Helvetica Neue" from the font
+// stack; the legacy components did neither. Same type scale with the legacy font stack and normal spacing.
+$mdc-typography: mat.m2-define-typography-config($font-family: 'Roboto, "Helvetica Neue", sans-serif');
+$app-typography: ();
+@each $level, $config in $mdc-typography {
+  @if meta.type-of($config) == 'map' {
+    $config: map.merge($config, (letter-spacing: normal));
+  }
+  $app-typography: map.merge($app-typography, ($level: $config));
+}
+
+// Default typography for all components plus the hierarchy classes (e.g. .mat-headline-1)
+@include mat.all-component-typographies($app-typography);
+@include mat.elevation-classes();
+@include mat.app-background();
+
+
+// Full hue sets: MDC components pick hues the old palettes didn't define (the slide toggle uses
+// 300/600/900), and a missing hue renders white. The 100/500/700 values are unchanged.
+$blue: (
+    50:   #e4e7ec,
+    100:  #193155,
+    200:  #8a97ab,
+    300:  #5e7290,
+    400:  #3d5274,
+    500:  #132542,
+    600:  #193155,
+    700:  #193155,
+    800:  #11223c,
+    900:  #0b1628,
+    A100: #8aa5d6,
+    A200: #5a80c8,
+    A400: #2f5aa8,
+    A700: #1f4687,
+    contrast: (
+      50: black, 100: white, 200: black, 300: white, 400: white, 500: white, 600: white,
+      700: white, 800: white, 900: white, A100: black, A200: white, A400: white, A700: white,
+    ),
+  );
+
+$orange: (
+    50:   #fbf5ec,
+    100 : #e0b274,
+    200 : #ecd2ae,
+    300 : #e6c391,
+    400 : #e3ba82,
+    500 : #f53919,
+    600 : #e0b274,
+    700 : #e0b274,
+    800 : #c9955a,
+    900 : #a8743c,
+    A100: #fff1de,
+    A200: #ffd9a8,
+    A400: #ffc070,
+    A700: #ffb457,
+    contrast: (
+      50: black, 100: white, 200: black, 300: black, 400: black, 500: white, 600: white,
+      700: white, 800: white, 900: white, A100: black, A200: black, A400: black, A700: black,
+    )
+);
+
+$red: (
+    50:     #f5e4e6,
+    100:    #ad1d2e,
+    200:    #d68e97,
+    300:    #c4606c,
+    400:    #b83d4c,
+    500:    #9a0000,
+    600:    #ad1d2e,
+    700:    #ad1d2e,
+    800:    #8f1424,
+    900:    #6e0c19,
+    A100:   #ff9aa6,
+    A200:   #ff6779,
+    A400:   #ff344c,
+    A700:   #ff1a35,
+    contrast: (
+      50: black, 100: white, 200: black, 300: white, 400: white, 500: white, 600: white,
+      700: white, 800: white, 900: white, A100: black, A200: white, A400: white, A700: white,
+    )
+
+);
+
+$green: (
+    100:    #104b10,
+    500:    #3db15a,
+    700:    #54ef1b,
+    contrast: (
+      100: white,
+      500: white,
+    )
+
+);
+
+$primary: mat.m2-define-palette($blue, 100);
+$accent: mat.m2-define-palette($orange, 100);
+$warn: mat.m2-define-palette($red,100);
+
+$other: mat.m2-define-palette($green,100);
+
+$config: mat-typography-config();
+
+$light-theme: mat.m2-define-light-theme((
+ color: (
+   primary: $primary,
+   accent: $accent,
+   warn: $warn,
+   other: $other
+ )
+));
+
+$dark-theme: mat.m2-define-dark-theme((
+  color:(   
+    primary: $primary,
+    accent: $accent,
+    warn: $warn,
+  )
+));
+
+@include mat.all-component-themes($light-theme);
+
+// Material 20 shifted many M2 theme values; put back the ones production had on Material 19
+@include meta.load-css('styles/m2-v19-tokens');
+
+// v19 colors snack bar actions with primary (dark blue on the dark bar); keep the accent as before
+html {
+  --mat-snack-bar-button-color: #{mat.m2-get-color-from-palette($accent)};
+}
+
+// Dialogs (panel class set in app.module): on desktop each keeps the size its dialog.open() asks for, as in
+// legacy; on phones the whole screen (!important beats those inline sizes).
+.cdk-overlay-pane.app-dialog .mat-mdc-dialog-container,
+.cdk-overlay-pane.app-confirm-dialog .mat-mdc-dialog-container {
+  width: 100%;
+}
+
+// Login dialog on phones (loginDialogConfig): a card over the map instead of the full-screen panel
+.cdk-overlay-pane.app-login-dialog .mat-mdc-dialog-container {
+  width: 100%;
+}
+
+@media (max-width: 767.98px) {
+  .cdk-overlay-pane.app-login-dialog .mat-mdc-dialog-container .mdc-dialog__surface.mdc-dialog__surface {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .cdk-overlay-pane.app-dialog {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+
+    // MDC passes the desktop 90vh cap down to its inner container; on phones it fills the pane
+    .mat-mdc-dialog-container .mdc-dialog__container {
+      max-height: none;
+    }
+
+    .mat-mdc-dialog-container .mdc-dialog__surface {
+      border-radius: 0;
+    }
+
+    .mat-mdc-dialog-content {
+      max-height: none;
+    }
+  }
+}
+
+// MDC's inner dialog layers inherit the panel's max-width. A percentage (most dialogs pass maxWidth:
+// this.screenSize, e.g. 50%) then compounds at each level (960 -> 480 -> 240px) until the panel class
+// lands, and autosized textareas measure their rows in that narrow box. The panel already enforces it.
+.cdk-overlay-pane .mat-mdc-dialog-container.mat-mdc-dialog-container,
+.mat-mdc-dialog-container .mdc-dialog__container.mdc-dialog__container,
+.mat-mdc-dialog-container .mdc-dialog__surface.mdc-dialog__surface {
+  max-width: none;
+}
+
+// Since v17 the dialog's component host is display: contents, which makes its children flex items of the
+// surface, and flex items' margins don't collapse. Before, the (inline) host sat in an anonymous block
+// where they did; a block host lays out the same way. Two classes, to beat MDC's one-class rule.
+.mat-mdc-dialog-container .mat-mdc-dialog-component-host {
+  display: block;
+}
+
+// Legacy dialog layout. The container was padded 24px and set the text colour; the title had no spacing
+// of its own; content was inset -24px/+24px and inherited the page font; actions were left-aligned with
+// 8px padding. MDC pads the title and content instead and stamps body-1 type (16px/24px, 60% black) on
+// the content. Three classes deep: enough to beat MDC's two-class rules, while a dialog's own rule that
+// names the element class too (e.g. .mat-mdc-dialog-content.cf-content) ties and wins by loading later.
+.mat-mdc-dialog-container .mdc-dialog__surface.mdc-dialog__surface {
+  padding: 24px;
+  box-sizing: border-box;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+// Two classes only: beats MDC's one-class title spacing, while a dialog's own title rule (e.g. .sl-title
+// with margin: 0) still wins, as it did over legacy's one-class .mat-dialog-title
+.mdc-dialog__title.mat-mdc-dialog-title {
+  padding: 0;
+  margin: 0 0 20px;
+
+  &::before {
+    display: none;
+  }
+}
+
+.mat-mdc-dialog-container .mdc-dialog__content.mat-mdc-dialog-content {
+  padding: 0 24px;
+  margin: 0 -24px;
+  // Legacy content was content-box, so a page's width: 100% excluded the 24px padding (MDC: border-box)
+  box-sizing: content-box;
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+
+.mat-mdc-dialog-container .mdc-dialog__actions.mat-mdc-dialog-actions {
+  padding: 8px 0;
+  margin: 0 0 -24px;
+  min-height: 52px;
+  box-sizing: content-box;
+  justify-content: normal;
+  border-top: 0;
+}
+
+// Legacy tab labels were all 87% black, the inactive ones at 60% opacity (MDC: primary / 60% colours)
+.mat-mdc-tab-group,
+.mat-mdc-tab-nav-bar {
+  --mat-tab-active-label-text-color: rgba(0, 0, 0, 0.87);
+  --mat-tab-active-focus-label-text-color: rgba(0, 0, 0, 0.87);
+  --mat-tab-active-hover-label-text-color: rgba(0, 0, 0, 0.87);
+  --mat-tab-inactive-label-text-color: rgba(0, 0, 0, 0.87);
+  --mat-tab-inactive-focus-label-text-color: rgba(0, 0, 0, 0.87);
+  --mat-tab-inactive-hover-label-text-color: rgba(0, 0, 0, 0.87);
+}
+
+html .mat-mdc-tab:not(.mdc-tab--active) .mdc-tab__text-label {
+  opacity: 0.6;
+}
+
+// Legacy labels used a normal line height (MDC: 1), which places badges and icons on them 1px higher
+html .mat-mdc-tab .mdc-tab__text-label {
+  line-height: normal;
+}
+
+// Legacy tab headers had a 1px divider, and stretched tabs shared the width equally (MDC: by label length)
+html .mat-mdc-tab-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+html .mat-mdc-tab-group-stretch-tabs > .mat-mdc-tab-header .mdc-tab {
+  flex: 1 1 0;
+}
+
+// Restore the legacy look of cards and buttons. MDC's own component styles load after this file, so
+// these are prefixed with html to win over them; a component's own, more specific rules still win.
+
+// Legacy cards: padded 16px blocks (padding outside the width) whose parts carry no padding.
+// MDC cards are unpadded flex columns whose parts are padded.
+html .mat-mdc-card {
+  display: block;
+  box-sizing: content-box;
+  padding: 16px;
+  color: rgba(0, 0, 0, 0.87);
+
+  > .mat-mdc-card-header,
+  > .mat-mdc-card-content,
+  > .mat-mdc-card-content:first-child,
+  > .mat-mdc-card-content:last-child {
+    padding: 0;
+  }
+
+  > .mat-mdc-card-actions {
+    padding: 8px 0;
+    margin: 0 -8px;
+  }
+}
+
+// Legacy buttons were inline blocks with a 36px line (34px inside the stroked border): the icon sat
+// vertical-align middle in the text line and "<mat-icon>x</mat-icon> Label" kept its space. MDC buttons
+// are 36px inline-flex boxes, which centre differently and drop that space. Lay them out the legacy way.
+// One class plus html: enough to beat MDC's single-class rules but not a page's own button styles
+// (legacy let those win too). MDC's two-class height rule reads a variable, so set that instead.
+html {
+  .mat-mdc-button,
+  .mat-mdc-raised-button,
+  .mat-mdc-unelevated-button,
+  .mat-mdc-outlined-button {
+    --mat-button-text-container-height: auto;
+    --mat-button-filled-container-height: auto;
+    --mat-button-protected-container-height: auto;
+    --mat-button-outlined-container-height: auto;
+    display: inline-block;
+    line-height: 36px;
+    vertical-align: baseline;
+    white-space: nowrap;
+    text-align: center;
+
+    > .mat-icon {
+      display: inline-block;
+      vertical-align: middle;
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+      margin: 0;
+    }
+  }
+
+  .mat-mdc-outlined-button {
+    line-height: 34px;
+  }
+
+  // ...trailing icons too (MDC: 8px before, -4px after, three classes deep); a dialog's own icon margin
+  // (e.g. Team members' role menu) ties and still wins by loading later
+  .mat-mdc-button-base .mdc-button__label + .mat-icon {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  // Legacy middle-aligned everything inside the button label (e.g. <b>Back</b>, toolbar labels)
+  .mdc-button__label > * {
+    vertical-align: middle;
+  }
+
+  // Legacy icon buttons: no padding, the icon middle-aligned in a 40px line of 14px text (MDC: 24px)
+  .mat-mdc-icon-button.mat-mdc-button-base {
+    padding: 0;
+    font-size: 14px;
+    line-height: 40px;
+
+    > .mat-icon,
+    > svg {
+      vertical-align: middle;
+    }
+  }
+
+  // Legacy text, stroked and icon buttons without a colour inherited the text colour (MDC: black).
+  // currentColor, not inherit: on a custom property inherit copies the parent's token, which the
+  // theme sets globally to black since v17.
+  .mat-mdc-button.mat-unthemed {
+    --mat-button-text-label-text-color: currentColor;
+  }
+
+  .mat-mdc-outlined-button.mat-unthemed {
+    --mat-button-outlined-label-text-color: currentColor;
+  }
+
+  .mat-mdc-icon-button.mat-unthemed {
+    --mat-icon-button-icon-color: currentColor;
+  }
+
+  // Legacy text buttons had 16px side padding (MDC: 8px). Since v17 MDC pads buttons with an icon from a
+  // :has() rule that outranks this one, so set its token too.
+  .mat-mdc-button {
+    --mat-button-text-with-icon-horizontal-padding: 16px;
+    padding: 0 16px;
+  }
+}
+
+// The theme's density output fixes button heights at 36px with two classes; the same two classes here,
+// later in this file, put back the line-based height (a page's own two-class rule still wins, loading later)
+.mat-mdc-button.mat-mdc-button-base,
+.mat-mdc-raised-button.mat-mdc-button-base,
+.mat-mdc-unelevated-button.mat-mdc-button-base,
+.mat-mdc-outlined-button.mat-mdc-button-base {
+  height: auto;
+}
+
+// Legacy form fields inherited the surrounding font size and sized everything in em, so a 14px field
+// is 7/8 the size of a 16px one; MDC fixes fields at 16px. Values below are the legacy em sizes
+// (16px equivalents in comments).
+html .mat-mdc-form-field {
+  font-size: inherit;
+  font-weight: 400;
+  line-height: 1.125;
+  // MDC lets a field shrink below its 180px input in a flex row (min-width: 0); legacy didn't
+  min-width: auto;
+
+  .mdc-floating-label {
+    font-size: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+  }
+
+  // Hints and errors were 75% of the field font
+  .mat-mdc-form-field-subscript-wrapper {
+    font-size: 75%;
+  }
+
+  .mat-mdc-form-field-hint,
+  .mat-mdc-form-field-error {
+    font-size: inherit;
+  }
+}
+
+// Legacy outline fields: a 3.6875em (59px) box .25em (4px) below the field's top, 5px corners, a 12%
+// black border, 1.125em (18px) input text starting 1.5625em (25px) into the box, and a 1.34375em
+// (21.5px) hint area: 88.5px in all (MDC: a 56px box, 4px corners, 38% border, centred 24px text).
+html .mat-mdc-form-field.mat-form-field-appearance-outline {
+  --mat-form-field-outlined-outline-color: rgba(0, 0, 0, 0.12);
+  --mat-form-field-outlined-container-shape: 5px;
+  // Legacy put this on an inner wrapper; only top/bottom here so a field's own side padding still applies
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+
+  // Part of the legacy box was a .84375em border, which snaps down to whole pixels (13px at 16px, 11px
+  // at 14px); round() reproduces that where supported, the plain em values are the fallback
+  .mat-mdc-form-field-infix {
+    min-height: 3.6875em;
+    min-height: calc(2.875em + #{'round(down, 0.84375em, 1px)'});
+    padding-top: 1.5625em;
+    padding-top: calc(0.75em + #{'round(down, 0.84375em, 1px)'});
+    padding-bottom: 1em;
+    line-height: 1.125;
+  }
+
+  input.mat-mdc-input-element {
+    height: 1.125em;
+    line-height: 1.125;
+  }
+
+  // Sizes here are in the 75% hint font: 1.34375em / .75 tall, .75em / .75 in from the edges, .125em / .75 down
+  .mat-mdc-form-field-subscript-wrapper {
+    height: 1.79167em;
+  }
+
+  .mat-mdc-form-field-hint-wrapper,
+  .mat-mdc-form-field-error-wrapper {
+    padding: 0 1em;
+    top: 0.16667em;
+  }
+
+  .mat-mdc-form-field-hint {
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  // Legacy prefixes/suffixes sat on the input's text baseline, .25em lower, with a 1.125 line and no
+  // padding of their own, whatever they hold (icon of any size, text, a button); MDC centres them and
+  // pads icons 12px
+  .mat-mdc-form-field-flex {
+    align-items: baseline;
+  }
+
+  .mat-mdc-form-field-icon-prefix,
+  .mat-mdc-form-field-icon-suffix {
+    align-self: auto;
+    position: relative;
+    top: 0.25em;
+    line-height: 1.125;
+    padding: 0;
+
+    > .mat-icon {
+      padding: 0;
+      line-height: 1.125;
+      // Legacy prefix/suffix icons were 150% of the field font (24px at 16px, 21px at 14px), and block
+      // outside its underline appearance, so the prefix is exactly the icon's 24px tall
+      font-size: 150%;
+      display: block;
+    }
+
+    // Legacy icon buttons here took the field's font (MDC rule above: 14px), their icon 1.125em tall
+    // and were inline-flex with the icon a centred block (which also sets the button's baseline)
+    > .mat-mdc-icon-button.mat-mdc-button-base {
+      font-size: inherit;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      > .mat-icon {
+        display: block;
+        height: 1.125em;
+        line-height: 1.125;
+        // Legacy's rule here outranked a page's own icon margins (e.g. Register's 6px)
+        margin: auto;
+      }
+    }
+
+    // Legacy datepicker toggles sat on the text baseline: a 40px button padded 8px top and bottom
+    // around its 24px icon (MDC centers the icon in a 40px line, 7px lower)
+    .mat-datepicker-toggle .mat-mdc-icon-button {
+      padding: 8px 0;
+      font-size: 24px;
+      line-height: normal;
+
+      svg {
+        vertical-align: baseline;
+      }
+    }
+  }
+
+  // Legacy padded the box .75em (12px) each side even with a prefix/suffix (MDC: 16px, or 0 beside an
+  // icon), and prefix/suffix icons had no padding of their own beyond the page's margins (MDC pads them
+  // 12px; the 12px top/bottom is kept here for the vertical position)
+  .mat-mdc-text-field-wrapper.mdc-text-field--outlined {
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+  }
+
+
+  // Legacy outline labels started where the input starts: .75em in, or right after a prefix (MDC moves a
+  // floated label to the left edge), with a gap in the outline just before it. --amp-prefix-width comes from
+  // LegacyFormFieldDirective. Resting/floated heights are fitted to legacy at 16px and 14px.
+  // Measured on legacy: the gap began 6px before a plain label and 4px before a label after a prefix.
+  // (The notch overlaps the leading piece by its 1px border.)
+  .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mdc-notched-outline .mdc-notched-outline__leading {
+    width: calc(0.75em - 5px);
+  }
+
+  &.mat-mdc-form-field-has-icon-prefix .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mdc-notched-outline .mdc-notched-outline__leading {
+    width: calc(0.75em + var(--amp-prefix-width, 0px) - 3px);
+  }
+
+  // Legacy's gap was 1px wider than MDC's notch (whose width MDC sets inline): start the outline after it 1px later
+  .mdc-notched-outline--notched .mdc-notched-outline__notch {
+    margin-right: 1px;
+  }
+
+  .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label {
+    left: 5px;
+    top: calc(2.25em - 7.5px);
+  }
+
+  // MDC shifts a prefixed label with an inline transform built from its own measurement; the notch
+  // already places it
+  &.mat-mdc-form-field-has-icon-prefix .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label {
+    left: 3px;
+    transform: var(--mat-mdc-form-field-label-transform, translateY(-50%)) !important;
+  }
+
+  // Floated labels keep the field's font size (MDC: 16px), so a 14px field's label floats at 14px as in legacy
+  .mdc-text-field--outlined .mdc-notched-outline--upgraded .mdc-floating-label--float-above {
+    font-size: inherit;
+  }
+
+  &:not(.compact-field) .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mdc-notched-outline--upgraded .mdc-floating-label--float-above {
+    --mat-mdc-form-field-label-transform: translateY(calc(7.5px - 2.578125em)) scale(var(--mat-mdc-form-field-floating-label-scale, 0.75));
+  }
+}
+
+// Fields that don't set an appearance were legacy "underline" fields: no box or side padding, a 2.8125em
+// (45px) input area (1.125em text 1.25em down) over a 1px 42% black line, a 1.25em (20px) hint area,
+// and a 54% black label that floats to the top at 75%. MDC renders them as filled boxes, so restyle
+// those (an explicit appearance="fill" keeps the filled look).
+html .mat-mdc-form-field.mat-form-field-appearance-fill:not([appearance]) {
+  --mat-form-field-filled-container-color: transparent;
+  --mat-form-field-filled-disabled-container-color: transparent;
+  --mat-form-field-filled-label-text-color: rgba(0, 0, 0, 0.54);
+  --mat-form-field-filled-hover-label-text-color: rgba(0, 0, 0, 0.54);
+  --mat-form-field-filled-active-indicator-color: rgba(0, 0, 0, 0.42);
+  --mat-form-field-filled-hover-active-indicator-color: rgba(0, 0, 0, 0.87);
+
+  .mat-mdc-text-field-wrapper.mdc-text-field--filled {
+    padding: 0;
+    border-radius: 0;
+    overflow: visible;
+  }
+
+  .mat-mdc-form-field-focus-overlay {
+    display: none;
+  }
+
+  .mat-mdc-form-field-infix {
+    min-height: 2.8125em;
+    padding: 1.25em 0 0.4375em;
+    line-height: 1.125;
+  }
+
+  input.mat-mdc-input-element {
+    height: 1.125em;
+    line-height: 1.125;
+  }
+
+  .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label {
+    left: 0;
+    top: 1.75em;
+  }
+
+  // Floated, the legacy label sat at the top of the field (MDC's filled float leaves it 9px lower)
+  .mat-mdc-text-field-wrapper.mdc-text-field--filled .mdc-floating-label--float-above {
+    --mat-mdc-form-field-label-transform: translateY(-1.828125em) scale(var(--mat-mdc-form-field-floating-label-scale, 0.75));
+    transform: var(--mat-mdc-form-field-label-transform);
+  }
+
+  // In the 75% hint font: 1.25em / .75 tall, half a pixel lower than MDC's
+  .mat-mdc-form-field-subscript-wrapper {
+    height: 1.66667em;
+  }
+
+  .mat-mdc-form-field-hint-wrapper,
+  .mat-mdc-form-field-error-wrapper {
+    padding: 0;
+    top: 0.04167em;
+  }
+
+  .mat-mdc-form-field-hint {
+    color: rgba(0, 0, 0, 0.54);
+  }
+}
+
+// subscriptSizing="dynamic" fields reserve no hint space (the fixed legacy hint heights above would)
+html .mat-mdc-form-field .mat-mdc-form-field-subscript-wrapper.mat-mdc-form-field-subscript-dynamic-size {
+  height: auto;
+}
+
+// Legacy selects were one 18px text line like inputs; MDC's 24px arrow wrapper makes the field 6px taller
+html .mat-mdc-form-field .mat-mdc-select {
+  font-size: inherit;
+  line-height: 1.125;
+}
+
+html .mat-mdc-form-field .mat-mdc-select-arrow-wrapper {
+  height: 1.125em;
+}
+
+// Legacy triggers were a fixed 1.125em; MDC's grows with taller custom triggers (e.g. chips)
+html .mat-mdc-form-field .mat-mdc-select-trigger {
+  height: 1.125em;
+}
+
+// Legacy required labels read "Label *" with a full space before the asterisk (MDC: a 1px gap)
+html .mat-mdc-form-field .mdc-floating-label--required:not(.mdc-floating-label--hide-required-marker)::after {
+  margin-left: 0.25em;
+}
+
+// Legacy textareas: 2px padding offset by -2px margins, sized content-box (MDC: border-box, no padding),
+// so autosized rows come out the legacy 18px each
+html textarea.mat-mdc-input-element {
+  padding: 2px 0;
+  margin: -2px 0;
+  box-sizing: content-box;
+}
+
+// Legacy form-field inputs inherited the field font with an 18px (1.125) line, from global styles. MDC's
+// equivalent rule ships with the form field component and lands after a textarea's autosize has
+// measured its rows at the browser default 13.33px, so set it globally as legacy did.
+html .mat-mdc-form-field .mat-mdc-input-element {
+  font: inherit;
+  line-height: 1.125;
+  vertical-align: bottom;
+}
+
+// Legacy disabled buttons greyed their text/icons to 26% black (MDC: 38%, set on [disabled][disabled])
+html .mat-mdc-button[disabled][disabled] {
+  --mat-button-text-disabled-label-text-color: rgba(0, 0, 0, 0.26);
+}
+
+html .mat-mdc-outlined-button[disabled][disabled] {
+  --mat-button-outlined-disabled-label-text-color: rgba(0, 0, 0, 0.26);
+}
+
+html .mat-mdc-unelevated-button[disabled][disabled] {
+  --mat-button-filled-disabled-label-text-color: rgba(0, 0, 0, 0.26);
+}
+
+html .mat-mdc-raised-button[disabled][disabled] {
+  --mat-button-protected-disabled-label-text-color: rgba(0, 0, 0, 0.26);
+}
+
+html .mat-mdc-icon-button[disabled][disabled] {
+  --mat-icon-button-disabled-icon-color: rgba(0, 0, 0, 0.26);
+}
+
+html .mat-mdc-mini-fab[disabled][disabled] {
+  color: rgba(0, 0, 0, 0.26);
+}
+
+// Legacy mini fabs set their icon in a padded 24px line, which left it 1.2px below MDC's exact centre
+html .mat-mdc-mini-fab > .mat-icon {
+  position: relative;
+  top: 1.2px;
+}
+
+// Legacy slide toggles: a 24px row, the label in the surrounding font (MDC: 14px) 8px after the switch (MDC: 4px)
+html .mat-mdc-slide-toggle {
+  height: 24px;
+  line-height: 24px;
+
+  .mdc-form-field {
+    font: inherit;
+    letter-spacing: inherit;
+    line-height: 24px;
+    vertical-align: top;
+  }
+
+  .mdc-form-field > label {
+    padding-left: 8px;
+    font: inherit;
+    letter-spacing: inherit;
+    line-height: 24px;
+
+    // No label, no gap (legacy dropped the bar's margin too)
+    &:empty {
+      padding-left: 0;
+    }
+  }
+}
+
+// Legacy slide toggle colours: off = 38% black bar with a #fafafa thumb; on = the colour at 54% under a
+// solid thumb (MDC: light grey/dark grey off, a solid lighter shade on). Legacy thumbs had no icons.
+html .mat-mdc-slide-toggle.mat-mdc-slide-toggle {
+  --mat-slide-toggle-unselected-track-color: rgba(0, 0, 0, 0.38);
+  --mat-slide-toggle-unselected-hover-track-color: rgba(0, 0, 0, 0.38);
+  --mat-slide-toggle-unselected-focus-track-color: rgba(0, 0, 0, 0.38);
+  --mat-slide-toggle-unselected-pressed-track-color: rgba(0, 0, 0, 0.38);
+  --mat-slide-toggle-unselected-handle-color: #fafafa;
+  --mat-slide-toggle-unselected-hover-handle-color: #fafafa;
+  --mat-slide-toggle-unselected-focus-handle-color: #fafafa;
+  --mat-slide-toggle-unselected-pressed-handle-color: #fafafa;
+
+  .mdc-switch__icons {
+    display: none;
+  }
+}
+
+html .mat-mdc-slide-toggle.mat-primary {
+  --mat-slide-toggle-selected-track-color: rgba(25, 49, 85, 0.54);
+  --mat-slide-toggle-selected-hover-track-color: rgba(25, 49, 85, 0.54);
+  --mat-slide-toggle-selected-focus-track-color: rgba(25, 49, 85, 0.54);
+  --mat-slide-toggle-selected-pressed-track-color: rgba(25, 49, 85, 0.54);
+}
+
+html .mat-mdc-slide-toggle.mat-accent {
+  --mat-slide-toggle-selected-track-color: rgba(224, 178, 116, 0.54);
+  --mat-slide-toggle-selected-hover-track-color: rgba(224, 178, 116, 0.54);
+  --mat-slide-toggle-selected-focus-track-color: rgba(224, 178, 116, 0.54);
+  --mat-slide-toggle-selected-pressed-track-color: rgba(224, 178, 116, 0.54);
+}
+
+html .mat-mdc-slide-toggle.mat-warn {
+  --mat-slide-toggle-selected-track-color: rgba(173, 29, 46, 0.54);
+  --mat-slide-toggle-selected-hover-track-color: rgba(173, 29, 46, 0.54);
+  --mat-slide-toggle-selected-focus-track-color: rgba(173, 29, 46, 0.54);
+  --mat-slide-toggle-selected-pressed-track-color: rgba(173, 29, 46, 0.54);
+}
+
+// Expansion panels read their header type from the MDC scale now (14px, 500); legacy used 15px, 400
+html .mat-expansion-panel-header {
+  font-size: 15px;
+  font-weight: 400;
+}
+
+// Legacy tables: no fixed line height (MDC: 20px, which shifts multi-line cells), 12px 54% black header
+// labels (MDC: 14px, 87%), 14px cells
+html .mat-mdc-table {
+  line-height: normal;
+  // Legacy body and footer rows were 48px (MDC: 52px); headers stay 56px
+  --mat-table-row-item-container-height: 48px;
+  --mat-table-footer-container-height: 48px;
+
+  // Legacy cells were content-box, so a column's set width excluded its padding (MDC: border-box)
+  .mat-mdc-header-cell,
+  .mat-mdc-cell,
+  .mat-mdc-footer-cell {
+    box-sizing: content-box;
+  }
+
+  .mat-mdc-header-cell {
+    font-size: 12px;
+    line-height: normal;
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  .mat-mdc-cell,
+  .mat-mdc-footer-cell {
+    font-size: 14px;
+    line-height: normal;
+  }
+
+  // Legacy kept the divider under the last row too (MDC drops it, which recenters that row 0.5px lower)
+  .mdc-data-table__row:last-child .mat-mdc-cell {
+    border-bottom: var(--mat-table-row-item-outline-width, 1px) solid var(--mat-table-row-item-outline-color, rgba(0, 0, 0, 0.12));
+  }
+}
+
+// Legacy paginators: 54% black text and a 56px page-size field 6px down (MDC: 87%, 84px)
+html .mat-mdc-paginator {
+  color: rgba(0, 0, 0, 0.54);
+  line-height: normal;
+
+  // The legacy field kept its 1.25em hint space here too, which the row's baseline alignment relies on
+  .mat-mdc-paginator-page-size-select {
+    width: 56px;
+    margin: 6px 4px 0 4px;
+    padding-bottom: 1.25em;
+  }
+
+  // MDC's paginator compacts its field with a five-class rule; put back the legacy underline spacing
+  .mat-mdc-form-field .mdc-text-field--no-label:not(.mdc-text-field--outlined):not(.mdc-text-field--textarea) .mat-mdc-form-field-infix {
+    padding: 1.25em 0 0.4375em;
+  }
+
+  .mat-mdc-paginator-page-size {
+    align-items: baseline;
+  }
+}
+
+// Legacy menus: a lighter (z4) shadow; 14px items laid out as a 48px text line with the icon middle-aligned
+// in 54% black (MDC: z8 shadow, 16px flex items, 87% icons)
+html .mat-mdc-menu-panel.mat-mdc-menu-panel {
+  box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+}
+
+html .mat-mdc-menu-item.mat-mdc-menu-item {
+  display: block;
+  // Legacy items were a fixed 48px in the Material font (MDC: at least 48px, and a button used as an item
+  // outside a menu, like the Membership list rows, keeps the browser's button font)
+  height: 48px;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 14px;
+  line-height: 48px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  > .mat-icon {
+    vertical-align: middle;
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  .mat-mdc-menu-item-text {
+    display: inline;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+  }
+}
+
+// Legacy select panels (placed over the field by LegacySelectDirective): no inner padding, at most 256px
+// tall, all corners rounded, the z4 shadow (MDC: 8px padding, 275px, square top, z8)
+html .cdk-overlay-pane div.mat-mdc-select-panel.mat-mdc-select-panel {
+  padding: 0;
+  max-height: 256px;
+  border-radius: 4px;
+  box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+}
+
+// Legacy radio buttons: a bare 20px circle with the label 8px after it in the surrounding font (MDC: a 40px
+// touch area around the circle, 4px gap, 14px label)
+html .mat-mdc-radio-button.mat-mdc-radio-button {
+  --mat-radio-state-layer-size: 20px;
+
+  .mdc-radio {
+    padding: 0;
+  }
+
+  .mdc-form-field {
+    font: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+  }
+
+  .mdc-form-field > label,
+  .mdc-form-field > .mat-internal-form-field-label {
+    padding-left: 8px;
+    font: inherit;
+    letter-spacing: inherit;
+  }
+
+  // Wrapping labels start level with the 20px circle (some dialogs pad them down for MDC's 40px area)
+  .mdc-form-field.mdc-form-field > label,
+  .mdc-form-field.mdc-form-field > .mat-internal-form-field-label {
+    padding-top: 0;
+  }
+}
+
+// Legacy checkboxes: a 16px box (2px border) 3px down, the label 8px after it in the surrounding font on
+// 24px lines, wrapping with the box on the first line (MDC: an 18px box in a 40px touch area, 4px gap,
+// 14px label). The ripple and click target stay 40px around the box, as in legacy.
+html .mat-mdc-checkbox.mat-mdc-checkbox {
+  .mdc-form-field {
+    align-items: flex-start;
+    font: inherit;
+    letter-spacing: inherit;
+    // Legacy labels took the surrounding colour (MDC: 87% black)
+    color: inherit;
+  }
+
+  .mdc-checkbox {
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    margin: 3px 8px 5px 0;
+  }
+
+  // Without a label (e.g. in table cells) legacy dropped the side and bottom margins: 16x19
+  .mdc-form-field:has(> label:empty) .mdc-checkbox,
+  .mdc-form-field:has(> .mat-internal-form-field-label:empty) .mdc-checkbox {
+    margin: 3px 0 0;
+  }
+
+  .mdc-checkbox .mdc-checkbox__background {
+    top: 0;
+    left: 0;
+    width: 16px;
+    height: 16px;
+  }
+
+  .mdc-checkbox .mdc-checkbox__native-control,
+  .mdc-checkbox .mdc-checkbox__ripple,
+  .mat-mdc-checkbox-ripple {
+    top: -12px;
+    left: -12px;
+    right: auto;
+    bottom: auto;
+    width: 40px;
+    height: 40px;
+  }
+
+  .mdc-form-field > label,
+  .mdc-form-field > .mat-internal-form-field-label {
+    padding: 0;
+    font: inherit;
+    letter-spacing: inherit;
+    line-height: 24px;
+    white-space: normal;
+  }
+}
+
+// Legacy lists: 8px above the items (4px when dense) and none below (MDC: 8px both ends, no dense)
+html .mat-mdc-list-base.mat-mdc-list-base {
+  padding: 8px 0 0;
+
+  &[dense] {
+    padding-top: 4px;
+  }
+}
+
+// Legacy controls had no invisible 48px touch area; MDC's overhangs 36px buttons and can make a scroll
+// container overflow (e.g. a scrollbar in the activity report's Notes tab)
+html .mat-mdc-button-touch-target,
+html .mat-mdc-checkbox-touch-target,
+html .mat-mdc-radio-touch-target {
+  display: none;
+}
+
+// Legacy icon buttons were 40px (MDC: 48px)
+@include mat.icon-button-density(-2);
+
+// Shorter form fields for rows and lists (tag value, rename word, upload column mapping)
+.compact-field {
+  @include mat.form-field-density(-3);
+}
+
+* {
+  margin:0;
+  padding:0;
+}
+
+body {
+  //font-family: mat-font-family($config);
+  font-family: 'Roboto', sans-serif;
+  font-weight: normal;
+  background-color: rgb(211, 211, 211) !important;
+  overflow: auto;
+}
+
+menu-font{
+  font-weight:bolder;
+  padding: 3px
+}
+
+h1 {
+  font-weight: normal;
+  font-size: x-large;
+}
+
+h2{
+  font-weight: normal;
+  font-size: medium;
+}
+
+h3 {
+  font-weight: normal;
+  font-size: small;
+}
+
+h4 {
+  font-size: small;
+  font-weight: lighter;
+}
+
+.full-height{
+  height: calc(100vh - 64px);
+}
+
+.right-aligned-header > .mat-content {
+  justify-content: start;
+}
+
+.mat-content > mat-panel-title, .mat-content > mat-panel-description {
+  flex: 0 0 auto;
+}
+
+////////////////////////////////////////////////////////////////
+
+.block-title{
+  margin: .5em;
+  text-align: center;
+}
+
+.block-title-img{
+  margin: .5em;
+  margin-left: 40%;
+}
+
+.loading-card{
+  display: flex;
+  justify-content: center;
+  margin: 10%
+}
+
+.loading-message{
+  display: flex;
+  justify-content: center;
+}
+
+.loader-spinner{
+  margin: 0px auto;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.dialog-section{
+  display: table-row;
+}
+
+.dialog-element{
+  width:95%;
+  margin:.4rem;
+}
+
+.dialog-element-long{
+  width:100%;
+}
+
+.dialog-select{
+  margin: .5rem;
+}
+
+.dialog-search{
+  height: 30px;
+}
+
+.dialog-element-bold{
+  width:95%;
+  margin:.4rem;
+  font-weight: bold;
+
+}
+
+.dialog-element-inline{
+display: inline;
+
+}
+
+.org-logo{
+  max-width: 400px;
+  width: 100%;
+}
+
+.dialog-search-element{
+  width:calc(100% - 38px);
+  height:3em;
+  margin:5px 0px 5px 5px;
+  padding:0px 12px;
+  font-size:14px;
+}
+
+.dialog-error{
+  color:"#ad1d2e";
+  margin-top: .5rem;
+}
+
+.red-snackbar {
+  background: #ad1d2e;
+  color: white;
+}
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////
+// Campaign map tooltips (built by campaign-map/mapTooltips.ts)
+
+.leaflet-tooltip.amp-map-tooltip {
+  // Leaflet sizes tooltips to the room left before the map edge; a fixed range keeps them from collapsing
+  box-sizing: border-box;
+  width: max-content;
+  min-width: 180px;
+  max-width: 280px;
+  padding: 8px 10px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  color: rgba(0, 0, 0, 0.87);
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  line-height: 1.35;
+  white-space: normal;
+
+  &.leaflet-tooltip-top::before {
+    border-top-color: #fff;
+  }
+
+  .amp-tt-title {
+    font-size: 13px;
+    font-weight: 600;
+    overflow-wrap: break-word;
+  }
+
+  .amp-tt-subtitle {
+    color: rgba(0, 0, 0, 0.55);
+    font-size: 11px;
+  }
+
+  .amp-tt-rows {
+    margin-top: 6px;
+  }
+
+  .amp-tt-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .amp-tt-label {
+    flex-shrink: 0;
+    white-space: nowrap;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .amp-tt-value {
+    min-width: 0;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    overflow-wrap: break-word;
+  }
+
+  .amp-tt-block {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .amp-tt-block-label {
+    margin-bottom: 2px;
+    font-weight: 600;
+
+    i {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      margin-right: 6px;
+      border-radius: 50%;
+      vertical-align: 0;
+    }
+  }
+
+  .amp-tt-line {
+    padding-left: 14px;
+    color: rgba(0, 0, 0, 0.7);
+    overflow-wrap: break-word;
+  }
+
+  .amp-tt-bar {
+    display: flex;
+    height: 6px;
+    margin-top: 8px;
+    border-radius: 3px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.06);
+
+    span {
+      height: 100%;
+    }
+  }
+
+  .amp-tt-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 10px;
+    margin-top: 4px;
+    color: rgba(0, 0, 0, 0.65);
+    font-size: 11px;
+  }
+
+  .amp-tt-key {
+    white-space: nowrap;
+  }
+
+  .amp-tt-key i {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 4px;
+    border-radius: 2px;
+    vertical-align: -1px;
+  }
+
+  .amp-tt-note {
+    margin-top: 6px;
+    color: rgba(0, 0, 0, 0.7);
+    overflow-wrap: break-word;
+  }
+
+  .amp-tt-hint {
+    margin-top: 6px;
+    padding-top: 5px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 11px;
+    font-style: italic;
+  }
+}
+
+// Campaign map: pick one of several overlapping polygons to edit
+.leaflet-popup.amp-polygon-chooser {
+  .leaflet-popup-content-wrapper {
+    border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  }
+
+  .leaflet-popup-content {
+    margin: 10px 12px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .amp-pc-title {
+    padding-right: 16px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .amp-pc-subtitle {
+    margin-bottom: 6px;
+    color: rgba(0, 0, 0, 0.55);
+    font-size: 11px;
+  }
+
+  .amp-pc-option {
+    display: block;
+    width: 100%;
+    margin-top: 2px;
+    padding: 6px 8px;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: rgba(0, 0, 0, 0.87);
+    font: inherit;
+    text-align: left;
+    overflow-wrap: break-word;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      background: rgba(0, 0, 0, 0.06);
+    }
+  }
+}
+
+// Activity dialogs (create/edit activity, report, texting templates, text responses)
+@include meta.load-css('styles/activity-dialogs');

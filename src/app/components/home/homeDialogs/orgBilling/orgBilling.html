@@ -1,0 +1,87 @@
+<div class="ob-header">
+  <div>
+    <h2 mat-dialog-title class="ob-title">Billing</h2>
+    <div class="ob-org">
+      <span>{{organization?.name}}</span>
+      <span class="ob-plan">{{subscriptionTier}} plan</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" (click)="return();"><mat-icon>close</mat-icon></button>
+</div>
+
+<!-- Period -->
+<div class="ob-period">
+  <mat-button-toggle-group [value]="period" (change)="setPeriod($event.value)" aria-label="Billing period">
+    <mat-button-toggle value="thisMonth">This month</mat-button-toggle>
+    <mat-button-toggle value="lastMonth">Last month</mat-button-toggle>
+    <mat-button-toggle value="custom">Custom</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <mat-form-field appearance="outline" class="ob-range" *ngIf="period === 'custom'">
+    <mat-label>Date range</mat-label>
+    <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+      <input matStartDate formControlName="start" placeholder="Start date">
+      <input matEndDate formControlName="end" placeholder="End date" (dateChange)="applyCustomRange()">
+    </mat-date-range-input>
+    <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
+    <mat-date-range-picker #picker></mat-date-range-picker>
+  </mat-form-field>
+
+  <div class="ob-period-label">
+    <mat-icon inline>event</mat-icon> {{periodLabel}}
+  </div>
+</div>
+
+<mat-progress-bar mode="indeterminate" *ngIf="loadingAny"></mat-progress-bar>
+
+<div class="ob-banner" *ngIf="displayErrorMsg">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-button (click)="retry()">Retry</button>
+  <button mat-icon-button matTooltip="Dismiss" (click)="displayErrorMsg = false"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="ob-content">
+  <table class="ob-table">
+    <thead>
+      <tr>
+        <th class="ob-item">Item</th>
+        <th class="ob-num">Quantity</th>
+        <th class="ob-num ob-rate">Rate</th>
+        <th class="ob-num">Amount</th>
+      </tr>
+    </thead>
+
+    <tbody *ngFor="let section of sections">
+      <tr class="ob-section">
+        <td colspan="4">
+          {{section.title}}
+          <mat-spinner *ngIf="section.loading" diameter="14" class="ob-spinner"></mat-spinner>
+        </td>
+      </tr>
+      <tr *ngFor="let line of section.lines">
+        <td class="ob-item">{{line.label}}</td>
+        <td class="ob-num">{{line.quantity | number}} <span class="ob-unit">{{line.unit}}</span></td>
+        <td class="ob-num ob-rate">{{line.rate !== null ? (line.rate | currency) : '—'}}</td>
+        <td class="ob-num ob-amount">{{line.amount | currency}}</td>
+      </tr>
+      <tr *ngFor="let note of section.notes" class="ob-note">
+        <td colspan="4">{{note}}</td>
+      </tr>
+      <tr class="ob-note" *ngIf="!section.loading && section.lines.length === 0 && section.notes.length === 0">
+        <td colspan="4">No charges</td>
+      </tr>
+    </tbody>
+
+    <tfoot>
+      <tr class="ob-total">
+        <td colspan="3">{{loadingAny ? 'Estimated total' : 'Total'}}</td>
+        <td class="ob-num">{{total | currency}}</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <p class="ob-footnote">Usage charges cover the selected period. The subscription is billed monthly.</p>
+</mat-dialog-content>

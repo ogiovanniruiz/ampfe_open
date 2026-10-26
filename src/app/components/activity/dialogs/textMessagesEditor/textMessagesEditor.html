@@ -1,0 +1,97 @@
+<!-- Initial messages -->
+<div class="ea-card">
+  <div class="ea-card-title">
+    Initial text messages
+    <span class="ea-count">{{initTextMsgs.length}}</span>
+  </div>
+
+  <div class="ea-draft-toggles">
+    <mat-slide-toggle color="primary" [(ngModel)]="draftSender">Include sender's name</mat-slide-toggle>
+    <mat-slide-toggle color="primary" [(ngModel)]="draftReceiver">Include receiver's name</mat-slide-toggle>
+    <mat-slide-toggle color="primary" [(ngModel)]="draftAttachImage">Attach an image</mat-slide-toggle>
+  </div>
+
+  <div class="ea-add-row" *ngIf="draftAttachImage">
+    <mat-form-field appearance="outline" class="ea-field">
+      <mat-label>Image URL</mat-label>
+      <input matInput [(ngModel)]="draftImageUrl" (ngModelChange)="draftImageFailed = false" type="url" autocomplete="off">
+      <mat-hint>Upload an image (large photos are shrunk automatically) or paste a link</mat-hint>
+    </mat-form-field>
+    <input #imageInput type="file" accept="image/jpeg,image/png,image/gif,image/webp" hidden (change)="uploadImage(imageInput)">
+    <button mat-icon-button color="primary" [disabled]="uploadingImage" (click)="imageInput.click()" matTooltip="Upload an image" aria-label="Upload an image">
+      <mat-spinner *ngIf="uploadingImage; else uploadIcon" diameter="20"></mat-spinner>
+      <ng-template #uploadIcon><mat-icon>add_photo_alternate</mat-icon></ng-template>
+    </button>
+  </div>
+  <img class="ea-image-preview" *ngIf="draftAttachImage && draftImageUrl && !draftImageFailed" [src]="draftImageUrl" alt="Attached image" (error)="draftImageFailed = true">
+
+  <div class="ea-add-row">
+    <mat-form-field appearance="outline" class="ea-field">
+      <mat-label>{{editing ? 'Edit message ' + editingNumber : 'New initial message'}}</mat-label>
+      <textarea matInput #msgInput [(ngModel)]="draftMsg" maxlength="800" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="5"
+                (keydown.enter)="$event.preventDefault(); submitDraft()"></textarea>
+      <mat-hint align="end">{{draftMsg.length}}/800</mat-hint>
+    </mat-form-field>
+    <ng-container *ngIf="!editing; else editButtons">
+      <button mat-icon-button color="primary" matTooltip="Add message" aria-label="Add message" (click)="addInitTextMsg()"><mat-icon>add_circle</mat-icon></button>
+    </ng-container>
+    <ng-template #editButtons>
+      <button mat-icon-button color="primary" matTooltip="Save changes" aria-label="Save changes" (click)="saveInitTextMsg()"><mat-icon>check_circle</mat-icon></button>
+      <button mat-icon-button matTooltip="Cancel editing" aria-label="Cancel editing" (click)="cancelEdit()"><mat-icon>cancel</mat-icon></button>
+    </ng-template>
+  </div>
+
+  <div class="ea-preview" *ngIf="draftMsg || draftSender || draftReceiver || draftAttachImage">
+    <div class="ea-preview-label">Preview</div>
+    <div class="ea-bubble">{{previewNewMessage()}}</div>
+  </div>
+
+  <div class="ea-list" *ngIf="initTextMsgs.length">
+    <div class="ea-list-item" [class.ea-list-item-editing]="item === editing" *ngFor="let item of initTextMsgs; let i = index; let first = first; let last = last">
+      <div class="ea-list-text">
+        <div>{{formatPreview(item)}}</div>
+        <div class="ea-attachment" *ngIf="item.attachImage"><mat-icon inline>attach_file</mat-icon>{{item.imageUrl}}</div>
+        <span class="ea-chip ea-chip-default" *ngIf="showDefaultSelect && initTextMsgs.length > 1 && item === defaultInitTextMsg">Default</span>
+        <span class="ea-chip" *ngIf="showDefaultSelect && initTextMsgs.length > 1 && !defaultInitTextMsg && first">Sent first</span>
+      </div>
+      <div class="ea-row-actions">
+        <ng-container *ngIf="initTextMsgs.length > 1">
+          <button mat-icon-button matTooltip="Move up" aria-label="Move up" [disabled]="first" (click)="moveInitTextMsg(i, -1)"><mat-icon>arrow_upward</mat-icon></button>
+          <button mat-icon-button matTooltip="Move down" aria-label="Move down" [disabled]="last" (click)="moveInitTextMsg(i, 1)"><mat-icon>arrow_downward</mat-icon></button>
+        </ng-container>
+        <button mat-icon-button matTooltip="Edit message" aria-label="Edit message" (click)="editInitTextMsg(item)"><mat-icon>edit</mat-icon></button>
+        <button mat-icon-button color="warn" matTooltip="Remove message" aria-label="Remove message" (click)="removeInitTextMsg(item)"><mat-icon>delete_outline</mat-icon></button>
+      </div>
+    </div>
+  </div>
+  <div class="ea-empty" *ngIf="!initTextMsgs.length">No initial messages yet.</div>
+</div>
+
+<mat-form-field appearance="outline" class="ea-field ea-gap-top" *ngIf="showDefaultSelect && initTextMsgs.length > 1">
+  <mat-label>Default initial message</mat-label>
+  <mat-select [ngModel]="defaultInitTextMsg" (ngModelChange)="setDefault($event)">
+    <mat-option *ngFor="let item of initTextMsgs" [value]="item">{{formatPreview(item)}}<span *ngIf="item.attachImage"> 📎</span></mat-option>
+  </mat-select>
+</mat-form-field>
+
+<!-- Quick responses -->
+<div class="ea-card" *ngIf="showQuickResponses">
+  <div class="ea-card-title">
+    Quick responses
+    <span class="ea-count">{{quickResponses.length}}</span>
+  </div>
+  <div class="ea-add-row">
+    <mat-form-field appearance="outline" class="ea-field">
+      <mat-label>New quick response</mat-label>
+      <input matInput [(ngModel)]="newQuickResponse" maxlength="800" (keyup.enter)="addQuickResponse()" autocomplete="off">
+    </mat-form-field>
+    <button mat-icon-button color="primary" matTooltip="Add quick response" aria-label="Add quick response" (click)="addQuickResponse()"><mat-icon>add_circle</mat-icon></button>
+  </div>
+  <div class="ea-list" *ngIf="quickResponses.length">
+    <div class="ea-list-item" *ngFor="let response of quickResponses">
+      <div class="ea-list-text">{{response}}</div>
+      <button mat-icon-button color="warn" matTooltip="Remove quick response" aria-label="Remove quick response" (click)="removeQuickResponse(response)"><mat-icon>delete_outline</mat-icon></button>
+    </div>
+  </div>
+  <div class="ea-empty" *ngIf="!quickResponses.length">No quick responses yet.</div>
+</div>

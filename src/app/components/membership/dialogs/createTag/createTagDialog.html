@@ -1,0 +1,184 @@
+<div class="ge-header">
+  <div class="ge-heading">
+    <h2 mat-dialog-title class="ge-title">{{editing ? 'Edit tag' : 'New tag'}}</h2>
+    <div class="ge-subtitle">{{editing ? 'Members and saved groups follow your changes.' : 'Name it, choose its values and a color for each.'}}</div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="saving" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ge-banner" *ngIf="errorMessage" role="alert">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-progress-bar *ngIf="saving" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-content class="ge-content">
+
+  <!-- NAME -->
+  <section class="ge-section">
+    <mat-form-field appearance="outline" class="bt-tag">
+      <mat-label>Tag name</mat-label>
+      <mat-icon matPrefix>sell</mat-icon>
+      <input matInput [(ngModel)]="label" maxlength="60" autocomplete="off" required placeholder="e.g. Immigrant Justice">
+      <mat-hint *ngIf="existingPlainTag && !duplicateDefinition">Already a tag. This adds values to “{{existingPlainTag}}”.</mat-hint>
+      <mat-hint *ngIf="duplicateDefinition" class="ge-error">“{{tagName}}” already has values.</mat-hint>
+      <mat-hint *ngIf="nameClash" class="ge-error">“{{nameClash}}” is already a tag. Use Merge tags to combine them.</mat-hint>
+      <mat-hint *ngIf="isConsentName" class="ge-error">Consent is set on each member, not with a tag.</mat-hint>
+    </mat-form-field>
+  </section>
+
+  <!-- VALUES -->
+  <section class="ge-section">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Values</span>
+    </div>
+    <mat-button-toggle-group class="ct-type" [(ngModel)]="valueType" aria-label="Kind of values">
+      <mat-button-toggle value="range">Number range</mat-button-toggle>
+      <mat-button-toggle value="list">Words</mat-button-toggle>
+      <mat-button-toggle value="none">No values</mat-button-toggle>
+    </mat-button-toggle-group>
+
+    <div class="ct-range" *ngIf="valueType === 'range'">
+      <mat-form-field appearance="outline">
+        <mat-label>From</mat-label>
+        <input matInput type="number" step="1" [(ngModel)]="min">
+      </mat-form-field>
+      <span class="ct-range-to">to</span>
+      <mat-form-field appearance="outline">
+        <mat-label>To</mat-label>
+        <input matInput type="number" step="1" [(ngModel)]="max">
+      </mat-form-field>
+    </div>
+
+    <div *ngIf="valueType === 'list'">
+      <div class="ct-word-row">
+        <mat-form-field appearance="outline" class="ct-word-field">
+          <mat-label>Add a word</mat-label>
+          <input matInput [(ngModel)]="newWord" maxlength="30" autocomplete="off" placeholder="e.g. Low" (keydown.enter)="$event.preventDefault(); addWord()">
+          <mat-hint *ngIf="wordProblem" class="ge-error">{{wordProblem}}</mat-hint>
+          <mat-hint *ngIf="!wordProblem">{{words.length}} of {{maxValues}}, in order</mat-hint>
+        </mat-form-field>
+        <button mat-stroked-button color="primary" [disabled]="!newWord.trim() || !!wordProblem" (click)="addWord()"><mat-icon>add</mat-icon> Add</button>
+      </div>
+    </div>
+
+    <div class="ct-problem" *ngIf="valuesProblem && (valueType === 'range' || words.length)">{{valuesProblem}}</div>
+  </section>
+
+  <!-- COLORS -->
+  <section class="ge-section">
+    <div class="ge-section-header">
+      <span class="ge-section-title">{{valueType === 'none' ? 'Color' : 'Colors'}}</span>
+    </div>
+
+    <ng-container *ngIf="valueType === 'none'; else scaleColors">
+      <div class="ct-swatches" role="radiogroup" aria-label="Tag color">
+        <button *ngFor="let swatch of swatches" class="ct-swatch" type="button" role="radio"
+                [style.background]="swatch" [class.selected]="singleColor === swatch" [attr.aria-checked]="singleColor === swatch"
+                [attr.aria-label]="swatch" (click)="singleColor = swatch"></button>
+        <label class="ct-custom" matTooltip="Custom color">
+          <mat-icon>colorize</mat-icon>
+          <input type="color" [value]="singleColor" (input)="singleColor = $any($event.target).value">
+        </label>
+      </div>
+    </ng-container>
+
+    <ng-template #scaleColors>
+      <div class="ct-base-label">Base color (fills the scale from light to dark)</div>
+      <div class="ct-swatches" role="radiogroup" aria-label="Base color">
+        <button *ngFor="let swatch of swatches" class="ct-swatch" type="button" role="radio"
+                [style.background]="swatch" [class.selected]="baseColor === swatch" [attr.aria-checked]="baseColor === swatch"
+                [attr.aria-label]="swatch" (click)="setBaseColor(swatch)"></button>
+        <label class="ct-custom" matTooltip="Custom base color">
+          <mat-icon>colorize</mat-icon>
+          <input type="color" [value]="baseColor" (change)="setBaseColor($any($event.target).value)">
+        </label>
+      </div>
+
+      <div class="bt-options ct-values" *ngIf="values.length; else noValues">
+        <div class="bt-option ct-value" *ngFor="let item of values; let i = index; trackBy: trackValue">
+          <button type="button" class="ct-dot" [style.background]="item.color" [matMenuTriggerFor]="colorMenu"
+                  [matMenuTriggerData]="{value: item.value}" [attr.aria-label]="'Color for ' + item.value" matTooltip="Change color"></button>
+          <span class="bt-label ct-word" *ngIf="valueType !== 'list' || editingWord !== i; else renameWord"
+                [class.ct-renamable]="valueType === 'list'" [attr.tabindex]="valueType === 'list' ? 0 : null"
+                [matTooltip]="valueType === 'list' ? 'Click to rename' : ''"
+                (click)="valueType === 'list' && startRenameWord(i)" (keydown.enter)="valueType === 'list' && startRenameWord(i)">{{item.value}}</span>
+          <ng-template #renameWord>
+            <mat-form-field appearance="outline" class="ct-rename compact-field" subscriptSizing="dynamic">
+              <input matInput [(ngModel)]="editingText" #renameInput maxlength="30" autocomplete="off"
+                     (keydown.enter)="$event.preventDefault(); finishRenameWord()" (keydown.escape)="editingWord = -1" (blur)="finishRenameWord()">
+              <mat-hint *ngIf="renameProblem" class="ge-error">{{renameProblem}}</mat-hint>
+            </mat-form-field>
+          </ng-template>
+          <span class="bt-note" *ngIf="isPicked(item.value)">
+            <button mat-button class="ct-reset" (click)="resetValueColor(item.value)">Use scale</button>
+          </span>
+          <ng-container *ngIf="valueType === 'list'">
+            <button mat-icon-button matTooltip="Move up" [disabled]="i === 0" (click)="moveWord(i, -1)"><mat-icon>arrow_upward</mat-icon></button>
+            <button mat-icon-button matTooltip="Move down" [disabled]="i === values.length - 1" (click)="moveWord(i, 1)"><mat-icon>arrow_downward</mat-icon></button>
+            <button mat-icon-button matTooltip="Remove" (click)="removeWord(item.value)"><mat-icon>close</mat-icon></button>
+          </ng-container>
+        </div>
+      </div>
+      <ng-template #noValues>
+        <div class="bt-empty">{{valueType === 'list' ? 'Add words to choose their colors.' : 'Fix the range to choose colors.'}}</div>
+      </ng-template>
+    </ng-template>
+  </section>
+
+  <!-- PREVIEW -->
+  <section class="ge-section" *ngIf="tagName">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Preview</span>
+    </div>
+    <div class="ct-preview">
+      <ng-container *ngIf="valueType === 'none'; else valuePreview">
+        <span class="ct-chip" [style.background]="singleColor" [style.color]="textOn(singleColor)">{{tagName}}</span>
+      </ng-container>
+      <ng-template #valuePreview>
+        <span class="ct-chip" *ngFor="let item of values; trackBy: trackValue" [style.background]="item.color" [style.color]="textOn(item.color)">{{tagName}} · {{item.value}}</span>
+      </ng-template>
+    </div>
+  </section>
+
+  <!-- Editing: what the change does to members and saved groups, before it's saved -->
+  <div class="ct-confirm" #confirmPanel *ngIf="confirming" role="alert">
+    <mat-icon>warning_amber</mat-icon>
+    <div>
+      <div *ngIf="confirming.membersCleared">
+        {{confirming.membersCleared}} {{confirming.membersCleared === 1 ? 'member has' : 'members have'}} a value being removed
+        ({{confirming.removed.join(', ')}}). They'll keep the tag with no value.
+      </div>
+      <div *ngIf="confirming.groupsAffected">
+        {{confirming.groupsAffected}} saved {{confirming.groupsAffected === 1 ? 'group uses' : 'groups use'}} this tag and will be updated.
+        Removed values come out of their Tag values filters.
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-menu #colorMenu="matMenu" class="ct-color-menu">
+  <ng-template matMenuContent let-value="value">
+    <div class="ct-swatches ct-menu-swatches">
+      <button *ngFor="let swatch of swatches" class="ct-swatch" type="button" [style.background]="swatch" [attr.aria-label]="swatch"
+              (click)="setValueColor(value, swatch)"></button>
+      <label class="ct-custom" matTooltip="Custom color" (click)="$event.stopPropagation()">
+        <mat-icon>colorize</mat-icon>
+        <input type="color" (change)="setValueColor(value, $any($event.target).value)">
+      </label>
+    </div>
+  </ng-template>
+</mat-menu>
+
+<mat-dialog-actions class="ge-actions">
+  <span class="spacer"></span>
+  <button mat-button [disabled]="saving" (click)="confirming ? confirming = null : close()">{{confirming ? 'Back' : 'Cancel'}}</button>
+  <button mat-raised-button [color]="confirming ? 'warn' : 'primary'" [disabled]="!canSave" (click)="save()">
+    <mat-icon>{{editing ? 'save' : 'new_label'}}</mat-icon>
+    {{saving ? (editing ? 'Saving…' : 'Creating…') : (confirming ? 'Confirm changes' : (editing ? 'Save changes' : 'Create tag'))}}
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,94 @@
+// Header, notices and actions come from the ge-* dialog styles and sendTestText.scss (tt-*)
+
+:host {
+  display: block;
+  // Bottom sheets span the screen; keep the content a readable width on desktop
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.op-content {
+  padding: 4px 0 8px;
+}
+
+// Consent choices as tappable cards
+.op-consents {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.op-consent {
+  display: block;
+  padding: 10px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  ::ng-deep .mdc-form-field {
+    align-items: flex-start;
+  }
+  ::ng-deep .mdc-form-field > label,
+  ::ng-deep .mdc-form-field > .mat-internal-form-field-label {
+    white-space: normal;
+    padding-top: 10px;
+  }
+}
+
+.op-consent-checked {
+  border-color: #193155;
+  background: rgba(25, 49, 85, 0.05);
+}
+
+.op-consent-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.op-consent-help {
+  display: block;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.op-fields {
+  display: flex;
+  flex-direction: column;
+  margin-top: 12px;
+}
+
+.op-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.op-chip {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.07);
+  color: rgba(0, 0, 0, 0.75);
+  font-size: 12px;
+}
+
+.op-chip-on {
+  background: rgba(46, 125, 50, 0.12);
+  color: #1b5e20;
+}
+
+.op-actions {
+  padding-bottom: 4px;
+}
+
+.op-note {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 13px;
+}
+
+@media (max-width: 480px) {
+  .op-consents {
+    grid-template-columns: 1fr;
+  }
+}

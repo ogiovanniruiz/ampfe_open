@@ -1,0 +1,186 @@
+<main class="pb-page">
+
+  <!-- STATUS -->
+  <section class="pb-card pb-status-card">
+    <div class="pb-status-top">
+      <!-- The org's logo, with a spinner while it loads; nothing when there is none -->
+      <ng-container *ngIf="{logo: orgLogo$ | async} as org">
+        <div class="pb-org-logo-loading" *ngIf="org.logo === undefined" aria-label="Loading logo"><mat-spinner diameter="20"></mat-spinner></div>
+        <img class="pb-org-logo" *ngIf="org.logo" [src]="org.logo" alt="">
+      </ng-container>
+      <div class="pb-status-text">
+        <h1 class="pb-activity">{{activity?.name || 'Phonebank'}}</h1>
+        <div class="pb-caller" *ngIf="callerName">Caller: {{callerName}}</div>
+      </div>
+      <span class="pb-pill" [ngClass]="'pb-pill-' + statusKind" [class.pb-pill-flash]="justAnswered" *ngIf="statusLabel" aria-live="polite">{{statusLabel}}</span>
+    </div>
+
+    <div class="ge-banner" *ngIf="displayErrorMsg && errorMessage" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{errorMessage}}</span>
+      <span class="spacer"></span>
+      <button mat-icon-button matTooltip="Dismiss" (click)="displayErrorMsg = false"><mat-icon>close</mat-icon></button>
+    </div>
+
+    <div class="pb-notice pb-notice-quality" *ngIf="inCall && connectionWarnings.size" role="status">
+      <mat-icon inline>network_check</mat-icon>
+      <span>Your internet connection is unstable, so audio may cut out. Close other tabs or apps using the internet, or move closer to your Wi-Fi.</span>
+    </div>
+
+    <div class="pb-notice" *ngIf="allNumsInUse">
+      <mat-icon inline>phone_disabled</mat-icon>
+      <span>All call numbers are in use. Try again in a moment.</span>
+    </div>
+  </section>
+
+  <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
+  <!-- END OF THE LIST -->
+  <section class="pb-card pb-done" *ngIf="allDone">
+    <mat-icon>task_alt</mat-icon>
+    <h2>Everyone on this list has been contacted.</h2>
+    <p>Thanks for calling! You can pick another phonebank from the dashboard.</p>
+    <button mat-raised-button color="primary" (click)="backToActivities()"><mat-icon>arrow_back</mat-icon> Back to phonebanks</button>
+  </section>
+
+  <ng-container *ngIf="household">
+    <!-- HOUSEHOLD -->
+    <section class="pb-card">
+      <h2 class="pb-address">{{household.fullAddress1 || 'No address on file'}}</h2>
+      <div class="pb-address-sub">
+        <span *ngIf="household.fullAddress2">{{household.fullAddress2}}</span>
+        <span class="ge-chip ge-chip-groupby">{{household.residents.length}} {{household.residents.length === 1 ? 'resident' : 'residents'}}</span>
+      </div>
+      <div class="pb-household-actions">
+        <a mat-stroked-button color="primary" *ngIf="activity?.scriptLink" [href]="activity.scriptLink" target="_blank" rel="noopener"><mat-icon>description</mat-icon> Open script</a>
+        <button mat-stroked-button [disabled]="inCall || connecting || submittingResponse" (click)="skipHousehold()"><mat-icon>skip_next</mat-icon> Skip household</button>
+      </div>
+    </section>
+
+    <!-- NEAREST VOTING LOCATIONS -->
+    <mat-progress-bar mode="indeterminate" *ngIf="gettingPollingLocations"></mat-progress-bar>
+    <section class="pb-card hh-places" *ngIf="pollingLocationApproximate">
+      <p class="hh-places-note"><mat-icon>how_to_vote</mat-icon> Voting locations not shown: this address's map location is approximate.</p>
+    </section>
+    <section class="pb-card hh-places" *ngIf="nearestPollingLocations?.length && !gettingPollingLocations">
+      <button type="button" class="hh-places-toggle" (click)="showPlaces = !showPlaces" [attr.aria-expanded]="showPlaces">
+        <mat-icon>how_to_vote</mat-icon>
+        <span>Nearest voting locations ({{nearestPollingLocations.length}})</span>
+        <span class="spacer"></span>
+        <mat-icon>{{showPlaces ? 'expand_less' : 'expand_more'}}</mat-icon>
+      </button>
+      <ng-container *ngIf="showPlaces">
+        <div class="hh-place" *ngFor="let place of nearestPollingLocations; index as i">
+          <div class="hh-place-name">{{i + 1}}. {{place.properties?.[0]?.Name}}
+            <span class="hh-place-distance" *ngIf="place.distanceMiles != null">· {{place.distanceMiles}} mi</span>
+          </div>
+          <div class="hh-place-line">{{place.properties?.[0]?.Address}}<span *ngIf="place.properties?.[0]?.Room"> · {{place.properties[0].Room}}</span></div>
+          <div class="hh-place-line" *ngFor="let site of place.properties">
+            <span class="ge-chip" [ngClass]="isVoteCenter(site) ? 'ge-chip-groupby' : 'hh-chip-done'"
+                  [matTooltip]="isVoteCenter(site) ? 'Vote in person or drop off a ballot' : 'Drop off a ballot only'">{{isVoteCenter(site) ? 'Vote center' : 'Ballot drop-off'}}</span>
+            <ng-container *ngIf="site.EarlyHours; else allHours">
+              <strong>Early</strong> {{site.EarlyHours}} · <strong>Election Day</strong> {{site.ElectionDayHours}}
+            </ng-container>
+            <ng-template #allHours>{{site.Hours}}</ng-template>
+          </div>
+        </div>
+      </ng-container>
+    </section>
+
+    <!-- RESIDENTS -->
+    <mat-accordion class="hh-residents">
+      <mat-expansion-panel *ngFor="let resident of household.residents; trackBy: trackResident"
+                           [expanded]="household.residents.length === 1 && !isResponded(resident)"
+                           [disabled]="isResponded(resident)">
+        <mat-expansion-panel-header>
+          <mat-panel-title class="hh-resident-title">
+            <span class="hh-resident-name">{{residentName(resident)}}</span>
+            <span class="ge-chip hh-chip-done" *ngIf="isResponded(resident)">Responded</span>
+            <span class="ge-chip hh-chip-tried" *ngIf="!isResponded(resident) && isCalled(resident)">Called this pass</span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <!-- Voter facts -->
+        <dl class="hh-facts">
+          <div class="hh-fact" *ngIf="getDialNumber(resident) as dialNumber"><dt>Phone</dt><dd>{{formatPhone(dialNumber)}}</dd></div>
+          <div class="hh-fact" *ngIf="resident.age"><dt>Age</dt><dd>{{resident.age}}</dd></div>
+          <div class="hh-fact"><dt>Voting propensity</dt><dd>{{getPropensityLabel(resident)}}</dd></div>
+          <div class="hh-fact" *ngIf="resident.party && showPartisan"><dt>Party</dt><dd>{{resident.party}}</dd></div>
+          <div class="hh-fact" *ngIf="resident.progressive && showPartisan"><dt>Progressive</dt><dd>{{resident.progressive}}</dd></div>
+          <div class="hh-fact" *ngIf="resident.segment && showPartisan"><dt>Segment</dt><dd>{{resident.segment}}</dd></div>
+          <div class="hh-fact" *ngIf="resident.ideology_score && showPartisan"><dt>Ideology score</dt><dd>{{resident.ideology_score}}</dd></div>
+        </dl>
+
+        <!-- Call controls -->
+        <div class="pb-call">
+          <div class="pb-call-row" *ngIf="!isOnCallWith(resident)">
+            <button mat-raised-button class="pb-call-button" *ngIf="!production || getDialNumber(resident)" [disabled]="inCall || connecting" (click)="call(resident)">
+              <mat-icon>call</mat-icon> Call {{firstName(resident)}}
+            </button>
+          </div>
+          <p class="pb-hint" *ngIf="(inCall || connecting) && residentCalling && !isOnCallWith(resident)">On a call with {{residentName(residentCalling)}}.</p>
+          <div class="pb-no-phone" *ngIf="!inCall && production && !getDialNumber(resident)">
+            <mat-icon inline>phone_disabled</mat-icon> No phone number on file.
+          </div>
+          <!-- Only the called resident's panel controls the call -->
+          <div class="pb-call-row" *ngIf="isOnCallWith(resident)">
+            <button mat-raised-button color="warn" (click)="cancelCall()"><mat-icon>call_end</mat-icon> {{connecting ? 'Cancel' : 'Hang up'}}</button>
+            <span [matTooltip]="callSid ? '' : 'Available once the call connects'" *ngIf="patchThroughAvailable">
+              <button mat-stroked-button color="primary" [disabled]="patchingThrough || !callSid" (click)="patchThroughCall()"><mat-icon>phone_forwarded</mat-icon> Patch through</button>
+            </span>
+          </div>
+          <mat-progress-bar mode="indeterminate" *ngIf="connecting && isOnCallWith(resident)"></mat-progress-bar>
+        </div>
+
+        <!-- Survey -->
+        <div *ngIf="survey">
+          <div class="hh-question" *ngFor="let item of visibleQuestions">
+            <div class="hh-question-text">
+              <span class="hh-question-number">{{item.number}}</span>
+              <span>{{item.question.question}}</span>
+            </div>
+
+            <ng-container [ngSwitch]="item.question.questionType">
+              <mat-radio-group *ngSwitchCase="'SINGLESELECT'" class="hh-options" color="primary"
+                               [name]="'q' + item.index + '_' + resident.personID"
+                               [(ngModel)]="answers[resident.personID][item.index]" (ngModelChange)="clearNeeds(resident)">
+                <mat-radio-button *ngFor="let option of item.question.responses" [value]="option.response">{{option.response}}</mat-radio-button>
+              </mat-radio-group>
+
+              <div *ngSwitchCase="'MULTISELECT'" class="hh-options">
+                <mat-checkbox *ngFor="let option of item.question.responses" color="primary"
+                              [checked]="isChecked(resident, item.index, option.response)"
+                              (change)="toggleOption(resident, item.index, option.response, $event.checked)">{{option.response}}</mat-checkbox>
+              </div>
+
+              <mat-form-field *ngSwitchCase="'NOTES'" appearance="outline" class="hh-notes">
+                <mat-label>Answer</mat-label>
+                <textarea matInput rows="2" [name]="'q' + item.index + '_' + resident.personID"
+                          [(ngModel)]="answers[resident.personID][item.index]"></textarea>
+              </mat-form-field>
+            </ng-container>
+          </div>
+        </div>
+
+        <p class="pb-hint" *ngIf="recordingCall">Saving the call…</p>
+        <p class="pb-hint" *ngIf="!isCalled(resident) && !inCall && !recordingCall">Call {{firstName(resident)}} first to record a response.</p>
+        <div class="hh-needs" *ngIf="needsResponses.has(resident.personID)">Answer at least one multiple-choice question to submit, or choose a non-response.</div>
+
+        <div class="hh-needs" *ngIf="responseError[resident.personID]" role="alert">{{responseError[resident.personID]}}</div>
+        <div class="hh-answer-buttons" *ngIf="nonResponseSet">
+          <button mat-raised-button color="primary" [disabled]="!isCalled(resident) || submittingResponse || inCall || recordingCall" (click)="submitSurveyResponse(resident)"><mat-icon>check</mat-icon> Submit</button>
+          <button mat-stroked-button *ngFor="let nonResponse of nonResponseSet.nonResponses" [disabled]="!isCalled(resident) || submittingResponse || inCall || recordingCall"
+                  (click)="submitNonResponse(resident, nonResponse.nonResponse, nonResponse.nonResponseType)">{{nonResponse.nonResponse}}</button>
+        </div>
+
+        <div class="hh-extras" *ngIf="activity?.enableTexting || optinOption">
+          <button mat-stroked-button color="primary" (click)="openOptinFormBottomSheet(resident)">
+            <mat-icon>{{activity?.enableTexting ? 'sms' : 'how_to_reg'}}</mat-icon> {{activity?.enableTexting ? 'Opt in & text' : 'Opt in'}}
+          </button>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <mat-progress-bar mode="indeterminate" *ngIf="submittingResponse"></mat-progress-bar>
+  </ng-container>
+</main>

@@ -1,0 +1,42 @@
+.co-success {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 10px;
+  background: rgba(46, 125, 50, 0.08);
+}
+
+.co-success-icon {
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+  color: #2e7d32;
+}
+
+.co-success-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.co-success-title {
+  font-size: 16px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.co-id {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin: 10px 0 6px;
+
+  code {
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.06);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+  }
+}

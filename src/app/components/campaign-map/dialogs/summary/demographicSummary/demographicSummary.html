@@ -1,0 +1,109 @@
+<div class="ds-header">
+  <div class="ds-heading">
+    <h2 mat-dialog-title class="ds-title">Demographics</h2>
+    <div class="ds-subtitle">All organizations on this campaign</div>
+  </div>
+  <span class="spacer"></span>
+  <mat-button-toggle-group [(ngModel)]="view" aria-label="View" class="ds-view-toggle" *ngIf="analysisSummaryData && !isEmpty">
+    <mat-button-toggle value="chart" matTooltip="Chart view"><mat-icon>bar_chart</mat-icon></mat-button-toggle>
+    <mat-button-toggle value="table" matTooltip="Table view"><mat-icon>table_rows</mat-icon></mat-button-toggle>
+  </mat-button-toggle-group>
+  <button mat-icon-button matTooltip="Close" (click)="return();"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-form-field appearance="outline" class="ds-survey">
+  <mat-label>{{loadingSurveys ? 'Loading surveys…' : 'Survey'}}</mat-label>
+  <mat-select [value]="selectedSurveyID" (selectionChange)="getAnalysisSummary($event.value)" [disabled]="loadingSurveys || !orgSurveys.length">
+    <mat-option *ngFor="let survey of orgSurveys" [value]="survey._id">{{survey.name}}</mat-option>
+  </mat-select>
+  <mat-hint *ngIf="!loadingSurveys && !orgSurveys.length">There are no active surveys on this campaign.</mat-hint>
+</mat-form-field>
+
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
+<mat-dialog-content class="ds-content">
+  <div class="ds-banner" *ngIf="error && !loading">
+    <mat-icon>error_outline</mat-icon>
+    <span>Couldn't load the demographics for this survey.</span>
+    <span class="spacer"></span>
+    <button mat-button (click)="retry()">Retry</button>
+  </div>
+
+  <div class="ds-empty" *ngIf="!selectedSurveyID && !loading">
+    <mat-icon>insights</mat-icon>
+    <p>Choose a survey to see who was contacted.</p>
+  </div>
+
+  <div class="ds-empty" *ngIf="isEmpty && !loading">
+    <mat-icon>person_off</mat-icon>
+    <p>No contacts recorded for this survey yet.</p>
+  </div>
+
+  <ng-container *ngIf="analysisSummaryData && !isEmpty && !error">
+    <!-- Headline numbers -->
+    <div class="ds-tiles">
+      <div class="ds-tile">
+        <div class="ds-tile-label">Total universe</div>
+        <div class="ds-tile-value">{{formatCompact(analysisSummaryData.universeSizeAll)}}</div>
+        <div class="ds-tile-sub">unique voters contacted or attempted</div>
+      </div>
+      <div class="ds-tile">
+        <div class="ds-tile-label">Surveyed</div>
+        <div class="ds-tile-value">{{formatCompact(analysisSummaryData.universeSizeSurveyed)}}</div>
+        <div class="ds-tile-sub">{{surveyedPct}}% gave a survey response</div>
+      </div>
+      <div class="ds-tile">
+        <div class="ds-tile-label">Average age</div>
+        <div class="ds-tile-value">{{analysisSummaryData.averageAge ?? '—'}}</div>
+        <div class="ds-tile-sub">years</div>
+      </div>
+      <div class="ds-tile">
+        <div class="ds-tile-label">Voters of color</div>
+        <div class="ds-tile-value">{{analysisSummaryData.pctVotersOfColor ?? 0}}%</div>
+        <div class="ds-tile-sub">incl. {{analysisSummaryData.pctHispanic ?? 0}}% Hispanic</div>
+      </div>
+    </div>
+
+    <!-- Distributions -->
+    <div class="ds-grid">
+      <ng-container *ngTemplateOutlet="distribution; context: {title: 'Ethnicity', entries: ethnicityEntries}"></ng-container>
+      <ng-container *ngTemplateOutlet="distribution; context: {title: 'Gender', entries: genderEntries}"></ng-container>
+      <ng-container *ngTemplateOutlet="distribution; context: {title: 'Age', entries: ageEntries}"></ng-container>
+      <ng-container *ngTemplateOutlet="distribution; context: {title: 'County', entries: countyEntries}"></ng-container>
+      <ng-container *ngTemplateOutlet="distribution; context: {title: 'Vote history (overall propensity)', subtitle: 'Elections voted in, of: ' + electionsConsidered, entries: voteHistoryEntries, ordinal: true}"></ng-container>
+    </div>
+  </ng-container>
+</mat-dialog-content>
+
+<!-- One distribution card: bars in chart view, a plain table in table view -->
+<ng-template #distribution let-title="title" let-subtitle="subtitle" let-entries="entries" let-ordinal="ordinal">
+  <section class="ds-card">
+    <div class="ds-card-title">{{title}}</div>
+    <div class="ds-card-subtitle" *ngIf="subtitle">{{subtitle}}</div>
+
+    <p class="ds-card-empty" *ngIf="!entries.length">No data</p>
+
+    <ng-container *ngIf="view === 'chart' && entries.length">
+      <div class="ds-bar-row" *ngFor="let entry of entries; let i = index" [matTooltip]="tooltip(entry)" [matTooltipShowDelay]="150" tabindex="0">
+        <span class="ds-bar-label">{{entry.label}}</span>
+        <span class="ds-bar-track">
+          <span class="ds-bar-fill" [style.width.%]="entry.pct" [style.background]="ordinal ? voteColor(i) : barColor"></span>
+        </span>
+        <span class="ds-bar-value">{{entry.pct}}%</span>
+      </div>
+    </ng-container>
+
+    <table class="ds-table" *ngIf="view === 'table' && entries.length">
+      <thead>
+        <tr><th>{{title}}</th><th class="ds-num">Share</th><th class="ds-num">≈ Voters</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let entry of entries">
+          <td>{{entry.label}}</td>
+          <td class="ds-num">{{entry.pct}}%</td>
+          <td class="ds-num">{{entry.estCount | number}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</ng-template>

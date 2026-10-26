@@ -1,0 +1,61 @@
+<div class="rc-header">
+  <div class="rc-heading">
+    <h2 mat-dialog-title class="rc-title">Request to join a campaign</h2>
+    <div class="rc-subtitle">The campaign's creator approves requests.</div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="sending" (click)="closeDialog()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="rc-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<!-- REQUEST -->
+<ng-container *ngIf="!sent">
+  <mat-dialog-content class="rc-content">
+    <p class="rc-help">Ask the campaign's data manager for its campaign ID. Once they approve, the campaign appears in your list.</p>
+    <mat-form-field appearance="outline" class="rc-field">
+      <mat-label>Campaign ID</mat-label>
+      <mat-icon matPrefix class="rc-prefix">tag</mat-icon>
+      <input matInput [(ngModel)]="campaignIDText" (ngModelChange)="onInput()" (keyup.enter)="requestCampaign()"
+             inputmode="numeric" autocomplete="off" placeholder="e.g. 142" [disabled]="sending" cdkFocusInitial>
+      <mat-hint class="rc-error" *ngIf="idError">{{idError}}</mat-hint>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-progress-bar *ngIf="sending" mode="indeterminate"></mat-progress-bar>
+
+  <mat-dialog-actions class="rc-actions">
+    <span class="spacer"></span>
+    <button mat-button [disabled]="sending" (click)="closeDialog()">Cancel</button>
+    <button mat-raised-button color="primary" [disabled]="sending || !campaignIDText.trim()" (click)="requestCampaign()">
+      <mat-icon>send</mat-icon> Send request
+    </button>
+  </mat-dialog-actions>
+</ng-container>
+
+<!-- SENT -->
+<ng-container *ngIf="sent">
+  <mat-dialog-content class="rc-content">
+    <div class="rc-success">
+      <mat-icon class="rc-success-icon">check_circle</mat-icon>
+      <div>
+        <div class="rc-success-title">Request sent</div>
+        <p class="rc-help">
+          Your request to join <b>{{sent.campaignName || 'the campaign'}}</b> (ID {{sent.campaignID}}) is waiting for approval.
+          You'll see it in your campaigns once its creator approves.
+        </p>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="rc-actions">
+    <button mat-button (click)="requestAnother()">Request another</button>
+    <span class="spacer"></span>
+    <button mat-raised-button color="primary" (click)="closeDialog()">Done</button>
+  </mat-dialog-actions>
+</ng-container>

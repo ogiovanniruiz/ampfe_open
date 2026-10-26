@@ -1,0 +1,62 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel"  (click)="return();"><mat-icon>close</mat-icon></button>
+
+<h1 mat-dialog-title class="block-title"><b>Edit Contact</b></h1>
+<mat-dialog-content>
+    <mat-form-field class="dialog-element-long"> 
+        <input matInput #firstName type="text" placeholder="First Name" disabled>
+    </mat-form-field >
+    <mat-form-field class="dialog-element-long"> 
+        <input matInput #lastName type="text" placeholder="Last Name" disabled>
+    </mat-form-field >
+    <mat-form-field style="margin:.3em;width:30%;min-width:300px"> 
+        <input matInput #phonenumber type="text" id="phone" placeholder="Phonenumber" maxlength="10" disabled>
+    </mat-form-field >
+    <mat-form-field style="margin:.3em;width:30%;min-width:300px"> 
+        <input matInput #email type="text" id="email" placeholder="Email" disabled>
+    </mat-form-field >
+    <mat-form-field style="margin:.3em;width:20%;min-width:300px"> 
+        <mat-select placeholder="Audience" #audience disabled multiple >
+            <mat-option value="attorneys" >Attorneys</mat-option>
+            <mat-option value="staff">Staff</mat-option>
+            <mat-option value="community">Community</mat-option>
+            <mat-option value="responder">Responder</mat-option>
+        </mat-select>
+    </mat-form-field >
+    <section>
+        <mat-checkbox color="warn" [(ngModel)]="blocked">Blocked</mat-checkbox>
+      </section>
+
+    <mat-card >
+        <mat-form-field class="dialog-element-long"> 
+            <input matInput #address type="text" placeholder="Address" disabled>
+        </mat-form-field >
+        <mat-form-field class="dialog-element-long"> 
+            <input matInput #address2 type="text" placeholder="Address Line 2 (Optional)" disabled>
+        </mat-form-field >
+        <mat-form-field style="margin:.3em;width:30%;min-width:300px"> 
+            <input matInput #city type="text" id="city" placeholder="City" disabled>
+        </mat-form-field >
+        <mat-form-field style="margin:.3em;width:20%;min-width:300px"> 
+            <mat-select placeholder="State" #state disabled>
+                <mat-option value="CA" selected="true">CA</mat-option>
+            </mat-select>
+        </mat-form-field >
+        <mat-form-field style="margin:.3em;width:30%;min-width:300px"> 
+            <input matInput #zip type="text" id="zip" placeholder="Zip" disabled>
+        </mat-form-field >
+        <mat-form-field class="dialog-element-long"> 
+            <mat-select placeholder="County" #county disabled>
+                <mat-option value="RIVERSIDE" >RIVERSIDE</mat-option>
+                <mat-option value="SAN BERNARDINO" >SAN BERNARDINO</mat-option>
+            </mat-select>
+        </mat-form-field >
+        
+    </mat-card>
+</mat-dialog-content>
+<mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
+
+
+<mat-dialog-actions>
+    <button mat-raised-button class='dialog-element-long' color="warn" (click)="removeContact()">DELETE CONTACT</button>
+
+</mat-dialog-actions>

@@ -1,0 +1,681 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.membership-container {
+  height: 100%;
+}
+
+.membership-drawer {
+  width: 300px;
+  min-width: 250px;
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.drawer-title {
+  font-weight: 500;
+}
+
+.org-name {
+  margin: 0 0 2px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #193155;
+  opacity: 0.75;
+}
+
+.panel-icon {
+  margin-right: 8px;
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+  opacity: 0.7;
+}
+
+.panel-count {
+  justify-content: flex-end;
+  margin-right: 4px;
+  font-size: 12px;
+}
+
+.full-width-button {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+// Tag lists / Merge tags: side by side, stacked when the drawer is narrow
+.tag-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  margin-bottom: 8px;
+
+  button {
+    min-width: 0;
+    padding: 0 8px;
+  }
+}
+
+.sidebar-item {
+  border-left: 3px solid transparent;
+  border-radius: 4px;
+
+  &.active {
+    background: rgba(25, 49, 85, 0.1);
+    border-left-color: #193155;
+    font-weight: 500;
+  }
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-empty {
+  padding: 8px 16px;
+  font-size: 13px;
+  opacity: 0.6;
+}
+
+.membership-content {
+  padding: 24px;
+}
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 1200px;
+  margin: 0 auto 16px;
+  padding: 4px 8px 4px 16px;
+  border-radius: 4px;
+  background: #fdecea;
+  color: #b71c1c;
+}
+
+.members-card {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.org-logo {
+  flex-shrink: 0;
+  width: auto;
+  height: 44px;
+  max-width: 140px;
+  margin-right: 12px;
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+.title-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-right: 12px;
+  border-radius: 50%;
+  background: rgba(25, 49, 85, 0.08);
+  color: #193155;
+}
+
+.list-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.list-subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  opacity: 0.6;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 64px 16px;
+  text-align: center;
+  opacity: 0.7;
+
+  mat-icon {
+    font-size: 64px;
+    height: 64px;
+    width: 64px;
+    margin-bottom: 12px;
+  }
+
+  h2 {
+    margin: 0 0 8px;
+    font-weight: 500;
+  }
+
+  &.small {
+    padding: 32px 16px;
+
+    mat-icon {
+      font-size: 40px;
+      height: 40px;
+      width: 40px;
+    }
+  }
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+}
+
+.members-table {
+  width: 100%;
+
+  th.mat-mdc-header-cell {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: #fafafa;
+  }
+
+  td.mat-mdc-cell, th.mat-mdc-header-cell {
+    padding: 0 12px;
+  }
+}
+
+.member-row {
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.name-cell {
+  font-weight: 500;
+}
+
+.actions-cell {
+  width: 48px;
+  text-align: right;
+}
+
+.tag-pill {
+  display: inline-block;
+  margin: 2px 4px 2px 0;
+  padding: 2px 10px;
+  border-radius: 12px;
+  background: rgba(25, 49, 85, 0.1);
+  color: #193155;
+  font-size: 12px;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.choose-list-button {
+  margin-top: 16px;
+}
+
+.card-title {
+  min-width: 0;
+}
+
+// Member cards (phone layout)
+.member-cards {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.member-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 56px;
+  padding: 10px 8px 10px 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:active {
+    background: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.member-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.member-card-name {
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.member-card-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  margin-top: 2px;
+  font-size: 13px;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    max-width: 100%;
+    color: #193155;
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.member-card-none {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.member-card-tags {
+  margin-top: 4px;
+}
+
+.member-card-chevron {
+  flex: 0 0 auto;
+  color: rgba(0, 0, 0, 0.35);
+}
+
+.all-members-item {
+  margin: 8px 0;
+}
+
+.item-count {
+  margin-left: 8px;
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+// Upload row: list button with a rename action on the right
+.sidebar-row {
+  display: flex;
+  align-items: center;
+
+  .sidebar-item {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .row-action {
+    flex: 0 0 auto;
+    opacity: 0.5;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-bottom: 8px;
+}
+
+.search-field {
+  flex: 1 1 260px;
+  max-width: 420px;
+
+  mat-icon[matPrefix] {
+    margin-right: 6px;
+    opacity: 0.6;
+  }
+}
+
+.summary-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.summary-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border: 1px solid rgba(25, 49, 85, 0.25);
+  border-radius: 16px;
+  background: transparent;
+  color: #193155;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+  }
+
+  &:hover {
+    background: rgba(25, 49, 85, 0.06);
+  }
+
+  &.active {
+    background: #193155;
+    border-color: #193155;
+    color: #fff;
+  }
+}
+
+.chip-count {
+  font-weight: 600;
+}
+
+.bulk-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 6px 8px 6px 16px;
+  border-radius: 4px;
+  background: rgba(25, 49, 85, 0.08);
+}
+
+.bulk-count {
+  font-weight: 500;
+}
+
+.menu-new-tag {
+  display: flex;
+  align-items: center;
+  padding: 0 8px 0 16px;
+}
+
+.select-cell {
+  width: 40px;
+}
+
+.selected-row {
+  background: rgba(25, 49, 85, 0.06);
+}
+
+.reach-cell {
+  white-space: nowrap;
+}
+
+.reach-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+  margin-right: 2px;
+  color: #193155;
+  vertical-align: middle;
+
+  &.warn {
+    color: #e65100;
+  }
+}
+
+.invalid-number {
+  color: #b71c1c;
+  text-decoration: line-through;
+}
+
+.source-cell {
+  max-width: 180px;
+
+  .truncate {
+    display: block;
+  }
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.member-card-source {
+  margin-top: 2px;
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+// Possible duplicates view
+.duplicate-group {
+  margin-bottom: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.duplicate-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  background: #fafafa;
+  font-size: 13px;
+}
+
+.duplicate-reason {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.duplicate-key {
+  min-width: 0;
+  opacity: 0.7;
+}
+
+.duplicate-action {
+  flex-shrink: 0;
+}
+
+.selected-group {
+  border-color: rgba(25, 49, 85, 0.35);
+
+  .duplicate-header {
+    background: rgba(25, 49, 85, 0.08);
+  }
+}
+
+.duplicate-member {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 8px 8px 14px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.duplicate-member-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.duplicate-member-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+@media (max-width: 767px) {
+  // Reason and key on one line, actions wrap below
+  .duplicate-header {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+
+  .membership-drawer {
+    width: 85vw;
+    max-width: 320px;
+    min-width: 0;
+  }
+
+  .membership-content {
+    padding: 8px;
+  }
+
+  .members-card {
+    padding: 16px 12px;
+  }
+
+  .card-header {
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+
+  .org-logo {
+    height: 36px;
+    max-width: 100px;
+    margin-right: 8px;
+  }
+
+  .title-icon {
+    width: 36px;
+    height: 36px;
+    margin-right: 8px;
+  }
+
+  .list-title {
+    font-size: 18px;
+    overflow-wrap: anywhere;
+  }
+
+  .empty-state {
+    padding: 40px 12px;
+  }
+
+  .search-field {
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  // Export on its own full-width row, pager centered underneath
+  .card-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+
+    > button {
+      width: 100%;
+    }
+
+    .spacer {
+      display: none;
+    }
+    mat-paginator {
+      align-self: center;
+    }
+  }
+}
+
+// Shared by the membership dialogs: title on the left, close on the right
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  .mat-mdc-dialog-title {
+    margin: 0 !important;
+    font-weight: 600;
+  }
+}
+
+// Color of a tag (or tag value) in the Add tag menus
+.menu-tag-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 16px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+  vertical-align: middle;
+}
+
+tag-chip {
+  display: inline-block;
+  max-width: 100%;
+  margin: 2px 4px 2px 0;
+}
+
+// Value chips in a tag's list
+.value-chips {
+  align-items: center;
+  margin-top: 6px;
+}
+
+.value-chips-label {
+  margin-right: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.value-chip-dot {
+  margin-right: 0;
+}
+
+.empty-chip {
+  opacity: 0.5;
+}
+
+.value-chips-clear {
+  min-width: 0;
+  line-height: 28px;
+}
+
+// Notes about the open list, e.g. an upload's tag values that didn't match
+.info-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: rgba(30, 111, 217, 0.08);
+  font-size: 13px;
+
+  mat-icon {
+    flex-shrink: 0;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #1e6fd9;
+  }
+}

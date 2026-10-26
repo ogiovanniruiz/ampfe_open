@@ -1,0 +1,112 @@
+<div class="dialog-header">
+  <h2 mat-dialog-title>Upload a membership list</h2>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="uploading" (click)="cancel()"><mat-icon>close</mat-icon></button>
+</div>
+<mat-progress-bar *ngIf="uploading" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-content class="ud-content">
+  <!-- 1. File -->
+  <div class="ud-section-label">CSV file</div>
+  <input #fileInput type="file" accept=".csv,text/csv" hidden (change)="fileChanged($event)">
+
+  <div *ngIf="!file" class="ud-dropzone" [class.drag-over]="dragOver"
+       (click)="fileInput.click()" (dragover)="onDragOver($event)" (dragleave)="dragOver = false" (drop)="onDrop($event)">
+    <mat-icon class="ud-dropzone-icon">upload_file</mat-icon>
+    <div class="ud-dropzone-text">
+      <span class="ud-desktop-only">Drag a CSV file here or </span>
+      <button mat-stroked-button color="primary" type="button" (click)="$event.stopPropagation(); fileInput.click()">Choose CSV file</button>
+    </div>
+    <div class="ud-hint">The first row must contain column headers.</div>
+  </div>
+
+  <div *ngIf="file" class="ud-file" [class.drag-over]="dragOver"
+       (dragover)="onDragOver($event)" (dragleave)="dragOver = false" (drop)="onDrop($event)">
+    <mat-icon class="ud-file-icon">description</mat-icon>
+    <div class="ud-file-body">
+      <div class="ud-file-name truncate" [matTooltip]="file.name">{{file.name}}</div>
+      <div class="ud-hint">{{columns.length}} {{columns.length === 1 ? 'column' : 'columns'}} found</div>
+    </div>
+    <button mat-button color="primary" type="button" [disabled]="uploading" (click)="fileInput.click()">Change</button>
+  </div>
+
+  <!-- 2. Details -->
+  <div class="ud-section-label">Details</div>
+  <div class="ud-grid">
+    <mat-form-field>
+      <mat-label>Upload name</mat-label>
+      <input matInput #uploadName id="upload-name" required autocomplete="off">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Tag this upload</mat-label>
+      <mat-select [formControl]="selectedTags" multiple>
+        <mat-option *ngFor="let tag of tags" [value]="tag">{{tag}}</mat-option>
+      </mat-select>
+      <mat-hint *ngIf="!tags.length">No tags in this organization yet</mat-hint>
+    </mat-form-field>
+  </div>
+
+  <!-- 3. Column mapping -->
+  <ng-container *ngIf="columns.length">
+    <div class="ud-section-header">
+      <div class="ud-section-label">Map columns</div>
+      <span class="spacer"></span>
+      <span class="ud-hint">{{mappedCount}} of {{columns.length}} mapped</span>
+    </div>
+    <div class="ud-warning" *ngIf="!hasNameOrId">
+      <mat-icon>info</mat-icon>
+      <span>Map a column to <b>first name</b>, <b>full name</b> or <b>voterID</b>. Rows without one are skipped.</span>
+    </div>
+
+    <div class="ud-mapping">
+      <div *ngFor="let col of columns" class="ud-map-row" [class.mapped]="col.control.value">
+        <div class="ud-map-source">
+          <span class="ud-map-label">Column in your file</span>
+          <span class="ud-map-header truncate" [matTooltip]="col.header">{{col.header}}</span>
+        </div>
+        <mat-icon class="ud-map-arrow">arrow_forward</mat-icon>
+        <mat-form-field class="ud-map-target compact-field" subscriptSizing="dynamic">
+          <mat-select [formControl]="col.control" placeholder="Don't import" [attr.aria-label]="'Field for column ' + col.header">
+            <mat-option [value]="null"><i>Don't import</i></mat-option>
+            <mat-optgroup label="Fields">
+              <mat-option *ngFor="let ourHeader of ourHeaders" [value]="ourHeader" [disabled]="isUsed(ourHeader, col)">{{ourHeader}}</mat-option>
+            </mat-optgroup>
+            <mat-optgroup label="Tags with values" *ngIf="tagValueTargets.length">
+              <mat-option *ngFor="let target of tagValueTargets" [value]="target.value" [disabled]="isUsed(target.value, col)">Tag: {{target.label}}</mat-option>
+            </mat-optgroup>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+      <div class="ud-hint ud-tag-hint">
+      A column mapped to a tag holds each person's value (e.g. 1–5); blank cells add nothing.
+      The <b>tag</b> column also accepts values, like <i>Immigrant Justice: 3; Volunteer</i>.
+    </div>
+  </ng-container>
+
+  <!-- 4. Options -->
+  <div class="ud-section-label">Options</div>
+  <div class="ud-options">
+    <div class="ud-option">
+      <mat-checkbox [formControl]="checkVoterfile" color="primary">Check voter file</mat-checkbox>
+      <div class="ud-hint">Match members against the voter file after the upload.</div>
+    </div>
+    <div class="ud-option">
+      <mat-checkbox [formControl]="checkDuplicates" color="primary">Check duplicates</mat-checkbox>
+      <div class="ud-hint">Skip people who are already members of this organization.</div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<div class="ud-message" *ngIf="displayMessage" role="alert">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{userMessage}}</span>
+</div>
+
+<mat-dialog-actions class="ud-actions">
+  <button mat-stroked-button type="button" [disabled]="uploading" (click)="cancel()">CANCEL</button>
+  <span class="spacer"></span>
+  <button mat-raised-button color="primary" type="button" [disabled]="uploading" (click)="checkUpload()">
+    {{uploading ? 'UPLOADING…' : 'UPLOAD'}}
+  </button>
+</mat-dialog-actions>

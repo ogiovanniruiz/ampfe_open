@@ -1,0 +1,61 @@
+<div class="dialog-header">
+  <h2 mat-dialog-title>Contact Customer Service</h2>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" aria-label="Close" [disabled]="sending" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+<mat-progress-bar *ngIf="sending" mode="indeterminate"></mat-progress-bar>
+
+<ng-container *ngIf="!sent; else sentView">
+  <mat-dialog-content class="cf-content">
+    <p class="cf-intro">Report a problem or ask a question. Include a phone number if you'd like a call back.</p>
+
+    <mat-form-field class="cf-field">
+      <mat-label>What is the issue?</mat-label>
+      <input matInput [formControl]="subject" [maxlength]="maxSubject" autocomplete="off" required>
+      <mat-error>Add a short subject.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="cf-field">
+      <mat-label>Details</mat-label>
+      <textarea matInput [formControl]="message" [maxlength]="maxMessage" required
+                cdkTextareaAutosize cdkAutosizeMinRows="5" cdkAutosizeMaxRows="12"
+                placeholder="What happened, what you expected, and the page you were on"></textarea>
+      <mat-hint align="end">{{(message.value || '').length}} / {{maxMessage}}</mat-hint>
+      <mat-error>Describe the issue so we can help.</mat-error>
+    </mat-form-field>
+
+    <div class="cf-reply" *ngIf="replyEmail">
+      <mat-icon>mail_outline</mat-icon>
+      <span>We'll reply to <b>{{replyEmail}}</b></span>
+    </div>
+
+    <div class="cf-error" *ngIf="errorMessage" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{errorMessage}}</span>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="cf-actions">
+    <button mat-stroked-button type="button" [disabled]="sending" (click)="close()">CANCEL</button>
+    <span class="spacer"></span>
+    <button mat-raised-button color="primary" type="button" [disabled]="sending" (click)="sendEmail()">
+      <mat-icon>send</mat-icon>
+      {{sending ? 'SENDING…' : 'SEND'}}
+    </button>
+  </mat-dialog-actions>
+</ng-container>
+
+<ng-template #sentView>
+  <mat-dialog-content>
+    <div class="cf-sent" role="status">
+      <mat-icon class="cf-sent-icon">check_circle</mat-icon>
+      <h3>Thanks, your message was sent.</h3>
+      <p *ngIf="replyEmail">We'll get back to you at <b>{{replyEmail}}</b>.</p>
+      <p *ngIf="!replyEmail">We'll get back to you soon.</p>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions class="cf-actions">
+    <span class="spacer"></span>
+    <button mat-raised-button color="primary" type="button" (click)="close()">CLOSE</button>
+  </mat-dialog-actions>
+</ng-template>

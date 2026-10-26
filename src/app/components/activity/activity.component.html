@@ -1,0 +1,164 @@
+<main class="act-main">
+
+  <!-- HEADER -->
+  <section class="act-header">
+    <div class="act-header-top">
+      <!-- The org's logo; a spinner while it loads, the activity type icon when there is none -->
+      <ng-container *ngIf="{logo: orgLogo$ | async} as org">
+        <div class="act-icon act-icon-lg" *ngIf="org.logo === undefined" aria-label="Loading logo"><mat-spinner diameter="24"></mat-spinner></div>
+        <img class="act-org-logo" *ngIf="org.logo" [src]="org.logo" alt="">
+        <div class="act-icon act-icon-lg" *ngIf="org.logo === null"><mat-icon>{{typeInfo.icon}}</mat-icon></div>
+      </ng-container>
+      <div class="act-header-text">
+        <h1 class="act-title">{{typeInfo.label}}</h1>
+        <p class="act-subtitle">{{campaignName}}<span *ngIf="campaignName && orgName"> · </span>{{orgName}}</p>
+      </div>
+    </div>
+    <div class="act-header-actions" *ngIf="canManage">
+      <button mat-raised-button color="primary" *ngIf="canCreate" [matTooltip]="createActivityToolTip" (click)="createActivity()"><mat-icon>add</mat-icon> New {{typeInfo.single}}</button>
+      <button mat-stroked-button color="primary" *ngIf="showTextingTemplates" matTooltip="Create and edit reusable texting templates" (click)="openTextingTemplatesDialog()"><mat-icon>sms</mat-icon> Texting templates</button>
+      <button mat-stroked-button color="warn" *ngIf="canManage" (click)="enterMap()"><mat-icon>map</mat-icon> Campaign management</button>
+    </div>
+  </section>
+
+  <!-- LOADING -->
+  <div class="act-loading" *ngIf="!dataLoaded">
+    <mat-card>
+      <img class="act-loading-logo" width="373" height="81" [src]="logo_dir" alt="Amplify">
+      <ng-container *ngIf="!loadError; else activitiesLoadFailed">
+        <p class="loading-message">Loading activities…</p>
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      </ng-container>
+      <ng-template #activitiesLoadFailed>
+        <p class="loading-message" role="alert">{{loadError}}</p>
+        <button mat-raised-button color="primary" (click)="getActivities()"><mat-icon>refresh</mat-icon> Retry</button>
+      </ng-template>
+    </mat-card>
+  </div>
+
+  <ng-container *ngIf="dataLoaded">
+    <div class="act-banner" *ngIf="preparingStalled">
+      <mat-icon>hourglass_empty</mat-icon>
+      <span>Still preparing households. Refresh later or contact your organizer.</span>
+      <span class="spacer"></span>
+      <button mat-button (click)="preparingStalled = false; getActivities()">Check again</button>
+    </div>
+    <div class="act-banner" *ngIf="errorMessage">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{errorMessage}}</span>
+      <span class="spacer"></span>
+      <button mat-button (click)="errorMessage = ''; getActivities()">Retry</button>
+      <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+    </div>
+
+    <!-- Volunteers only see active activities; no tabs -->
+    <ng-container *ngIf="!canManage">
+      <div class="act-section-header">
+        <h2 class="act-section-title">Active</h2>
+        <span class="act-section-count">{{activities.length}}</span>
+      </div>
+      <ng-container *ngTemplateOutlet="activeContent"></ng-container>
+    </ng-container>
+
+    <!-- The Inactive tab is for admins, owners and developers -->
+    <mat-tab-group mat-stretch-tabs animationDuration="0ms" class="act-tabs" *ngIf="canManage">
+
+      <!-- ACTIVE -->
+      <mat-tab>
+        <ng-template matTabLabel>Active ({{activities.length}})</ng-template>
+        <ng-container *ngTemplateOutlet="activeContent"></ng-container>
+      </mat-tab>
+
+      <!-- INACTIVE -->
+      <mat-tab>
+        <ng-template matTabLabel>Inactive ({{completedActivities.length}})</ng-template>
+        <div class="act-tab">
+          <mat-progress-bar *ngIf="updatingCompletionStatus" mode="indeterminate" class="act-tab-progress"></mat-progress-bar>
+
+          <div class="act-grid" *ngIf="completedActivities.length; else noInactive">
+            <mat-card class="act-card act-card-inactive" *ngFor="let completedActivity of completedActivities; trackBy: trackActivity">
+              <div class="act-card-top">
+                <div class="act-icon act-icon-muted"><mat-icon>{{typeInfo.icon}}</mat-icon></div>
+                <div class="act-card-heading">
+                  <h3 class="act-card-name" [title]="completedActivity.name">{{completedActivity.name}}</h3>
+                  <span class="act-chip act-chip-done" *ngIf="completedActivity.completed"><mat-icon inline>check</mat-icon> Completed</span>
+                  <span class="act-chip" *ngIf="!completedActivity.completed">Not completed</span>
+                </div>
+              </div>
+
+              <p class="act-card-description" *ngIf="completedActivity.description" [title]="completedActivity.description">{{completedActivity.description}}</p>
+
+              <div class="act-card-actions">
+                <button mat-stroked-button [disabled]="updatingCompletionStatus" (click)="getActivityCompletionStatus(completedActivity._id, completedActivity.completed)">
+                  <mat-icon>{{completedActivity.completed ? 'remove_done' : 'done_all'}}</mat-icon>
+                  {{completedActivity.completed ? 'Mark not completed' : 'Mark completed'}}
+                </button>
+                <button mat-stroked-button color="warn" *ngIf="canReactivate(completedActivity)" (click)="reactivate(completedActivity)">
+                  <mat-icon>replay</mat-icon> Reactivate
+                </button>
+              </div>
+
+              <div class="act-card-actions" *ngIf="canManage">
+                <span [matTooltip]="canEdit(completedActivity) ? '' : 'Only the organization that created this activity or the campaign can edit it'"><button mat-stroked-button [disabled]="!canEdit(completedActivity)" (click)="editActivity(completedActivity)"><mat-icon>edit</mat-icon> Edit</button></span>
+                <button mat-stroked-button (click)="openReportsDialog(completedActivity)"><mat-icon>insert_chart</mat-icon> Report</button>
+              </div>
+            </mat-card>
+          </div>
+
+          <ng-template #noInactive>
+            <section class="act-empty">
+              <mat-icon>inventory_2</mat-icon>
+              <h2>No inactive {{typeInfo.label | lowercase}}</h2>
+              <p>Activities you close show up here.</p>
+            </section>
+          </ng-template>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </ng-container>
+
+  <!-- Active cards and empty state, shared by the tab and the volunteer view -->
+  <ng-template #activeContent>
+    <div class="act-tab">
+      <div class="act-grid" *ngIf="activities.length; else noActive">
+        <mat-card class="act-card" *ngFor="let activity of activities; trackBy: trackActivity">
+          <div class="act-card-top">
+            <div class="act-icon"><mat-icon>{{typeInfo.icon}}</mat-icon></div>
+            <div class="act-card-heading">
+              <h3 class="act-card-name" [title]="activity.name">{{activity.name}}</h3>
+              <span class="act-chip act-chip-preparing" *ngIf="!activity.hhReady">Preparing contacts…</span>
+              <span class="act-chip act-chip-preparing" *ngIf="activity.hhReady && activity.hhCapped"
+                    matTooltip="The group had more households than an activity can hold. Narrow the group to reach everyone.">Capped at 150,000 households</span>
+            </div>
+            <button mat-icon-button class="act-test-text" *ngIf="canSendTestText(activity)" matTooltip="Send test text" aria-label="Send test text" (click)="openTestTextDialog(activity)">
+              <mat-icon>sms</mat-icon>
+            </button>
+          </div>
+
+          <p class="act-card-description" *ngIf="activity.description" [title]="activity.description">{{activity.description}}</p>
+          <mat-progress-bar *ngIf="!activity.hhReady && !preparingStalled" mode="indeterminate"></mat-progress-bar>
+
+          <button mat-flat-button color="primary" class="act-enter" [disabled]="!activity.hhReady" (click)="enterActivity(activity)">
+            <mat-icon>login</mat-icon> Enter
+          </button>
+
+          <div class="act-card-actions" *ngIf="canManage">
+            <span [matTooltip]="canEdit(activity) ? '' : 'Only the organization that created this activity or the campaign can edit it'"><button mat-stroked-button [disabled]="!canEdit(activity)" (click)="editActivity(activity)"><mat-icon>edit</mat-icon> Edit</button></span>
+            <button mat-stroked-button (click)="openReportsDialog(activity)"><mat-icon>insert_chart</mat-icon> Report</button>
+          </div>
+
+        </mat-card>
+      </div>
+
+      <ng-template #noActive>
+        <section class="act-empty">
+          <mat-icon>{{typeInfo.icon}}</mat-icon>
+          <h2>No active {{typeInfo.label | lowercase}}</h2>
+          <p *ngIf="canCreate">Create one to start reaching people in this campaign.</p>
+          <p *ngIf="!canCreate">When your organization starts one, it will show up here.</p>
+          <button mat-raised-button color="primary" *ngIf="canCreate" (click)="createActivity()"><mat-icon>add</mat-icon> New {{typeInfo.single}}</button>
+        </section>
+      </ng-template>
+    </div>
+  </ng-template>
+</main>

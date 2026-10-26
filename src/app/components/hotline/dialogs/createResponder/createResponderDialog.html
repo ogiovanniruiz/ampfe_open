@@ -1,0 +1,52 @@
+<button mat-icon-button class="close-button" matTooltip="Cancel"  (click)="return();"><mat-icon>close</mat-icon></button>
+
+<h1 mat-dialog-title class="block-title"><b>Create Responder</b></h1>
+<mat-dialog-content>
+    <mat-form-field class="dialog-element-long"> 
+        <input matInput #firstName type="text" placeholder="First Name">
+    </mat-form-field >
+    <mat-form-field class="dialog-element-long"> 
+        <input matInput #lastName type="text" placeholder="Last Name">
+    </mat-form-field >
+    <mat-form-field style="margin:.3em;width:30%;min-width:300px"> 
+        <input matInput #phonenumber type="text" id="phone" placeholder="Phonenumber" maxlength="10">
+    </mat-form-field >
+    <mat-form-field style="margin:.3em;width:30%;min-width:300px"> 
+        <input matInput #email type="text" id="email" placeholder="Email">
+    </mat-form-field >
+    <mat-form-field style="margin:.3em;width:20%;min-width:300px"> 
+        <mat-select placeholder="Audience" #audience multiple>
+            <mat-option value="legal" >Legal</mat-option>
+            <mat-option value="staff">Staff</mat-option>
+        </mat-select>
+    </mat-form-field >
+    <mat-card >
+        <mat-form-field class="dialog-element-long"> 
+            <input matInput #address type="text" placeholder="Address">
+        </mat-form-field >
+        <mat-form-field class="dialog-element-long"> 
+            <input matInput #address2 type="text" placeholder="Address Line 2 (Optional)">
+        </mat-form-field >
+        <mat-form-field style="margin:.3em;width:30%;min-width:300px"> 
+            <input matInput #city type="text" id="city" placeholder="City">
+        </mat-form-field >
+        <mat-form-field style="margin:.3em;width:20%;min-width:300px"> 
+            <mat-select placeholder="State" #state >
+                <mat-option value="CA" selected="true">CA</mat-option>
+            </mat-select>
+        </mat-form-field >
+        <mat-form-field style="margin:.3em;width:30%;min-width:300px"> 
+            <input matInput #zip type="text" id="zip" placeholder="Zip">
+        </mat-form-field >
+        <mat-form-field class="dialog-element-long"> 
+            <mat-select placeholder="County" #county >
+                <mat-option value="RIVERSIDE" >RIVERSIDE</mat-option>
+                <mat-option value="SAN BERNARDINO" >SAN BERNARDINO</mat-option>
+            </mat-select>
+        </mat-form-field >
+    </mat-card>
+</mat-dialog-content>
+<mat-error *ngIf="displayMessage">{{userMessage}}</mat-error>
+<mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="saveResponder()">CREATE RESPONDER</button>
+</mat-dialog-actions>

@@ -1,0 +1,130 @@
+<div class="pm-header">
+  <div class="pm-heading">
+    <h2 mat-dialog-title class="pm-title">Campaign permissions</h2>
+    <div class="pm-subtitle" *ngIf="campaign?.name">{{campaign.name}}</div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" (click)="return();"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="pm-banner" *ngIf="displayErrorMsg">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-button *ngIf="loadFailed" (click)="reload()">Retry</button>
+  <button mat-icon-button matTooltip="Dismiss" (click)="displayErrorMsg = false"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="pm-content">
+  <mat-tab-group mat-stretch-tabs animationDuration="0ms">
+
+    <!-- DATA MANAGERS -->
+    <mat-tab>
+      <ng-template matTabLabel>Data managers ({{dataManagerCount}} of {{allOrgUsers.length}})</ng-template>
+      <div class="pm-tab">
+        <p class="pm-help">Admins and owners of the organizations on this campaign. Data managers can manage permissions, billing and campaign-wide data.</p>
+
+        <mat-form-field appearance="outline" class="pm-search">
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput [(ngModel)]="userSearch" placeholder="Search by name, email or organization" autocomplete="off">
+          <button mat-icon-button matSuffix *ngIf="userSearch" (click)="userSearch = ''"><mat-icon>close</mat-icon></button>
+        </mat-form-field>
+
+        <mat-progress-bar mode="indeterminate" *ngIf="loadingMembers"></mat-progress-bar>
+
+        <div class="pm-list" *ngIf="filteredUsers.length">
+          <div class="pm-row" *ngFor="let user of filteredUsers; trackBy: trackByID">
+            <span class="pm-avatar" [class.pm-avatar-on]="isDataManager(user)">{{initials(user)}}</span>
+            <div class="pm-row-text">
+              <div class="pm-name">
+                {{user.name?.fullName || user.loginEmail}}
+                <span class="pm-chip pm-chip-you" *ngIf="isSelf(user)">You</span>
+              </div>
+              <div class="pm-sub">{{user.loginEmail}}</div>
+              <div class="pm-orgs">
+                <span class="pm-chip" *ngFor="let name of orgNames(user)">{{name}}</span>
+              </div>
+            </div>
+            <mat-slide-toggle color="primary" #dmToggle
+                              [checked]="isDataManager(user)"
+                              [disabled]="savingUserIDs.has(user._id)"
+                              (change)="setDataManager(user, $event.checked, dmToggle)">
+              <span class="pm-toggle-label">Data manager</span>
+            </mat-slide-toggle>
+          </div>
+        </div>
+
+        <div class="pm-empty" *ngIf="!loadingMembers && !filteredUsers.length">
+          <mat-icon>person_search</mat-icon>
+          <p>{{userSearch ? 'No one matches "' + userSearch + '".' : 'No organization admins on this campaign yet.'}}</p>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- ORGANIZATIONS -->
+    <mat-tab>
+      <ng-template matTabLabel>Organizations ({{campaignOrgs.length}})</ng-template>
+      <div class="pm-tab">
+        <mat-form-field appearance="outline" class="pm-search">
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput [(ngModel)]="orgSearch" placeholder="Search organizations" autocomplete="off">
+          <button mat-icon-button matSuffix *ngIf="orgSearch" (click)="orgSearch = ''"><mat-icon>close</mat-icon></button>
+        </mat-form-field>
+
+        <mat-progress-bar mode="indeterminate" *ngIf="loadingOrgs"></mat-progress-bar>
+
+        <div class="pm-list" *ngIf="filteredOrgs.length">
+          <div class="pm-row" *ngFor="let org of filteredOrgs; trackBy: trackByID">
+            <span class="pm-avatar pm-avatar-org"><mat-icon>groups</mat-icon></span>
+            <div class="pm-row-text">
+              <div class="pm-name">
+                {{org.name}}
+                <span class="pm-chip pm-chip-creator" *ngIf="isCreatorOrg(org)">Creator</span>
+              </div>
+              <div class="pm-desc" *ngIf="org.description" [matTooltip]="org.description" [matTooltipShowDelay]="500">{{org.description}}</div>
+            </div>
+            <span [matTooltip]="isCreatorOrg(org) ? 'The organization that created this campaign can\'t be removed' : 'Remove from campaign'">
+              <button mat-icon-button color="warn" [disabled]="isCreatorOrg(org) || busyOrgIDs.has(org._id)" (click)="removeOrg(org)">
+                <mat-icon>person_remove</mat-icon>
+              </button>
+            </span>
+          </div>
+        </div>
+
+        <div class="pm-empty" *ngIf="!loadingOrgs && !filteredOrgs.length">
+          <mat-icon>domain_disabled</mat-icon>
+          <p>{{orgSearch ? 'No organizations match "' + orgSearch + '".' : 'No organizations on this campaign.'}}</p>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- REQUESTS -->
+    <mat-tab>
+      <ng-template matTabLabel>
+        <span [matBadge]="requests.length" [matBadgeHidden]="requests.length === 0" matBadgeColor="warn" matBadgeOverlap="false">Requests</span>
+      </ng-template>
+      <div class="pm-tab">
+        <mat-progress-bar mode="indeterminate" *ngIf="loadingRequests"></mat-progress-bar>
+
+        <div class="pm-list" *ngIf="requests.length">
+          <div class="pm-row pm-row-request" *ngFor="let org of requests; trackBy: trackByID">
+            <span class="pm-avatar pm-avatar-org"><mat-icon>group_add</mat-icon></span>
+            <div class="pm-row-text">
+              <div class="pm-name">{{org.name}}</div>
+              <div class="pm-desc" *ngIf="org.description">{{org.description}}</div>
+            </div>
+            <div class="pm-request-actions">
+              <button mat-stroked-button color="warn" [disabled]="busyOrgIDs.has(org._id)" (click)="manageRequest(org, 'DENY')">Deny</button>
+              <button mat-flat-button color="primary" [disabled]="busyOrgIDs.has(org._id)" (click)="manageRequest(org, 'APPROVE')">Approve</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pm-empty" *ngIf="!loadingRequests && !requests.length">
+          <mat-icon>inbox</mat-icon>
+          <p>No pending requests.</p>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</mat-dialog-content>

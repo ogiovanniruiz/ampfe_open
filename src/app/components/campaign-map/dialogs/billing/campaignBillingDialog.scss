@@ -1,0 +1,242 @@
+// Mirrors orgBilling.scss so the two billing screens look the same
+.cb-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.cb-title {
+  margin: 0 !important;
+  font-weight: 600;
+}
+
+.cb-org {
+  margin-top: 2px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.cb-plan {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(63, 81, 181, 0.12);
+  color: #3f51b5;
+}
+
+.cb-period {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 16px 0 4px;
+}
+
+.cb-range {
+  width: 280px;
+  margin-bottom: -1.25em;
+}
+
+.cb-period-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.cb-scope {
+  margin: 4px 0 8px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.cb-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 4px 4px 4px 12px;
+  border-radius: 8px;
+  background: #fdecea;
+  color: #b71c1c;
+  font-size: 14px;
+}
+
+.cb-content {
+  padding-top: 8px !important;
+}
+
+.cb-section-heading {
+  margin: 8px 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.cb-by-org {
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+// Invoice-style tables; override the global bordered th/td rule
+.cb-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  th, td {
+    border: none;
+    padding: 8px 12px;
+  }
+
+  thead th {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(0, 0, 0, 0.55);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  tbody tr:not(.cb-section) td {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+}
+
+.cb-item {
+  text-align: left;
+}
+
+.cb-num {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.cb-unit {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.cb-amount {
+  font-weight: 500;
+}
+
+.cb-section td {
+  padding-top: 16px !important;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.cb-note td {
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.cb-total td {
+  padding-top: 14px !important;
+  border-top: 2px solid rgba(0, 0, 0, 0.6) !important;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.cb-subtotal-row td {
+  padding-top: 10px !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.3) !important;
+  font-weight: 600;
+}
+
+// Organization panels
+.cb-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.cb-org-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cb-row-error-icon {
+  color: #c62828;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.cb-panel-desc {
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.cb-subtotal {
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.87);
+  font-variant-numeric: tabular-nums;
+}
+
+.cb-row-error {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #c62828;
+}
+
+.cb-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 32px 16px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.55);
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    opacity: 0.6;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.cb-footnote {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 600px) {
+  .cb-rate {
+    display: none;
+  }
+
+  .cb-table {
+    th, td {
+      padding: 8px 6px;
+    }
+  }
+
+  .cb-range {
+    width: 100%;
+  }
+
+  .cb-plan {
+    display: none;
+  }
+}

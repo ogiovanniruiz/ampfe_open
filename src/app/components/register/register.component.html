@@ -1,0 +1,67 @@
+<main class="rg-page">
+  <section class="rg-card">
+
+    <div class="rg-header">
+      <img class="rg-logo" [src]="logo_dir" alt="Amplify">
+      <h1 class="rg-title">Create your account</h1>
+      <p class="rg-subtitle">Sign up with your email to join your organization's campaigns.</p>
+    </div>
+
+    <form class="rg-form" [formGroup]="form" (ngSubmit)="submitRegistration()">
+      <div class="rg-names">
+        <mat-form-field appearance="outline">
+          <mat-label>First name</mat-label>
+          <input matInput formControlName="firstName" [errorStateMatcher]="matcher" autocomplete="given-name" name="firstName" required>
+          <mat-error>Enter your first name.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Last name</mat-label>
+          <input matInput formControlName="lastName" [errorStateMatcher]="matcher" autocomplete="family-name" name="lastName" required>
+          <mat-error>Enter your last name.</mat-error>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" [errorStateMatcher]="matcher" autocomplete="email" name="email" required>
+        <mat-error *ngIf="form.get('email').hasError('required')">Enter your email.</mat-error>
+        <mat-error *ngIf="form.get('email').hasError('email')">Enter a valid email address.</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" [errorStateMatcher]="matcher" autocomplete="new-password" name="password" required>
+        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword" [attr.aria-label]="hidePassword ? 'Show password' : 'Hide password'" [attr.aria-pressed]="!hidePassword">
+          <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+        <mat-hint>At least {{minPasswordLength}} characters.</mat-hint>
+        <mat-error *ngIf="form.get('password').hasError('required')">Enter a password.</mat-error>
+        <mat-error *ngIf="form.get('password').hasError('minlength')">Use at least {{minPasswordLength}} characters.</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Confirm password</mat-label>
+        <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="repeatPassword" [errorStateMatcher]="repeatMatcher" autocomplete="new-password" name="repeatPassword" required>
+        <mat-error *ngIf="form.get('repeatPassword').hasError('required')">Enter your password again.</mat-error>
+        <mat-error *ngIf="!form.get('repeatPassword').hasError('required') && form.hasError('mismatch')">Passwords don't match.</mat-error>
+      </mat-form-field>
+
+      <div class="rg-banner" *ngIf="message" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{message}}</span>
+        <button mat-button type="button" *ngIf="emailExists" (click)="returnToLoginPage()">Sign in</button>
+      </div>
+
+      <mat-progress-bar *ngIf="loading" mode="indeterminate" class="rg-progress"></mat-progress-bar>
+
+      <button mat-raised-button color="primary" type="submit" class="rg-submit" [disabled]="loading">
+        <mat-icon>person_add</mat-icon> {{loading ? 'Creating account…' : 'Create account'}}
+      </button>
+    </form>
+
+    <div class="rg-footer">
+      <span>Already have an account?</span>
+      <button mat-button color="primary" type="button" (click)="returnToLoginPage()"><mat-icon>login</mat-icon> Sign in</button>
+    </div>
+  </section>
+</main>

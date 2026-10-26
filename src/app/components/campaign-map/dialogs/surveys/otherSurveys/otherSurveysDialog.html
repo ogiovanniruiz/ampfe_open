@@ -1,0 +1,93 @@
+<div class="os-header">
+  <div class="os-heading">
+    <h2 mat-dialog-title class="os-title">Surveys</h2>
+    <div class="os-subtitle">All surveys created by your organization, across campaigns</div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" (click)="closeDialog();"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
+<div class="os-banner" *ngIf="errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-button *ngIf="loadFailed" (click)="getAllSurveys()">Retry</button>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="os-content">
+  <mat-tab-group mat-stretch-tabs animationDuration="0ms">
+
+    <!-- ACTIVE -->
+    <mat-tab>
+      <ng-template matTabLabel>Active ({{orgSurveys.length}})</ng-template>
+      <div class="os-tab">
+        <div class="os-list" *ngIf="orgSurveys.length">
+          <div class="os-row" *ngFor="let survey of orgSurveys; trackBy: trackSurvey">
+            <div class="os-row-text">
+              <div class="os-name">
+                {{survey.name}}
+                <span class="os-chip os-chip-campaign" *ngIf="inThisCampaign(survey)">In this campaign</span>
+              </div>
+              <div class="os-preview" *ngIf="questionCount(survey)">{{questionsPreview(survey)}}</div>
+              <div class="os-meta">
+                <span>{{questionCount(survey)}} {{questionCount(survey) === 1 ? 'question' : 'questions'}}</span>
+                <span *ngIf="usageLabel(survey)"> · {{usageLabel(survey)}}</span>
+              </div>
+            </div>
+            <div class="os-row-actions">
+              <button mat-stroked-button color="primary" [disabled]="busyIDs.has(survey._id)" (click)="editSurvey(survey)">
+                <mat-icon>edit</mat-icon> Edit
+              </button>
+              <button mat-icon-button [disabled]="busyIDs.has(survey._id)" (click)="setActive(survey, false)"
+                      [matTooltip]="survey.activityCount ? 'Archive (activities already using it keep working)' : 'Archive'">
+                <mat-icon>archive</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="os-empty" *ngIf="!loading && !orgSurveys.length">
+          <mat-icon>playlist_add</mat-icon>
+          <p>Your organization hasn't created any active surveys.</p>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- ARCHIVED -->
+    <mat-tab>
+      <ng-template matTabLabel>Archived ({{archivedSurveys.length}})</ng-template>
+      <div class="os-tab">
+        <div class="os-list" *ngIf="archivedSurveys.length">
+          <div class="os-row os-row-archived" *ngFor="let survey of archivedSurveys; trackBy: trackSurvey">
+            <div class="os-row-text">
+              <div class="os-name">{{survey.name}}</div>
+              <div class="os-preview" *ngIf="questionCount(survey)">{{questionsPreview(survey)}}</div>
+              <div class="os-meta">
+                <span>{{questionCount(survey)}} {{questionCount(survey) === 1 ? 'question' : 'questions'}}</span>
+                <span *ngIf="usageLabel(survey)"> · {{usageLabel(survey)}}</span>
+              </div>
+            </div>
+            <div class="os-row-actions">
+              <button mat-stroked-button color="primary" [disabled]="busyIDs.has(survey._id)" (click)="setActive(survey, true)">
+                <mat-icon>unarchive</mat-icon> Restore
+              </button>
+              <span *ngIf="dev" [matTooltip]="survey.activityCount ? 'Used by activities, so it can\'t be deleted' : 'Delete permanently'">
+                <button mat-icon-button color="warn" [disabled]="busyIDs.has(survey._id) || survey.activityCount > 0" (click)="removeSurvey(survey)">
+                  <mat-icon>delete_forever</mat-icon>
+                </button>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="os-empty" *ngIf="!loading && !archivedSurveys.length">
+          <mat-icon>inventory_2</mat-icon>
+          <p>No archived surveys. Archived surveys are hidden from campaign lists but can be restored here.</p>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</mat-dialog-content>

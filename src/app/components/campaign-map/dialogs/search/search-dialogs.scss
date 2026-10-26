@@ -1,0 +1,242 @@
+// Shared by the address, precinct and voter search dialogs
+.spacer {
+  flex: 1 1 auto;
+}
+
+.sd-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sd-title {
+  margin: 0 !important;
+  font-weight: 600;
+}
+
+.sd-hint {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.sd-content {
+  padding-top: 16px !important;
+}
+
+.sd-field {
+  width: 100%;
+
+  mat-icon[matPrefix] {
+    margin-right: 8px;
+    color: rgba(0, 0, 0, 0.54);
+  }
+}
+
+.sd-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 12px;
+
+  .sd-field {
+    flex: 1 1 200px;
+    width: auto;
+  }
+}
+
+.sd-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #fdecea;
+  color: #b71c1c;
+  font-size: 14px;
+}
+
+.sd-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sd-button-spinner {
+  display: inline-block;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+// Voter results
+.sd-count {
+  margin: 4px 0 8px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.sd-results {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.sd-result-panel.mat-expansion-panel {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  ::ng-deep .mat-expansion-panel-body {
+    padding: 0 14px 14px;
+  }
+}
+
+.sd-result-header.mat-expansion-panel-header {
+  padding: 0 14px 0 0;
+}
+
+.sd-result {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  min-width: 0;
+  gap: 8px 12px;
+  padding: 12px 0 12px 14px;
+}
+
+.sd-result-text {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.sd-result-name {
+  font-weight: 600;
+}
+
+.sd-result-address {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.sd-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.sd-chip {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(0, 0, 0, 0.07);
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.sd-chip-voted {
+  background: #e6f4ea;
+  color: #1e6b34;
+}
+
+.sd-chip-missed {
+  background: rgba(0, 0, 0, 0.05);
+  color: rgba(0, 0, 0, 0.5);
+}
+
+// Voter search options and details
+.sd-field-short.sd-field {
+  flex: 0 1 110px;
+}
+
+.sd-more-toggle {
+  margin: -4px 0 8px;
+}
+
+.sd-options-hint {
+  margin: -8px 0 8px;
+}
+
+.sd-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px 20px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.sd-section {
+  min-width: 0;
+}
+
+.sd-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.sd-facts {
+  margin: 0;
+}
+
+.sd-fact {
+  display: flex;
+  gap: 8px;
+  padding: 3px 0;
+  font-size: 13px;
+
+  dt {
+    flex: 0 0 45%;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  dd {
+    margin: 0;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.sd-history {
+  margin-top: 8px;
+}
+
+.sd-none {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.sd-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 24px 16px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.55);
+
+  mat-icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+    opacity: 0.6;
+  }
+
+  p {
+    margin: 0;
+  }
+}

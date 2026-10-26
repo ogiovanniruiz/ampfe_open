@@ -1,0 +1,151 @@
+<div class="cb-header">
+  <div>
+    <h2 mat-dialog-title class="cb-title">Campaign billing</h2>
+    <div class="cb-org" *ngIf="!loadingOrgs">{{rows.length}} {{rows.length === 1 ? 'organization' : 'organizations'}}</div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" (click)="return();"><mat-icon>close</mat-icon></button>
+</div>
+
+<!-- Period -->
+<div class="cb-period">
+  <mat-button-toggle-group [value]="period" (change)="setPeriod($event.value)" aria-label="Billing period">
+    <mat-button-toggle value="thisMonth">This month</mat-button-toggle>
+    <mat-button-toggle value="lastMonth">Last month</mat-button-toggle>
+    <mat-button-toggle value="custom">Custom</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <mat-form-field appearance="outline" class="cb-range" *ngIf="period === 'custom'">
+    <mat-label>Date range</mat-label>
+    <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+      <input matStartDate formControlName="start" placeholder="Start date">
+      <input matEndDate formControlName="end" placeholder="End date" (dateChange)="applyCustomRange()">
+    </mat-date-range-input>
+    <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
+    <mat-date-range-picker #picker></mat-date-range-picker>
+  </mat-form-field>
+
+  <div class="cb-period-label">
+    <mat-icon inline>event</mat-icon> {{periodLabel}}
+  </div>
+</div>
+<p class="cb-scope">Each organization's charges cover all of its activity in this period, not only this campaign.</p>
+
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
+<div class="cb-banner" *ngIf="displayErrorMsg">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-button *ngIf="orgsFailed" (click)="loadOrgs()">Retry</button>
+  <button mat-icon-button matTooltip="Dismiss" (click)="displayErrorMsg = false"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="cb-content">
+  <!-- Campaign summary -->
+  <ng-container *ngIf="rows.length > 0 && totals as t">
+    <div class="cb-section-heading">Campaign summary</div>
+    <table class="cb-table">
+      <thead>
+        <tr>
+          <th class="cb-item">Item</th>
+          <th class="cb-num">Quantity</th>
+          <th class="cb-num">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="cb-item">Subscriptions</td>
+          <td class="cb-num">{{rows.length}} <span class="cb-unit">{{rows.length === 1 ? 'org' : 'orgs'}}</span></td>
+          <td class="cb-num cb-amount">{{t.subscriptions | currency}}</td>
+        </tr>
+        <tr>
+          <td class="cb-item">Call minutes</td>
+          <td class="cb-num">{{t.callMinutes | number}} <span class="cb-unit">min</span></td>
+          <td class="cb-num cb-amount">{{t.callCost | currency}}</td>
+        </tr>
+        <tr>
+          <td class="cb-item">Text segments</td>
+          <td class="cb-num">{{t.textSegments | number}} <span class="cb-unit">segments</span></td>
+          <td class="cb-num cb-amount">{{t.textCost | currency}}</td>
+        </tr>
+        <tr>
+          <td class="cb-item">Pool numbers</td>
+          <td class="cb-num">{{t.numbers | number}} <span class="cb-unit">numbers</span></td>
+          <td class="cb-num cb-amount">{{t.numberCost | currency}}</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="cb-total">
+          <td colspan="2">{{loading ? 'Estimated campaign total' : 'Campaign total'}}</td>
+          <td class="cb-num">{{t.total | currency}}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </ng-container>
+
+  <div class="cb-empty" *ngIf="!loadingOrgs && rows.length === 0 && !displayErrorMsg">
+    <mat-icon>receipt_long</mat-icon>
+    <p>No organizations on this campaign.</p>
+  </div>
+
+  <!-- By organization -->
+  <ng-container *ngIf="rows.length > 0">
+    <div class="cb-section-heading cb-by-org">By organization</div>
+    <mat-accordion multi>
+      <mat-expansion-panel *ngFor="let row of rows; trackBy: trackRow" [expanded]="rows.length === 1">
+        <mat-expansion-panel-header class="cb-panel-header">
+          <mat-panel-title class="cb-panel-title">
+            <span class="cb-org-name">{{row.org.name}}</span>
+            <span class="cb-plan">{{row.org.subscription || 'PLUS'}}</span>
+            <mat-icon class="cb-row-error-icon" *ngIf="row.error" [matTooltip]="row.error">error_outline</mat-icon>
+          </mat-panel-title>
+          <mat-panel-description class="cb-panel-desc">
+            <mat-spinner *ngIf="rowLoading(row)" diameter="14"></mat-spinner>
+            <span class="cb-subtotal">{{subtotal(row) | currency}}</span>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <p class="cb-row-error" *ngIf="row.error">{{row.error}}</p>
+
+        <table class="cb-table">
+          <thead>
+            <tr>
+              <th class="cb-item">Item</th>
+              <th class="cb-num">Quantity</th>
+              <th class="cb-num cb-rate">Rate</th>
+              <th class="cb-num">Amount</th>
+            </tr>
+          </thead>
+
+          <tbody *ngFor="let section of sections(row)">
+            <tr class="cb-section">
+              <td colspan="4">{{section.title}}</td>
+            </tr>
+            <tr *ngFor="let line of section.lines">
+              <td class="cb-item">{{line.label}}</td>
+              <td class="cb-num">{{line.quantity | number}} <span class="cb-unit">{{line.unit}}</span></td>
+              <td class="cb-num cb-rate">{{line.rate !== null ? (line.rate | currency) : '—'}}</td>
+              <td class="cb-num cb-amount">{{line.amount | currency}}</td>
+            </tr>
+            <tr *ngFor="let note of section.notes" class="cb-note">
+              <td colspan="4">{{note}}</td>
+            </tr>
+            <tr class="cb-note" *ngIf="!rowLoading(row) && section.lines.length === 0 && section.notes.length === 0">
+              <td colspan="4">No charges</td>
+            </tr>
+          </tbody>
+
+          <tfoot>
+            <tr class="cb-subtotal-row">
+              <td colspan="3">{{rowLoading(row) ? 'Estimated subtotal' : 'Subtotal'}}</td>
+              <td class="cb-num">{{subtotal(row) | currency}}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </ng-container>
+
+  <p class="cb-footnote">Usage charges cover the selected period. Subscriptions are billed monthly.</p>
+</mat-dialog-content>

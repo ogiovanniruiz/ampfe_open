@@ -1,0 +1,48 @@
+<div class="dialog-header">
+  <h2 mat-dialog-title>Edit uploaded list</h2>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" (click)="cancel()"><mat-icon>close</mat-icon></button>
+</div>
+<mat-dialog-content style="padding-top:7px;padding-bottom:7px">
+  <mat-form-field class="dialog-element-long" > 
+    <mat-label>Name this Upload</mat-label>
+    <input matInput #uploadName id='upload-name' required>
+  </mat-form-field>
+
+  <!--
+  <mat-form-field *ngFor='let theirHeader of theirHeaders'>
+    <mat-label>Your Header: {{theirHeader}}</mat-label>
+    <mat-select [(formControl)]="selectedHeader1" (selectionChange)="dropdownChanged($event)">
+      <mat-option *ngFor="let ourHeader of ourHeaders" [value]="ourHeader" (click)='allocateHeader(ourHeader, theirHeader)'>{{ourHeader}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Tag this Upload</mat-label>
+    <mat-select [(formControl)]="selectedTags" multiple #matmat>
+      <div (mouseleave)="matmat.close()">
+        <mat-option *ngFor="let tag of tags" [value]="tag">{{tag}}</mat-option>
+      </div>
+
+    </mat-select>
+  </mat-form-field>
+  
+  <mat-checkbox (click)="updateOverwriteStatus(!overwrite.checked);" #overwrite color="warn"><mat-error>If Voter is found, overwrite your data with our Voterfile?</mat-error></mat-checkbox>
+    -->
+
+  <mat-error *ngIf="displayMessage">{{userMessage}}</mat-error> 
+  
+</mat-dialog-content>
+<mat-dialog-actions>
+    <!--
+  <input type="file" (change)="fileChanged($event)" > 
+  <button mat-stroked-button color='primary' (click)='checkUpload()'>UPLOAD</button>-->
+  <button mat-stroked-button color='primary' (click)="editUpload()" >Save Changes</button>
+  <span class="spacer"></span>
+
+  <button mat-stroked-button color="warn" (click)="deleteUpload()">Delete</button>
+
+
+</mat-dialog-actions>
+
+<mat-progress-bar *ngIf='uploading' mode='indeterminate'></mat-progress-bar>

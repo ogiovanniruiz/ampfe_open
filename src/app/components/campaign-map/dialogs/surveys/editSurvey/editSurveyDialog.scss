@@ -1,0 +1,26 @@
+.es-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(63, 81, 181, 0.07);
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.75);
+
+  mat-icon {
+    color: #3f51b5;
+    margin-top: 2px;
+  }
+}
+
+.es-loading p {
+  margin: 8px 0 16px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.es-optin {
+  margin-top: 8px;
+}

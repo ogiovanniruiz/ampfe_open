@@ -1,0 +1,62 @@
+<div class="ge-header">
+  <div class="ge-heading">
+    <h2 mat-dialog-title class="ge-title">{{fullAddress1}}</h2>
+    <div class="ge-subtitle">
+      <span class="ge-subtitle-name" *ngIf="fullAddress2">{{fullAddress2}}</span>
+      <span class="ge-chip eh-chip-complete" *ngIf="householdStatus === 'complete'">Complete</span>
+      <span class="ge-chip eh-chip-passed" *ngIf="householdStatus === 'passed'">Passed</span>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="resetting" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ge-banner" *ngIf="errorMessage" role="alert">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content class="ge-content">
+  <section class="ge-section">
+    <div class="ge-section-header">
+      <span class="ge-section-title">Responses</span>
+      <span class="ge-section-sub" *ngIf="!loading">{{records.length}} {{records.length === 1 ? 'record' : 'records'}}</span>
+    </div>
+
+    <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+    <div class="eh-records" *ngIf="!loading && records.length">
+      <div class="eh-record" *ngFor="let record of records">
+        <div class="eh-record-top">
+          <span class="eh-person">{{personName(record)}}</span>
+          <span class="eh-outcome" [ngClass]="'eh-outcome-' + outcomeKind(record)">{{outcome(record)}}</span>
+        </div>
+        <div class="eh-meta">
+          by {{canvasserName(record)}}<span *ngIf="record.creationDate"> · {{record.creationDate | date:'medium'}}</span>
+        </div>
+
+        <div class="eh-answers" *ngIf="record.surveyResponse?.questionResponses?.length">
+          <div class="eh-answer" *ngFor="let questionResponse of record.surveyResponse.questionResponses">
+            <span class="eh-question">{{questionResponse.question}}</span>
+            <span class="eh-response">{{answerText(questionResponse.response)}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ge-empty" *ngIf="!loading && !records.length && !errorMessage">
+      {{householdStatus === 'passed' ? 'This door was marked passed without any responses.' : 'No responses recorded for this door.'}}
+    </div>
+  </section>
+</mat-dialog-content>
+
+<mat-progress-bar *ngIf="resetting" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-actions class="ge-actions">
+  <button mat-stroked-button color="warn" [disabled]="loading || resetting" (click)="reset()"><mat-icon>restart_alt</mat-icon> Reset door</button>
+  <span class="eh-reset-help">Deletes these responses so the door can be canvassed again.</span>
+  <span class="spacer"></span>
+  <button mat-raised-button color="primary" [disabled]="resetting" (click)="close()">Close</button>
+</mat-dialog-actions>

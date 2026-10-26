@@ -1,0 +1,78 @@
+<div class="ge-header">
+  <div class="ge-heading">
+    <h2 mat-dialog-title class="ge-title">Merge members</h2>
+    <div class="ge-subtitle">{{data.group.reason}} · {{data.group.key}}</div>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Close" [disabled]="saving" (click)="close()"><mat-icon>close</mat-icon></button>
+</div>
+
+<div class="ge-banner" *ngIf="errorMessage" role="alert">
+  <mat-icon>error_outline</mat-icon>
+  <span>{{errorMessage}}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Dismiss" (click)="errorMessage = ''"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-progress-bar *ngIf="saving" mode="indeterminate"></mat-progress-bar>
+
+<mat-dialog-content class="ge-content">
+
+  <!-- RESULT -->
+  <div class="bt-done" *ngIf="result; else picker" role="status">
+    <mat-icon>check_circle</mat-icon>
+    <span>Merged {{members.length}} members into one. {{result.removed}} {{result.removed === 1 ? 'duplicate was' : 'duplicates were'}} removed.</span>
+  </div>
+
+  <ng-template #picker>
+    <!-- KEEP -->
+    <section class="ge-section">
+      <div class="ge-section-header">
+        <span class="ge-section-title">Member to keep</span>
+      </div>
+      <mat-radio-group class="bt-options" [(ngModel)]="keepID" (ngModelChange)="confirming = false">
+        <mat-radio-button class="mm-option" color="primary" *ngFor="let member of members" [value]="member._id">
+          <div class="mm-name">{{fullName(member) || 'No name'}}</div>
+          <div class="mm-meta">
+            <span *ngIf="member.resident?.phones?.[0]?.number">{{member.resident.phones[0].number}}</span>
+            <span *ngIf="member.resident?.emails?.[0]">{{member.resident.emails[0]}}</span>
+            <span *ngIf="member.fullAddress1">{{member.fullAddress1}}</span>
+            <span *ngIf="data.sources[member._id]">{{data.sources[member._id]}}</span>
+            <span *ngIf="member.enrollment?.dateCreated">Added {{member.enrollment.dateCreated | date:'mediumDate'}}</span>
+          </div>
+        </mat-radio-button>
+      </mat-radio-group>
+    </section>
+
+    <!-- PREVIEW -->
+    <section class="ge-section">
+      <div class="ge-section-header">
+        <span class="ge-section-title">After merging</span>
+      </div>
+      <dl class="mm-preview">
+        <dt>Phones</dt><dd>{{combinedPhones.join(', ') || 'None'}}</dd>
+        <dt>Emails</dt><dd>{{combinedEmails.join(', ') || 'None'}}</dd>
+        <dt>Tags</dt><dd>{{combinedTags.join(', ') || 'None'}}</dd>
+      </dl>
+    </section>
+
+    <div class="ge-note">
+      The kept member's details stay. Anything it's missing is filled in from the others, and their contact history stays with it.
+      {{removedCount}} {{removedCount === 1 ? 'member' : 'members'}} will be removed.
+    </div>
+  </ng-template>
+</mat-dialog-content>
+
+<mat-dialog-actions class="ge-actions">
+  <ng-container *ngIf="!result; else doneActions">
+    <span class="spacer"></span>
+    <button mat-button [disabled]="saving" (click)="confirming ? confirming = false : close()">{{confirming ? 'Back' : 'Cancel'}}</button>
+    <button mat-raised-button [color]="confirming ? 'warn' : 'primary'" [disabled]="!keepID || saving" (click)="merge()">
+      <mat-icon>merge</mat-icon> {{saving ? 'Merging…' : (confirming ? 'Confirm merge' : 'Merge members')}}
+    </button>
+  </ng-container>
+  <ng-template #doneActions>
+    <span class="spacer"></span>
+    <button mat-raised-button color="primary" (click)="close()">Done</button>
+  </ng-template>
+</mat-dialog-actions>

@@ -1,0 +1,159 @@
+.ob-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.ob-title {
+  margin: 0 !important;
+  font-weight: 600;
+}
+
+.ob-org {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.ob-plan {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(63, 81, 181, 0.12);
+  color: #3f51b5;
+}
+
+.ob-period {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 16px 0 8px;
+}
+
+.ob-range {
+  width: 280px;
+  margin-bottom: -1.25em; // keep the row compact; the field has no hint text
+}
+
+.ob-period-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.ob-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 4px 4px 4px 12px;
+  border-radius: 8px;
+  background: #fdecea;
+  color: #b71c1c;
+  font-size: 14px;
+}
+
+.ob-content {
+  padding-top: 8px !important;
+}
+
+// Invoice-style statement; overrides the global bordered th/td rule
+.ob-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  th, td {
+    border: none;
+    padding: 8px 12px;
+  }
+
+  thead th {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(0, 0, 0, 0.55);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  tbody tr:not(.ob-section) td {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+}
+
+.ob-item {
+  text-align: left;
+}
+
+.ob-num {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.ob-unit {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.ob-amount {
+  font-weight: 500;
+}
+
+.ob-section td {
+  padding-top: 16px !important;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.ob-spinner {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
+.ob-note td {
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.ob-total td {
+  padding-top: 14px !important;
+  border-top: 2px solid rgba(0, 0, 0, 0.6) !important;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.ob-footnote {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 600px) {
+  .ob-rate {
+    display: none;
+  }
+
+  .ob-table {
+    th, td {
+      padding: 8px 6px;
+    }
+  }
+
+  .ob-range {
+    width: 100%;
+  }
+}

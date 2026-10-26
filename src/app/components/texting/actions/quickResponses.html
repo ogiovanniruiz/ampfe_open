@@ -1,0 +1,4 @@
+<section class="block-title">Quick Responses </section>
+<mat-nav-list>
+  <button *ngFor="let response of quickResponses;" mat-stroked-button color="primary" (click)="onResponseChange(response)">{{response}}</button>
+</mat-nav-list>
